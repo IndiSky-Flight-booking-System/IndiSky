@@ -58,7 +58,7 @@ function Login() {
 
                     <div className="col">
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Email </label>
                             <input type="email" className="form-control"
                                 onChange={(e) => {
@@ -67,7 +67,7 @@ function Login() {
                                 placeholder="virat@gmail.com" />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Password</label>
                             <input type="password" className="form-control"
                                 onChange={(e) => {
@@ -76,7 +76,7 @@ function Login() {
                                 placeholder="Password " />
                         </div>
 
-                        <div>
+                        <div className='text-center'>
                             <h6>Didn't Registered ? <Link to='/reg'>Register here</Link></h6>
                             <button type="button" className="btn btn-success btn-block" onClick={onLogin}>Login</button>
                         </div>
