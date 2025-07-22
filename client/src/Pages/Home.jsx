@@ -12,14 +12,14 @@ import Search from '../Component/Search';
 function Home() {
   const location = useLocation();
 
-  useEffect(() => {
-    if (location.hash) {
-      const element = document.getElementById(location.hash.substring(1));
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-  }, [location]);
+  // useEffect(() => {
+  //   if (location.hash) {
+  //     const element = document.getElementById(location.hash.substring(1));
+  //     if (element) {
+  //       element.scrollIntoView({ behavior: 'smooth' });
+  //     }
+  //   }
+  // }, [location]);
 
 
   
@@ -90,8 +90,8 @@ function Home() {
                   
                   
                 </div>
-                <div className="row mt-3 d-flex align-items-center justify-content-center">
-                  <button type="submit" class="btn btn-outline-secondary">Submit</button>
+                <div className=" mt-3 text-center">
+                  <button type="submit" class="btn btn-outline-secondary w-25">Submit</button>
                 </div>
 
               </form>
