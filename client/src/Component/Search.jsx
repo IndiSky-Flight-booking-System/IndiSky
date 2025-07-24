@@ -52,7 +52,7 @@ function Search() {
             toast.error("Class Not selected")
         }
         else {
-            navigate('/show')
+            navigate('/pass')
         }
 
     }

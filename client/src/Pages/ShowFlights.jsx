@@ -11,6 +11,7 @@ function ShowFlights() {
   return (
     <div>
       <SlideBar/>
+      <Search/>
 
       <div className="container">
 
