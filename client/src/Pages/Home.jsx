@@ -1,9 +1,10 @@
 import React from 'react'
-import SlideBar from './../Component/SlideBar';
+import SlideBar from '../Component/SlideBar';
+import Footer from '../Component/Footer';
+
 import { useState } from 'react';
 import '../css/Popup.css';
 
-import Footer from '../Component/Footer';
 import { useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import Search from '../Component/Search';

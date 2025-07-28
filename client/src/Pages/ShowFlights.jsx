@@ -1,9 +1,9 @@
+import SlideBar from '../Component/SlideBar';
 import React, { useContext, useEffect, useState } from 'react'
-import SlideBar from './../Component/SlideBar';
 import Search from '../Component/Search';
 import { infoContext , flightDetailsContext, totalPriceContext } from '../App';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+
 
 function ShowFlights() {
 

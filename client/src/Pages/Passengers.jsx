@@ -1,5 +1,6 @@
+import SlideBar from '../Component/SlideBar';
+import Footer from '../Component/Footer';
 import React, { useContext, useEffect } from 'react'
-import SlideBar from './../Component/SlideBar';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
