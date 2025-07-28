@@ -15,5 +15,10 @@
 }
 
 
+/* css for show flights */
+#tripcolor  :hover{
+    background: rgb(209, 207, 207);
+    color: black;
+}
 
 

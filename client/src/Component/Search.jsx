@@ -14,7 +14,17 @@ function Search() {
     const [adult, setAdult] = useState(1);
     const [senior, setSenior] = useState(0);
     const [trips, setTrips] = useState('OneWay');
-    const [clas , setClas] =useState('');
+    const [clas, setClas] = useState('');
+
+    useEffect(() => {
+        if (info) {
+            setChild(info.child || 0);
+            setAdult(info.adult || 1);
+            setSenior(info.senior || 0);
+            setTrips(info.trip || 'OneWay');
+            setClas(info.class || '');
+        }
+    }, []);
 
     const today = new Date().toISOString().split('T')[0];
     console.log(today);
@@ -25,19 +35,25 @@ function Search() {
     console.log(tom)
 
     let total = child + adult + senior;
-    const maxTotal =9;
-    
+    const maxTotal = 9;
 
     //It was just giving default value when changed to roundtrip and summation of total
     //It was not Synchronizing properly  therefore used useEffect to update it simultaneously 
     //did for both in single useEffect  
     useEffect(() => {
-        setInfo(e => ({ ...e, passenger: total }));
-        setInfo(e => ({ ...e, trip: trips }))
-        setInfo(e => ({ ...e, departure: today }))
-        setInfo(e => ({ ...e, return: trips == 'OneWay' ? '' : tom }))
-        setInfo(e=> ({ ...e, class : clas}))
-    }, [total, trips, clas])
+        setInfo(e => ({
+            ...e, passenger: total,
+            trip: trips,
+            departure: e.departure || today,
+            return: trips == 'OneWay' ? '' : (e.return || tom),
+            class: clas,
+            adult: adult,
+            child: child,
+            senior: senior
+        }));
+
+    }, [total, trips, clas ,adult,child,senior])
+
 
     const navigate = useNavigate();
     function onSearch() {
@@ -48,11 +64,11 @@ function Search() {
             toast.error("Destination location is Empty")
         } else if (info.departure.length === 0) {
             toast.error("Departure date is Empty")
-        } else if (info.class.length==0){
+        } else if (info.class.length == 0) {
             toast.error("Class Not selected")
         }
         else {
-            navigate('/pass')
+            navigate('/show')
         }
 
     }
@@ -83,7 +99,7 @@ function Search() {
                 <div className="d-flex align-items-center justify-content-around">
                     <div className='group'>
                         <label htmlFor="from">From</label>
-                        <input type="search" className='rounded border px-2 py-1 form-control ' placeholder='Pune'
+                        <input type="search" className='rounded border px-2 py-1 form-control ' placeholder='Pune' value={info.from || ''}
                             onChange={(e) => {
                                 setInfo({ ...info, from: e.target.value })
                             }}
@@ -92,7 +108,7 @@ function Search() {
 
                     <div className='group'>
                         <label htmlFor="to">To</label>
-                        <input type="search" className='rounded border px-2 py-1 form-control' placeholder='Kochi'
+                        <input type="search" className='rounded border px-2 py-1 form-control' placeholder='Kochi' value={info.to || ''}
                             onChange={(e) => {
                                 setInfo({ ...info, to: e.target.value })
                             }}
@@ -141,49 +157,49 @@ function Search() {
                             data-bs-toggle="dropdown"
                             aria-expanded="false"
                         >
-                            Travellers ({total})
+                            Travellers ({total || info.passenger})
                         </button>
-                        
+
                         {/* when clicked on label name the drop down was getting closed automatically beccause of bootstrap
                         therefore used inbuild method stop Propagation  */}
                         <ul className="dropdown-menu " style={{ width: "350px" }} aria-labelledby="trav"
-                        onClick={(e) => e.stopPropagation()}>  
+                            onClick={(e) => e.stopPropagation()}>
                             <li className='d-flex align-items-center justify-content-center  ' ><label className="dropdown-item m-0">Child </label>
-                                <input className="form-range ms-0" type="range" name="child" value={child} min={0}
-                                    max={Math.min(5,maxTotal-adult-senior)} onChange={(e) =>
+                                <input className="form-range ms-0" type="range" name="child" value={info.child || child} min={0}
+                                    max={Math.min(5, maxTotal - adult - senior)} onChange={(e) =>
                                         setChild(Number(e.target.value))  //used NUmber beacuse to convert string to integer
                                         //here range is by deafult string thats why Number
 
                                     } ></input>
-                                <span className="mx-2 text-success">{child}</span>
+                                <span className="mx-2 text-success">{info.child || child}</span>
                             </li>
 
                             <li className='d-flex align-items-center justify-content-center ' ><label className="dropdown-item m-0">Adult </label>
-                                <input className="form-range ms-1" type="range" name="adult" value={adult} min={0}
-                                    max={Math.min(9,maxTotal-child-senior)}
-                                     onChange={(e) =>{
-                                         setAdult(Number(e.target.value));
-                                         if(adult ===0 && senior===0){
+                                <input className="form-range ms-1" type="range" name="adult" value={info.adult || adult} min={0}
+                                    max={Math.min(9, maxTotal - child - senior)}
+                                    onChange={(e) => {
+                                        setAdult(Number(e.target.value));
+                                        if (adult === 0 && senior === 0) {
                                             toast.error("At one adult or Senior Citizen is required ")
-                                         } 
-                                     }  
+                                        }
+                                    }
                                     } ></input>
-                                <span className="mx-2 text-success">{adult}</span>
+                                <span className="mx-2 text-success">{info.adult || adult}</span>
                             </li>
 
 
 
                             <li className='d-flex align-items-center justify-content-center ' ><label className="dropdown-item m-0">Senior Citizen </label>
-                                <input className="form-range ms-0" type="range" name="senior" value={senior} min={0}
-                                    max={Math.min(5,maxTotal-adult-child)} onChange={(e) =>{
+                                <input className="form-range ms-0" type="range" name="senior" value={info.senior ||senior} min={0}
+                                    max={Math.min(5, maxTotal - adult - child)} onChange={(e) => {
                                         setSenior(Number(e.target.value))
-                                         if(adult ===0 && senior===0){
+                                        if (adult === 0 && senior === 0) {
                                             toast.error("At one adult or Senior Citizen is required ")
-                                         } 
+                                        }
                                     }
-                                        
+
                                     } ></input>
-                                <span className="mx-2 text-success " >{senior}</span>
+                                <span className="mx-2 text-success " >{info.senior ||senior}</span>
                             </li>
                             <li className='d-flex  align-items-start justify-content-around bg-info text-black'>
 
@@ -192,32 +208,32 @@ function Search() {
                                 <div className='d-flex align-items-start justify-content-center flex-column '>
                                     <div className='m-1 form-check form-switch '>
                                         <input className="form-check-input" type="radio" name="class" id="eco"
-                                        onChange={ (e) => {
-                                            setClas(e.target.value)
-                                        }}
+                                            onChange={(e) => {
+                                                setClas(e.target.value)
+                                            }}
 
-                                        checked={clas == 'Economy'}
-                                        value="Economy" />
+                                            checked={clas == 'Economy'}
+                                            value="Economy" />
                                         <label className="form-check-label" htmlFor="eco">Economy</label>
                                     </div>
                                     <div className='form-check form-switch m-1 '>
                                         <input className="form-check-input" type="radio" name="class" id="preeco"
-                                         onChange={ (e) => {
-                                            setClas(e.target.value)
-                                        }}
+                                            onChange={(e) => {
+                                                setClas(e.target.value)
+                                            }}
 
-                                        checked={clas == 'Premium_Economy'}
-                                        value="Premium_Economy" />
+                                            checked={clas == 'Premium_Economy'}
+                                            value="Premium_Economy" />
                                         <label className="form-check-label" htmlFor="preeco">Premium Economy</label>
                                     </div>
                                     <div className='form-check form-switch m-1'>
                                         <input className="form-check-input" type="radio" name="class" id="bus"
-                                         onChange={ (e) => {
-                                            setClas(e.target.value)
-                                        }}
+                                            onChange={(e) => {
+                                                setClas(e.target.value)
+                                            }}
 
-                                        checked={clas == 'Business'}
-                                        value="Business" />
+                                            checked={clas == 'Business'}
+                                            value="Business" />
                                         <label className="form-check-label" htmlFor="bus">Business</label>
                                     </div>
 
