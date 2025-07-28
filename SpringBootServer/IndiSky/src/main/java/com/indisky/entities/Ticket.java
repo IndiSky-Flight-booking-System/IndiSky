@@ -1,12 +1,8 @@
 package com.indisky.entities;
 
-import com.indisky.enums.TicketClass;
-import com.indisky.enums.TicketType;
+import com.indisky.enums.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
@@ -17,6 +13,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Ticket {
     @Id
     @Column(name = "ticketId")

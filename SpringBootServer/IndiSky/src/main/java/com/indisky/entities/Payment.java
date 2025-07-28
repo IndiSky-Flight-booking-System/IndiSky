@@ -1,12 +1,8 @@
 package com.indisky.entities;
 
-import com.indisky.enums.PaymentMethod;
-import com.indisky.enums.PaymentStatus;
+import com.indisky.enums.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.util.Date;
@@ -16,6 +12,7 @@ import java.util.Date;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

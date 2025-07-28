@@ -1,93 +1,32 @@
-<<<<<<< HEAD:SpringBootServer/IndiSky/src/main/java/com/sunbeam/entities/Passenger.java
-package com.sunbeam.entities;
-=======
 package com.indisky.entities;
->>>>>>> 1fdd79201edb034d28fe25d51ef16407008c3140:SpringBootServer/IndiSky/src/main/java/com/indisky/entities/Passenger.java
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import com.indisky.enums.*;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
+
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
 @Table(name = "passengers")
 public class Passenger {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "passenger_id")
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer passengerId;
 
-    @Column(name = "first_name", nullable = false)
-    private String firstName;
+    private String fullName;
+    private LocalDate dob;
+    private String passportNo, nationality;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
-
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "phone")
-    private String phone;
-
-    @Column(name = "gender")
-    private String gender;
-
-    // Constructors
-    public Passenger() {}
-
-    public Passenger(String firstName, String lastName, String email, String phone, String gender) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phone = phone;
-        this.gender = gender;
-    }
-
-    // Getters and Setters
-    
-    public Long getId() {
-        return id;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
+    @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL)
+    private List<Ticket> tickets;
 }
+
