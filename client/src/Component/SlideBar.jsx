@@ -38,11 +38,25 @@ function SlideBar() {
                     <li className="nav-item">
                         <Link className='nav-link' to=''>Bookings</Link>
                     </li>
-                    <li className="nav-item ">
-                        <Link className='nav-link' to='/home#about'>About Us</Link>
-                    </li>
+                
                     <li className="nav-item ">
                         <Link className='nav-link' to='/home#contact'>Contact us</Link>
+                    </li>
+                   
+                    <li className="nav-item ">
+                        <Link className='nav-link' to='/flight-status'>Flight Status</Link>
+                    </li>
+                    <li className="nav-item ">
+                        <Link className='nav-link' to='/payment-history'>Payment History</Link>
+                    </li>
+                    <li className="nav-item ">
+                        <Link className='nav-link' to='/profile'>Profile</Link>
+                    </li>
+                    <li className="nav-item ">
+                        <Link className='nav-link' to='/my-bookings'>My Bookings</Link>
+                    </li>
+                    <li className="nav-item ">
+                        <Link className='nav-link' to='/show-flights'>Show Flights</Link>
                     </li>
 
 

@@ -1,6 +1,6 @@
 import React from 'react'
-import SlideBar from './../Component/SlideBar';
-import Search from '../Component/Search';
+import SlideBar from '../Component/SlideBar';
+import Footer from '../Component/Footer';
 
 function ShowFlights() {
   return (

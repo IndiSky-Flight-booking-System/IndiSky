@@ -1,5 +1,6 @@
 import React from 'react'
-import SlideBar from './../Component/SlideBar';
+import SlideBar from '../Component/SlideBar';
+import Footer from '../Component/Footer';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useState } from 'react';
