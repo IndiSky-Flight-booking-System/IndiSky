@@ -1,4 +1,4 @@
-package com.sunbeam;
+package com.indisky;
 
 import org.modelmapper.Conditions;
 import org.modelmapper.ModelMapper;

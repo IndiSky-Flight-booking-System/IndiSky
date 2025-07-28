@@ -1,4 +1,4 @@
-package com.sunbeam.enums;
+package com.indisky.enums;
 
 public enum TicketType {
     ONE_WAY,

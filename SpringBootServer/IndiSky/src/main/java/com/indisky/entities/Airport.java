@@ -1,6 +1,6 @@
-package com.sunbeam.entities;
+package com.indisky.entities;
 
-import com.sunbeam.enums.*;
+import com.indisky.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
