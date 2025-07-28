@@ -82,7 +82,7 @@ function Register() {
                    
                     <div className="col">
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Full Name </label>
                             <input type="text" className="form-control"
                             onChange={(e)=>{
@@ -91,7 +91,7 @@ function Register() {
                             placeholder="Virat Kohli" />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Email </label>
                             <input type="email" className="form-control"
                             onChange={(e)=>{
@@ -100,7 +100,7 @@ function Register() {
                             placeholder="virat@gmail.com " />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Password</label>
                             <input type="password" className="form-control"
                             onChange={(e)=>{
@@ -109,7 +109,7 @@ function Register() {
                             placeholder="Password" />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Confirm Password</label>
                             <input type="password" className="form-control"
                             onChange={(e)=>{
@@ -118,7 +118,7 @@ function Register() {
                             placeholder="Confirm Password" />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Phone Number </label>
                             <input type="tel" className="form-control"
                             onChange={(e)=>{
@@ -127,7 +127,7 @@ function Register() {
                             placeholder="9876543210" />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Enter Date of Birth </label>
                             <input type="date" className="form-control"
                             onChange={(e)=>{
@@ -136,7 +136,7 @@ function Register() {
                              />
                         </div>
 
-                        <div className="form-group">
+                        <div className="form-group m-2">
                             <label >Enter Passport Number</label>
                             <input type="text" className="form-control"
                             onChange={(e)=>{
@@ -145,7 +145,7 @@ function Register() {
                             placeholder="A1234567" />
                         </div>
 
-                        <div>
+                        <div className='text-center'>
                             <h6>Already Registered ? <Link to='/log'>Login here</Link></h6>
                             <button type="button"  className="btn btn-success btn-block " onClick={onRegister}>Create Account</button>
                         </div>

@@ -1,0 +1,24 @@
+
+
+.trips{
+    padding: 3px;
+    text-align: center;
+    font-size: large;
+}
+
+.group{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin: 3px;
+}
+
+
+/* css for show flights */
+#tripcolor  :hover{
+    background: rgb(209, 207, 207);
+    color: black;
+}
+
+

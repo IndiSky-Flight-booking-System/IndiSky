@@ -1,4 +1,8 @@
+<<<<<<< HEAD:SpringBootServer/IndiSky/src/main/java/com/sunbeam/entities/FlightSeat.java
 package com.sunbeam.entities;
+=======
+package com.indisky.entities;
+>>>>>>> 1fdd79201edb034d28fe25d51ef16407008c3140:SpringBootServer/IndiSky/src/main/java/com/indisky/entities/FlightSeat.java
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
