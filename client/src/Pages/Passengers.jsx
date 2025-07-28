@@ -83,45 +83,45 @@ function Passengers() {
 
                     <hr />
 
-                    <div className="row">
+                    <div className="row mt-0 row-cols-2">
                         {/* <div className="col"></div> */}
 
                         {passengerList.map((passenger, ind) => (
-                            <div className="col-3" key={ind}>
-
+                            <div className="col-3 mt-4 " key={ind}>
+                                <h3 className='text-warning'>Passenger {ind + 1}</h3>
                                 <div className="form-group m-2">
-                                    <label >Passenger Full Name </label>
-                                    <input type="text" className="form-control"
+                                    <label htmlFor='name'>Full Name </label>
+                                    <input type="text" className="form-control w-75"
                                         onChange={(e) => {
-                                            onPassengerChange(ind,'full_name',e.target.value)
-                                        }}
+                                            onPassengerChange(ind, 'full_name', e.target.value)
+                                        }} id='name'
                                         placeholder="Virat Kohli" />
                                 </div>
 
                                 <div className="form-group m-2">
-                                    <label >Passenger Date of Birth </label>
-                                    <input type="date" className="form-control"
+                                    <label htmlFor='date'>Date of Birth </label>
+                                    <input type="date" className="form-control w-75" 
                                         onChange={(e) => {
-                                            onPassengerChange(ind,'dob',e.target.value)
-                                        }}
+                                            onPassengerChange(ind, 'dob', e.target.value)
+                                        }} id='date'
                                     />
                                 </div>
 
                                 <div className="form-group m-2">
-                                    <label >Passenger Passport Number</label>
-                                    <input type="text" className="form-control"
+                                    <label htmlFor='pno'>Passport Number</label>
+                                    <input type="text" className="form-control w-75"
                                         onChange={(e) => {
-                                            onPassengerChange(ind,'passport_no',e.target.value)
-                                        }}
+                                            onPassengerChange(ind, 'passport_no', e.target.value)
+                                        }} id='pno'
                                         placeholder="A1234567" />
                                 </div>
 
                                 <div className="form-group col-md-4 m-2 w-75" >
                                     <label for="inputState">Nationality</label>
-                                    <select id="inputState" className="form-select w-100"
+                                    <select id="inputState" className="form-select w-75"
                                         value={passenger.nationality}
                                         onChange={(e) => {
-                                            onPassengerChange(ind,'nationality',e.target.value)
+                                            onPassengerChange(ind, 'nationality', e.target.value)
                                         }}
                                     >
                                         {
@@ -136,12 +136,19 @@ function Passengers() {
                             </div>
                         ))}
                         {/* <div className="col"></div> */}
+
+
                     </div>
                 </div>
 
-                <div className='m-3 text-center'>
-                    <button type="button" className="btn btn-success btn-block " onClick={onSave}>Save Passenger</button>
-                </div>
+                {passengerList != 0 && (
+                    <div className='m-3 text-center'>
+                        <button type="button" className="btn btn-success btn-block " onClick={onSave}>Save Passenger</button>
+                    </div>
+
+                )}
+
+
             </div>
 
         </div>
