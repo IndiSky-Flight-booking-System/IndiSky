@@ -1,4 +1,4 @@
-package com.sunbeam.entities;
+package com.indisky.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

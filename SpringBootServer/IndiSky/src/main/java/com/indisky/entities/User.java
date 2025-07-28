@@ -1,30 +1,32 @@
-package com.sunbeam.entities;
+package com.indisky.entities;
 
-import com.sunbeam.enums.PersonRole;
+import com.indisky.enums.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.util.Date;
+import java.util.List;
 
-@MappedSuperclass
+@Entity
 @Getter
 @Setter
-@ToString
 @NoArgsConstructor
-public class Person {
+@AllArgsConstructor
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "person_role")
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    private PersonRole personRole;
+    private Role personRole;
 
     @Column(name = "first_name")
     private String firstName;
@@ -36,9 +38,13 @@ public class Person {
 
     private String password;
 
-    @Column(name = "phone_no",unique = true,length = 10)
+    @Column(name = "phone_no")
     private String phoneNo;
 
+    @Column(name = "passport_no")
+    private String passportNo;
+
+    @Column(name = "dob")
     private LocalDate birthDate;
 
     @CreationTimestamp
@@ -49,8 +55,6 @@ public class Person {
     @Column(name = "update_on")
     private Date updatedOn;
 
-    public Person(PersonRole ps){
-        this.personRole = ps;
-    }
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Booking> bookings;
 }
