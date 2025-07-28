@@ -1,6 +1,6 @@
 package com.indisky.entities;
 
-import com.indisky.enums.FlightStatus;
+import com.indisky.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
 
