@@ -12,16 +12,6 @@ import Search from '../Component/Search';
 function Home() {
   const location = useLocation();
 
-  // useEffect(() => {
-  //   if (location.hash) {
-  //     const element = document.getElementById(location.hash.substring(1));
-  //     if (element) {
-  //       element.scrollIntoView({ behavior: 'smooth' });
-  //     }
-  //   }
-  // }, [location]);
-
-
   
 
   return (
@@ -44,17 +34,17 @@ function Home() {
 
 
             <div id='about'>
-              <h4>About Flightize </h4>
-              <p> <b style={{ color: '#512888' }}> Flightize </b> is a user-friendly flight booking platform built as part of our Travel Management
+              <h4>About IndiSky </h4>
+              <p> <b style={{ color: '#512888' }}> IndiSky </b> is a user-friendly flight booking platform built as part of our Travel Management
                 System project. Developed by a team of passionate freshers, our goal is to make flight booking easy, efficient,
                 and hassle-free for everyone.</p>
 
               <p>Whether you're planning a business trip, a family vacation, or a last-minute getaway,
-                Flightize helps you search, compare, and book flights with just a few clicks.
+                IndiSky helps you search, compare, and book flights with just a few clicks.
                 The system supports one-way and round-trip bookings, passenger details
                 customization, and future enhancements like payment integration and booking history</p>
 
-              <p>We built Flightize using modern web technologies like React.js, and are focused on improving user experience, performance,
+              <p>We built IndiSky using modern web technologies like React.js, and are focused on improving user experience, performance,
                 and functionality with every update.</p>
 
             </div>

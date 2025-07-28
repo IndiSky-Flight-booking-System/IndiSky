@@ -8,6 +8,9 @@ import Home from './Pages/Home';
 import Passengers from './Pages/Passengers';
 import ShowFlights from './Pages/ShowFlights';
 
+import FlightDetails from './Pages/FlightDetails'
+import UserDashBoard from './Pages/UserDashBoard'
+
 import AdminDashboard from './Pages/Admin/AdminDashboard';
 import ManageAirlines from './Pages/Admin/ManageAirlines';
 import ManageAirports from './Pages/Admin/ManageAirports';
@@ -18,6 +21,8 @@ import ManageUsers from './Pages/Admin/ManageUsers';
 import FlightStatusManagement from './Pages/Admin/ManageFlightStatus';
 
 export const infoContext = createContext();
+export const flightDetailsContext = createContext();
+export const totalPriceContext = createContext();
 
 function App() {
   const [info, setInfo] = useState({
@@ -27,18 +32,26 @@ function App() {
     departure: '',
     return: '',
     passenger: '',
-    class: ''
-  });
+    class: '',
+    adult: '',
+    child: '',
+    senior: ''
+  })
+
+  const [selectedOneway, setSelectedOneway] = useState(null);
+  const [selectedRoundtrip, setSelectedRoundtrip] = useState(null);
+  const [total, setTotal] = useState(0);
+
 
   return (
-    <infoContext.Provider value={{ info, setInfo }}>
-      <Routes>
-        {/* User Routes */}
-        <Route path='/log' element={<Login />} />
-        <Route path='/reg' element={<Register />} />
-        <Route path='/' element={<Home />} />
-        <Route path='/pass' element={<Passengers />} />
-        <Route path='/show' element={<ShowFlights />} />
+    <div>
+      <infoContext.Provider value={{ info, setInfo }}>
+        <flightDetailsContext.Provider value={{ selectedOneway, setSelectedOneway, selectedRoundtrip, setSelectedRoundtrip }} >
+          <totalPriceContext.Provider value={{ total, setTotal }} >
+            <Routes>
+              <Route path='/log' element={<Login />}></Route>
+              <Route path='/reg' element={<Register />}></Route>
+              <Route path='/' element={<Home />}></Route>
 
         {/* Admin Routes */}
         <Route path='/admin/dashboard' element={<AdminDashboard />} />
@@ -48,9 +61,17 @@ function App() {
         <Route path='/admin/seats' element={<ManageSeats />} />
         <Route path='/admin/users' element={<ManageUsers />} />
         <Route path='/admin/flight-status' element={<FlightStatusManagement />} />
-      </Routes>
+      
+              <Route path='/pass' element={<Passengers />}></Route>
+              <Route path='/show' element={<ShowFlights />}></Route>
+              <Route path='/review' element={<FlightDetails />}></Route>
+              <Route path='/dashboard' element={<UserDashBoard />}></Route>
+            </Routes>
+          </totalPriceContext.Provider>
+        </flightDetailsContext.Provider>
+      </infoContext.Provider>
       <ToastContainer />
-    </infoContext.Provider>
+   </div>
   );
 }
 
