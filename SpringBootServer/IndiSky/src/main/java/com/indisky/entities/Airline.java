@@ -1,5 +1,6 @@
 package com.indisky.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.indisky.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
@@ -24,6 +25,7 @@ public class Airline {
     private String airlineName, country;
 
     @OneToMany(mappedBy = "airline")
+    @JsonIgnore  //used beacuse causing infinite recursion
     private List<Flight> flights;
 }
 
