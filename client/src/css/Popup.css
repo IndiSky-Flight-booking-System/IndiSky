@@ -30,3 +30,8 @@
 
   }
   
+.navbar .nav-link:hover {
+  background-color: white !important; 
+  color: black !important;
+  border-radius: 5px; 
+}
