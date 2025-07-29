@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-
+import '../css/Popup.css';
 function SlideBar() {
   const navigate = useNavigate();
   // const fullname = sessionStorage.getItem('full_name');
@@ -15,7 +15,7 @@ function SlideBar() {
 
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-light px-5" style={{ backgroundColor: '#e3f2fd' }}>
+      <nav className="navbar navbar-expand-lg navbar-light px-5" style={{ backgroundColor: '#a1d5fbff' }}>
         <Link className="navbar-brand active" to="/" style={{ color: '#512888' }}>
           <img src="Logo.png" alt="logo" style={{ width: '30px' }} /> IndiSky
         </Link>
@@ -32,34 +32,34 @@ function SlideBar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
-          <ul className="navbar-nav">
+        <div className="collapse navbar-collapse justify-content-around text-dark"  id="navbarNav">
+          <ul className="navbar-nav  ">
             <li className="nav-item active">
-              <Link className="nav-link" to="/">Home</Link>
+              <Link className="nav-link text-dark" to="/">Home</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="">Bookings</Link>
+              <Link className="nav-link text-dark" to="">Bookings</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/home#about">About Us</Link>
+              <Link className="nav-link text-dark" to="/home#about">About Us</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/home#contact">Contact Us</Link>
+              <Link className="nav-link text-dark" to="/home#contact">Contact Us</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/flight-status">Flight Status</Link>
+              <Link className="nav-link text-dark" to="/flight-status">Flight Status</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/payment-history">Payment History</Link>
+              <Link className="nav-link text-dark" to="/payment-history">Payment History</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/profile">Profile</Link>
+              <Link className="nav-link text-dark" to="/profile">Profile</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/my-bookings">My Bookings</Link>
+              <Link className="nav-link text-dark" to="/my-bookings">My Bookings</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/show-flights">Show Flights</Link>
+              <Link className="nav-link text-dark" to="/show-flights">Show Flights</Link>
             </li>
           </ul>
 
@@ -68,7 +68,7 @@ function SlideBar() {
               Hello,
               {/* {fullname} */}
             </h6>
-            <button type="button" className="btn btn-outline-info" onClick={onLogout}>
+            <button type="button" className="btn btn-outline-light text-black" onClick={onLogout}>
               Logout
             </button>
           </div>
