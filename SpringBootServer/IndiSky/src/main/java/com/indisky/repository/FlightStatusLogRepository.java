@@ -1,4 +1,4 @@
 package com.indisky.repository;
 
-public class FlightStatusLogRepository {
+public interface FlightStatusLogRepository {
 }

@@ -1,4 +1,4 @@
 package com.indisky.repository;
 
-public class AirlineRepository {
+public interface AirlineRepository {
 }

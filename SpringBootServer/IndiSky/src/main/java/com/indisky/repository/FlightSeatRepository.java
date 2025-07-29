@@ -1,4 +1,4 @@
 package com.indisky.repository;
 
-public class FlightSeatRepository {
+public interface FlightSeatRepository {
 }

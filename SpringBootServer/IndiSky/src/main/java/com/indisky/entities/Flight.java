@@ -1,5 +1,6 @@
 package com.indisky.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.indisky.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
@@ -21,14 +22,17 @@ public class Flight {
 
     @ManyToOne
     @JoinColumn(name = "airline_id")
+    @JsonIgnoreProperties("flights") // had to use because casuing infinite recursion that why
     private Airline airline;
 
     @ManyToOne
     @JoinColumn(name = "source_airport_id")
+    @JsonIgnoreProperties({"departures","arrivals"})  // had to use because casuing infinite recursion that why same for destination
     private Airport sourceAirport;
 
     @ManyToOne
     @JoinColumn(name = "destination_airport_id")
+    @JsonIgnoreProperties({"departures","arrivals"})
     private Airport destinationAirport;
 
     private String flightNumber;

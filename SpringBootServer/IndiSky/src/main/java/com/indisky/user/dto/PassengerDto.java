@@ -1,4 +1,4 @@
 package com.indisky.user.dto;
 
-public class passengerDto {
+public class PassengerDto {
 }
