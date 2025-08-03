@@ -4,9 +4,11 @@ import com.indisky.entities.Flight;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface FlightRepository extends JpaRepository<Flight,Long> {
 
     //here in this code below % called the wild card in sql
@@ -16,6 +18,16 @@ public interface FlightRepository extends JpaRepository<Flight,Long> {
     @Query("select f from Flight f where lower(f.sourceAirport.city) like lower(concat('%' ,?1 ,'%')) " +
             "and lower(f.destinationAirport.city) like lower(concat('%' ,?2 ,'%'))")
     List<Flight> findBySourceAndDestinationAirportName(String source,String destination);
+
+    @Query("""
+        SELECT f FROM Flight f
+        JOIN FETCH f.airline
+        JOIN FETCH f.sourceAirport
+        JOIN FETCH f.destinationAirport
+    """)
+    List<Flight> fetchFlightsWithJoins();
+
+
 
 
 }
