@@ -50,5 +50,3 @@ public class Flight {
     private List<FlightStatusLog> statusLogs;
 
 }
-
-
