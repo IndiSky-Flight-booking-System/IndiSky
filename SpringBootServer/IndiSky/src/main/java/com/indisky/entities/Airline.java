@@ -25,7 +25,7 @@ public class Airline {
     private String airlineName, country;
 
     @OneToMany(mappedBy = "airline")
-    @JsonIgnore  //used beacuse causing infinite recursion
+    @JsonIgnore  //used because causing infinite recursion
     private List<Flight> flights;
 }
 
