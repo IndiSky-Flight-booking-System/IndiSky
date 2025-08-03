@@ -1,5 +1,6 @@
 package com.indisky.exception;
 
+import com.indisky.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -15,31 +16,29 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<?> handleException(Exception e){
+    public ResponseEntity<?> handleException(Exception e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
     }
 
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<?> handleApiException(ApiException e) {
+        System.out.println("in handle api exc");
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(new ApiResponse(e.getMessage()));
+    }
 
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException e) {
+        System.out.println("in handle res not found exc");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage()));
+    }
 
-    //bELOW CODE is FOR validation purpose only
-
-//    @ExceptionHandler(MethodArgumentNotValidException.class)
-//    public ResponseEntity<?> handleMethodArgumentNotValidException (MethodArgumentNotValidException e){
-//        //this is used for @valid to validate the fail
-//
-//        List<FieldError> fieldErrors =e.getFieldErrors();
-//        //but we want msg + field name so will be using hashmap
-//        Map<String,String> map = new HashMap<>();
-//        fieldErrors.forEach(fe -> {
-//            map.put(fe.getField(), fe.getDefaultMessage());
-//        });
-//
-////        Set<String> set = new HashSet<>();     using hashset -> msg only not feild name
-////        fieldErrors.forEach(fe -> {
-////            set.add(fe.getDefaultMessage());
-////        });
-//
-//
-//        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(map);
-//    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<?> handleValidationException(MethodArgumentNotValidException ex) {
+        Map<String, String> errors = new HashMap<>();
+        List<FieldError> fieldErrors = ex.getBindingResult().getFieldErrors();
+        for (FieldError error : fieldErrors) {
+            errors.put(error.getField(), error.getDefaultMessage());
+        }
+        return ResponseEntity.badRequest().body(errors);
+    }
 }

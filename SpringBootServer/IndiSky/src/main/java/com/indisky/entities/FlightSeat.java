@@ -30,7 +30,9 @@ public class FlightSeat {
     @Enumerated(EnumType.STRING)
     private TicketClass seatClass;
 
-    private boolean isBooked;
+
+    @Column(name = "is_booked")
+    private boolean booked;
 
     @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL)
     private List<Ticket> tickets;

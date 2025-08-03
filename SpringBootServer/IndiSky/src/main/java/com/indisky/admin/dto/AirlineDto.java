@@ -1,11 +1,9 @@
+
 package com.indisky.admin.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 public class AirlineDto {
@@ -19,5 +17,5 @@ public class AirlineDto {
     @NotBlank(message = "Country is required")
     @Size(min = 2, max = 100, message = "Country name must be between 2 and 100 characters")
     private String country;
-
 }
+

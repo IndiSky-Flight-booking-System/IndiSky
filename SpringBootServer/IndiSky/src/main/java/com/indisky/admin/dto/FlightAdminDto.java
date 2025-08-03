@@ -4,14 +4,12 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 public class FlightAdminDto {
-
     private Long flightId;
 
     @NotBlank(message = "Flight number is required")
@@ -28,14 +26,14 @@ public class FlightAdminDto {
     private BigDecimal basePrice;
 
     @NotBlank(message = "Status is required")
-    private String status; // Enum as String
+    private String status;
 
-    @NotNull(message = "Airline ID is required")
-    private Long airlineId;
+    @NotBlank(message = "Airline name is required")
+    private String airlineName;
 
-    @NotNull(message = "Source airport ID is required")
-    private Long sourceAirportId;
+    @NotBlank(message = "Source airport IATA code is required")
+    private String sourceAirportIataCode;
 
-    @NotNull(message = "Destination airport ID is required")
-    private Long destinationAirportId;
+    @NotBlank(message = "Destination airport IATA code is required")
+    private String destinationAirportIataCode;
 }
