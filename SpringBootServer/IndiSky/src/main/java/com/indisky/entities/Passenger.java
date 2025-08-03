@@ -20,7 +20,7 @@ import java.util.List;
 public class Passenger {
     @Column(name = "passenger_id")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long passengerId;
+    private long passengerId;
 
     private String fullName;
     private LocalDate dob;
@@ -29,4 +29,3 @@ public class Passenger {
     @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL)
     private List<Ticket> tickets;
 }
-

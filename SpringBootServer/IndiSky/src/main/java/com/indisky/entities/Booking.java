@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,7 +16,8 @@ import java.util.List;
 @ToString
 @Table(name = "bookings")
 public class Booking {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
 
     @ManyToOne
@@ -29,6 +29,7 @@ public class Booking {
     private Flight flight;
 
     private LocalDateTime bookingDate;
+
     private BigDecimal totalPrice;
 
     @Enumerated(EnumType.STRING)
@@ -39,6 +40,8 @@ public class Booking {
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private Payment payment;
+
+    public LocalDateTime getId() {
+        return null;
+    }
 }
-
-

@@ -1,7 +1,8 @@
-package com.indisky.user.service;
+package com.indisky.user.service.Impl;
 
 import com.indisky.repository.UserRepository;
 import com.indisky.entities.User;
+import com.indisky.user.service.UserProfileService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -9,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @AllArgsConstructor
-public class UserProfileServiceImpl implements  UserProfileService{
+public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserRepository repo;
 

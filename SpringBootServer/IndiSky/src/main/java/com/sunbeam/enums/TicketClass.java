@@ -1,8 +1,8 @@
-package com.indisky.enums;
+package com.sunbeam.enums;
 
 public enum TicketClass {
     ECONOMY,
-    PREMIUM,
+    PREMIUM_ECONOMY,
     BUSINESS,
     FIRST
 }
