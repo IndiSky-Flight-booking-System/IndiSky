@@ -1,4 +1,7 @@
 package com.indisky.repository;
 
-public interface FlightSeatRepository {
+import com.indisky.entities.FlightSeat;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface FlightSeatRepository extends JpaRepository<FlightSeat, Long> {
 }

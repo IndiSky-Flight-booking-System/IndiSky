@@ -20,7 +20,7 @@ import java.util.List;
 public class Passenger {
     @Column(name = "passenger_id")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer passengerId;
+    private long passengerId;
 
     private String fullName;
     private LocalDate dob;

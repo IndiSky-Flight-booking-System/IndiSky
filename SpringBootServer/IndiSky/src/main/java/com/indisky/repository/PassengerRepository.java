@@ -1,4 +1,7 @@
 package com.indisky.repository;
 
-public interface PassengerRepository {
+import com.indisky.entities.Passenger;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+public interface PassengerRepository extends JpaRepository<Passenger, Long> {
 }
