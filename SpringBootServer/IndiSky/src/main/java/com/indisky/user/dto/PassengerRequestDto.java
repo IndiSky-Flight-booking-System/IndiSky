@@ -1,13 +1,12 @@
 package com.indisky.user.dto;
 
-import lombok.*;
+import lombok.Data;
+
 import java.time.LocalDate;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class PassengerRequestDto {
+
     private String fullName;
     private LocalDate dob;
     private String passportNo;
