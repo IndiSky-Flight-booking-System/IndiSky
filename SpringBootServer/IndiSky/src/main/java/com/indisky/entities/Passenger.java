@@ -29,3 +29,4 @@ public class Passenger {
     @OneToMany(mappedBy = "passenger", cascade = CascadeType.ALL)
     private List<Ticket> tickets;
 }
+
