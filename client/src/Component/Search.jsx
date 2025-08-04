@@ -3,12 +3,13 @@ import { useState, useContext } from 'react';
 import '../css/SearchHeader.css';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { infoContext } from '../App';
+import { infoContext, searchedFlightsContext } from '../App';
 
 
 function Search() {
 
     const { info, setInfo } = useContext(infoContext)
+    const {setSearched} =useContext(searchedFlightsContext);
 
     const [child, setChild] = useState(0);
     const [adult, setAdult] = useState(1);
@@ -22,17 +23,17 @@ function Search() {
             setAdult(info.adult || 1);
             setSenior(info.senior || 0);
             setTrips(info.trip || 'OneWay');
-            setClas(info.class || '');
+            setClas(info.Tclass || '');
         }
     }, []);
 
     const today = new Date().toISOString().split('T')[0];
-    console.log(today);
+    // console.log(today);
 
     const next = new Date();
     next.setDate(next.getDate() + 1);
     const tom = next.toISOString().split('T')[0]
-    console.log(tom)
+    // console.log(tom)
 
     let total = child + adult + senior;
     const maxTotal = 9;
@@ -45,8 +46,8 @@ function Search() {
             ...e, passenger: total,
             trip: trips,
             departure: e.departure || today,
-            return: trips == 'OneWay' ? '' : (e.return || tom),
-            class: clas,
+            arrival: trips == 'OneWay' ? '' : (e.arrival || tom),
+            Tclass: clas,
             adult: adult,
             child: child,
             senior: senior
@@ -64,11 +65,12 @@ function Search() {
             toast.error("Destination location is Empty")
         } else if (info.departure.length === 0) {
             toast.error("Departure date is Empty")
-        } else if (info.class.length == 0) {
+        } else if (info.Tclass.length == 0) {
             toast.error("Class Not selected")
         }
         else {
             navigate('/show')
+            setSearched(true);
         }
 
     }
@@ -121,7 +123,7 @@ function Search() {
                             min={today} value={info.departure || today}
 
                             onChange={(e) => {
-                                setInfo({ ...info, departure: e.target.value, return: '' })
+                                setInfo({ ...info, departure: e.target.value, arrival: '' })
                             }}
                             id='dept' />
                     </div>
@@ -132,14 +134,14 @@ function Search() {
 
                         {trips == "RoundTrip" ? (
                             <input type="date" className='rounded border px-2 py-1 form-control '
-                                min={today} value={info.return || tom}
+                                min={today} value={info.arrival || tom}
                                 onChange={(e) => {
-                                    setInfo({ ...info, return: e.target.value })
+                                    setInfo({ ...info, arrival: e.target.value })
                                 }}
                                 id='ret' />) :
 
                             (<input type="date" className='rounded border px-2 py-1 form-control '
-                                min={today} value={info.return || tom}
+                                min={today} value={info.arrival || tom}
                                 disabled id='ret' />)
                         }
 
