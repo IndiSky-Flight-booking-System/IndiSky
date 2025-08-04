@@ -30,7 +30,6 @@ public class Flight {
 
     @ManyToOne
     @JoinColumn(name = "destination_airport_id")
-    @JsonIgnoreProperties({"departures","arrivals"})
     private Airport destinationAirport;
 
     private String flightNumber;
@@ -49,6 +48,5 @@ public class Flight {
 
     @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
     private List<FlightStatusLog> statusLogs;
+
 }
-
-

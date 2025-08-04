@@ -19,7 +19,7 @@ import java.util.List;
 public class FlightSeat {
     @Column(name = "seat_id")
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer seatId;
+    private Long seatId;
 
     @ManyToOne
     @JoinColumn(name = "flight_id")
@@ -30,7 +30,9 @@ public class FlightSeat {
     @Enumerated(EnumType.STRING)
     private TicketClass seatClass;
 
-    private boolean isBooked;
+
+    @Column(name = "is_booked")
+    private boolean booked;
 
     @OneToMany(mappedBy = "seat", cascade = CascadeType.ALL)
     private List<Ticket> tickets;

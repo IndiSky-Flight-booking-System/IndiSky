@@ -1,20 +1,33 @@
 package com.indisky.user.service.Impl;
 
 import com.indisky.repository.FlightRepository;
+import com.indisky.entities.Booking;
 import com.indisky.entities.Flight;
 import com.indisky.user.dto.FlightResponseDto;
+import com.indisky.entities.FlightSeat;
+import com.indisky.entities.FlightStatusLog;
+import com.indisky.exception.ResourceNotFoundException;
+import com.indisky.repository.BookingRepository;
+
+import com.indisky.repository.FlightSeatRepository;
+import com.indisky.user.dto.FlightDetailsDto;
+import com.indisky.user.dto.FlightSeatDto;
+import com.indisky.user.dto.FlightStatusDto;
 import com.indisky.user.service.FlightService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.Map;
 
 @Service
@@ -25,23 +38,50 @@ public class FlightServiceImpl implements FlightService {
     private final FlightRepository repo;
 
     private final ModelMapper modelMapper;
+    private final FlightRepository flightRepo;
+    private final FlightSeatRepository seatRepo;
+    private final BookingRepository bookingRepo;
+    private final ModelMapper mapper;
 
-    @Override
-    public List<Flight> getAllFlights() {
-        return repo.findAll();
+//    @Override
+//    public List<Flight> getAllFlights() {
+//        return repo.findAll();}
+
+    public FlightDetailsDto getFlightDetails(Long id) {
+        Flight flight = flightRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with ID: " + id));
+
+        FlightDetailsDto dto = new FlightDetailsDto();
+        dto.setFlightId(flight.getFlightId());
+        dto.setAirlineName(flight.getAirline().getAirlineName());
+        dto.setSourceAirport(flight.getSourceAirport().getAirportName());
+        dto.setDestinationAirport(flight.getDestinationAirport().getAirportName());
+        dto.setFlightNumber(flight.getFlightNumber());
+        dto.setDepartureTime(flight.getDepartureTime());
+        dto.setArrivalTime(flight.getArrivalTime());
+        dto.setBasePrice(flight.getBasePrice());
+        dto.setStatus(flight.getStatus());
+
+        return dto;
     }
 
-    @Override
-    public Flight getSpecificFlightWithStatus(Long id) {
-        return repo.findByFlightStatus(id);
+    public List<FlightSeatDto> getFlightSeats(Long flightId) {
+        Flight flight = flightRepo.findById(flightId)
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with ID: " + flightId));
+
+        List<FlightSeat> seats = flight.getSeats();
+
+        return seats.stream()
+                .map(seat -> mapper.map(seat, FlightSeatDto.class))
+                .collect(Collectors.toList());
     }
 
     @Override
     public Map<String, List<FlightResponseDto>> getSearchFlights(String source, String destination,
-                                                      LocalDate departure, LocalDate arrival,
-                                                      int passengers, String travelclass, String tripType) {
+                                                                 LocalDate departure, LocalDate arrival,
+                                                                 int passengers, String travelclass, String tripType) {
 
-        Map<String ,List<FlightResponseDto>> map =new HashMap<>();
+        Map<String, List<FlightResponseDto>> map = new HashMap<>();
 
 
         //Problem faced in date -> observation made ->
@@ -51,9 +91,9 @@ public class FlightServiceImpl implements FlightService {
         LocalDateTime depStartDate = departure.atStartOfDay();
         LocalDateTime depEndDate = departure.atTime(LocalTime.MAX);
 
-        System.out.println(source +" "+ destination + " " + departure + " " + arrival + " -> "+ depStartDate+ " "+ depEndDate) ;
+        System.out.println(source + " " + destination + " " + departure + " " + arrival + " -> " + depStartDate + " " + depEndDate);
 
-        List<Flight> onewayFlights =repo.findByDepartureDate(source,destination,depStartDate,depEndDate);
+        List<Flight> onewayFlights = repo.findByDepartureDate(source, destination, depStartDate, depEndDate);
 
         List<FlightResponseDto> onewayDtoList = new ArrayList<>();
         for (Flight flight : onewayFlights) {
@@ -61,16 +101,14 @@ public class FlightServiceImpl implements FlightService {
             onewayDtoList.add(dto);
         }
 
-        //if roundtrip selected then only otherwise it won't
         List<FlightResponseDto> roundTripFlightsDtoList = new ArrayList<>();
-
-        if(arrival !=null && tripType!=null && (tripType.trim().equalsIgnoreCase("roundtrip")
-                || tripType.trim().equalsIgnoreCase("round_trip")) ){
+        if (arrival != null && tripType != null && (tripType.trim().equalsIgnoreCase("roundtrip")
+                || tripType.trim().equalsIgnoreCase("round_trip"))) {
 
             LocalDateTime ArrStartDate = arrival.atStartOfDay();
             LocalDateTime ArrEndDate = arrival.atTime(LocalTime.MAX);
-            System.out.println(source +" "+ destination + " " + departure + " " + arrival + " -> "+ ArrStartDate+ " "+ ArrEndDate) ;
-             List<Flight> roundTripFlightsE=repo.findByDepartureDate(destination,source,ArrStartDate,ArrEndDate);
+            System.out.println(source + " " + destination + " " + departure + " " + arrival + " -> " + ArrStartDate + " " + ArrEndDate);
+            List<Flight> roundTripFlightsE = repo.findByDepartureDate(destination, source, ArrStartDate, ArrEndDate);
             for (Flight flight : roundTripFlightsE) {
                 FlightResponseDto dto = modelMapper.map(flight, FlightResponseDto.class);
                 roundTripFlightsDtoList.add(dto);
@@ -83,10 +121,19 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightResponseDto getAllFlightsAndSeat(Long fid) {    //flight details  +  seat details fetching the data
-        Flight flight = repo.findFlightBySeat(fid);
-        return modelMapper.map(flight, FlightResponseDto.class);
+    public FlightStatusDto getFlightStatusByBookingId(Long bookingId) {
+        Booking booking = bookingRepo.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
+
+        Flight flight = booking.getFlight();
+
+        return flight.getStatusLogs().stream()
+                .max(Comparator.comparing(FlightStatusLog::getUpdatedAt))
+                .map(log -> new FlightStatusDto(flight.getFlightId(), log.getStatus(), log.getUpdatedAt()))
+                .orElseThrow(() -> new ResourceNotFoundException("No status logs found for flight ID: " + flight.getFlightId()));
     }
 
 
 }
+
+

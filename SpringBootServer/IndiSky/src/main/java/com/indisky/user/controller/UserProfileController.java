@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin(origins = "http://localhost:5173")  //react js localhost (frontend)
 @AllArgsConstructor
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserProfileController {
 
     private final UserProfileService service;

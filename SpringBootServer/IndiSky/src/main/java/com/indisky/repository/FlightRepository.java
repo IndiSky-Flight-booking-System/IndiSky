@@ -36,6 +36,16 @@ public interface FlightRepository extends JpaRepository<Flight,Long> {
 //            "and f.arrivalTime between ?3 and ?4")
 //    List<Flight> findByArrivalDate(String source, String destination, LocalDateTime start , LocalDateTime end);
 
+    @Query("""
+        SELECT f FROM Flight f
+        JOIN FETCH f.airline
+        JOIN FETCH f.sourceAirport
+        JOIN FETCH f.destinationAirport
+    """)
+    List<Flight> fetchFlightsWithJoins();
+
+
+
 
     @Query("select f from Flight f left join fetch f.seats where f.flightId=?1")
     Flight findFlightBySeat(Long flightId);
