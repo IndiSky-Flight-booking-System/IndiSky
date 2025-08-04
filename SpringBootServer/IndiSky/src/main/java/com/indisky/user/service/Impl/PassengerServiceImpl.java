@@ -3,13 +3,10 @@ package com.indisky.user.service.Impl;
 import com.indisky.entities.Passenger;
 import com.indisky.exception.ResourceNotFoundException;
 import com.indisky.repository.PassengerRepository;
-import com.indisky.user.dto.PassengerReqDto;
-import com.indisky.user.dto.PassengerRespDto;
 import com.indisky.user.dto.PassengerRequestDto;
 import com.indisky.user.dto.PassengerResponseDto;
 import com.indisky.user.service.PassengerService;
 import lombok.AllArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,12 +23,12 @@ public class PassengerServiceImpl implements PassengerService {
     private final PassengerRepository passengerRepository;
 
     @Override
-    public String addPassengers(List<PassengerReqDto> passDto) {
+    public String addPassengers(List<PassengerRequestDto> passDto) {
         if(passDto==null || passDto.isEmpty()){
             return "No Passengers to add ";
         }
         List<Passenger> entity = new ArrayList<>();
-        for (PassengerReqDto en : passDto){
+        for (PassengerRequestDto en : passDto){
             Passenger passenger=modelMapper.map(en,Passenger.class);
             entity.add(passenger);
         }

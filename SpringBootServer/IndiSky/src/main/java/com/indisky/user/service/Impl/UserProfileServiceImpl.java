@@ -1,9 +1,10 @@
 package com.indisky.user.service.Impl;
 
+import com.indisky.enums.Role;
 import com.indisky.repository.UserRepository;
 import com.indisky.entities.User;
-import com.indisky.user.dto.UserDto;
-import com.indisky.user.dto.UserProfileDto;
+import com.indisky.user.dto.UserRequestDto;
+import com.indisky.user.dto.UserResponseDto;
 import com.indisky.user.service.UserProfileService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,23 +20,25 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final ModelMapper modelMapper;
 
     @Override
-    public String register(UserDto userdto) {
+    public String register(UserRequestDto userdto) {
+
+        User userEntity = repo.findByEmail(userdto.getEmail());
+        if(userEntity!=null){
+            return "User Already Registered with Email id- " + userEntity.getEmail();
+        }
+
         User user = modelMapper.map(userdto, User.class);
         if(user!=null){
+            user.setPersonRole(Role.USER);
             repo.save(user);
             return user.getFullName() + " Registered Successfully!";
         }
         return "Failed to Registered!";
     }
 
-    @Override
-    public boolean isEmailRegistered(String email) {
-        return  repo.findByEmail(email) !=null;
-    }
-
 
     @Override
-    public String updateUser(UserProfileDto userdto,String email) {
+    public String updateUser(UserRequestDto userdto, String email) {
         //        String email = from security  and remove email from parameter
                 User user = repo.findByEmail(email);
         System.out.println(user.toString());
@@ -70,10 +73,10 @@ public class UserProfileServiceImpl implements UserProfileService {
     }
 
 //    @Override
-//    public UserProfileDto getUserProfile() {                //dashboard
+//    public UserResponseDto getUserProfile() {                //dashboard
 ////        String email = from security
 ////        User user = repo.findByEmail();
-//        UserProfileDto dto = modelMapper.map(user, UserProfileDto.class);
+//        UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
 //
 //        return dto;
 //    }
