@@ -22,12 +22,10 @@ public class Flight {
 
     @ManyToOne
     @JoinColumn(name = "airline_id")
-    @JsonIgnoreProperties("flights") // had to use because casuing infinite recursion that why
     private Airline airline;
 
     @ManyToOne
     @JoinColumn(name = "source_airport_id")
-    @JsonIgnoreProperties({"departures","arrivals"})  // had to use because casuing infinite recursion that why same for destination
     private Airport sourceAirport;
 
     @ManyToOne

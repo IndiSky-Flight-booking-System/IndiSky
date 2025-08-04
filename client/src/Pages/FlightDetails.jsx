@@ -48,7 +48,7 @@ function FlightDetails() {
 
                                 <div>
 
-                                    <h6>Return date </h6>
+                                    <h6>{info.departure}</h6>
                                     <h4>{selectedOneway.arr}</h4>
                                     <h5>{selectedOneway.to}</h5>
 

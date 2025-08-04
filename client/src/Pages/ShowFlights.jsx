@@ -1,57 +1,96 @@
 import SlideBar from '../Component/SlideBar';
 import React, { useContext, useEffect, useState } from 'react'
 import Search from '../Component/Search';
-import { infoContext , flightDetailsContext, totalPriceContext } from '../App';
+import { infoContext, flightDetailsContext, totalPriceContext, searchedFlightsContext } from '../App';
 import { useNavigate } from 'react-router-dom';
+import { GetFlightSearch } from '../Service/flightSearch';
 
 
 function ShowFlights() {
 
   const { info } = useContext(infoContext);
-   const {total, setTotal} = useContext(totalPriceContext)
-  const {selectedOneway, setSelectedOneway,selectedRoundtrip, setSelectedRoundtrip} = useContext(flightDetailsContext)
-  
+  const { total, setTotal } = useContext(totalPriceContext)
+  const { selectedOneway, setSelectedOneway, selectedRoundtrip, setSelectedRoundtrip } = useContext(flightDetailsContext)
+  const { searched } = useContext(searchedFlightsContext);
 
-  const oneWayFlights = [
-    { id: 1, airline: 'IndiGo', from: 'PUNE', to: 'Kochi', dep: '04:30', arr: '06:30', duration: '2hr', price: 4000 },
-    { id: 2, airline: 'Air India', from: 'PUNE', to: 'Kochi', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-    { id: 3, airline: 'Emirates', from: 'London', to: 'MUMBAI', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-    { id: 4, airline: 'Air India', from: 'Delhi', to: 'MUMBAI', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
+  const [oneWayFlights, setOneWayFlights] = useState([]); //displaying fligths according to search
+  const [roundTripFlights, setRoundTripFlights] = useState([]);
 
-  ];
+  function formatDuration(dep, arr) {
+    const depTime = new Date(dep);
+    const arrTime = new Date(arr);
+    const diffMs = arrTime - depTime;
 
-  const roundTripFlights = [
-    { id: 1, airline: 'Air India Express', from: 'Kochi', to: 'PUNE', dep: '14:00', arr: '16:00', duration: '2hr', price: 4100 },
-    { id: 2, airline: 'IndiGo', from: 'Kochi', to: 'PUNE', dep: '18:00', arr: '20:00', duration: '2hr', price: 4300 },
-    { id: 3, airline: 'Emirates', from: 'MUMBAI', to: 'London', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-    { id: 4, airline: 'Air India', from: 'MUMBAI', to: 'Delhi', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-  ];
+    const diffMinutes = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
 
-  
+    return `${hours}h ${minutes}m`;
+  }
 
-  useEffect( ()=>{
-    if(info.trip === 'OneWay'){
+  async function onGetFlightSearch() {
+    const { trip, from, to, departure, arrival, Tclass, passenger } = info
+
+    const result = await GetFlightSearch(trip, from, to, departure, arrival, Tclass, passenger)
+    console.log(result);
+
+    if (result) {
+
+      const onewayformat = (result.onewayFlights || []).map(f => ({
+        id: f.flightId,
+        airline: f.airline.airlineName,
+        from: f.sourceAirport.iataCode,
+        to: f.destinationAirport.iataCode,
+        dep: f.departureTime.split("T")[1].substring(0,5),
+        arr: f.arrivalTime.split("T")[1].substring(0,5),
+        duration: formatDuration(f.departureTime, f.arrivalTime),
+        price: f.basePrice
+      }));
+
+      const roudtripformat = (result.roundTripFlights || []).map(f => ({
+        id: f.flightId,
+        airline: f.airline.airlineName,
+        from: f.sourceAirport.iataCode,
+        to: f.destinationAirport.iataCode,
+        dep: f.departureTime.split("T")[1].substring(0,5),
+        arr: f.arrivalTime.split("T")[1].substring(0,5),
+        duration: formatDuration(f.departureTime, f.arrivalTime),
+        price: f.basePrice
+      }));
+
+      setOneWayFlights(onewayformat);
+      setRoundTripFlights(roudtripformat);
+    }
+  }
+
+  useEffect(() => {
+    onGetFlightSearch();
+  }, [])
+
+  useEffect(() => {
+    if (searched) {
+      onGetFlightSearch();
+    }
+
+  }, [searched, info]);
+
+
+
+  useEffect(() => {
+    if (info.trip === 'OneWay') {
       setSelectedRoundtrip(null);
     }
 
-    const cal = (selectedOneway ? selectedOneway.price : 0) +  (selectedRoundtrip !=null ? selectedRoundtrip.price : 0) ;
+    const cal = (selectedOneway ? selectedOneway.price : 0) + (selectedRoundtrip != null ? selectedRoundtrip.price : 0);
 
     setTotal(cal)
 
-  },[selectedOneway,selectedRoundtrip,info.trip])
+  }, [selectedOneway, selectedRoundtrip, info.trip])
 
   const navigate = useNavigate();
   function bookFlights() {
     navigate('/review')
   }
-
-  const filteredOneWay = oneWayFlights.filter(flight => 
-    flight.from.toLowerCase() === info.from.toLowerCase() && flight.to.toLowerCase() === info.to.toLowerCase()
-  )
-
-  const filteredRoundTripWay = roundTripFlights.filter(flight => 
-    flight.from.toLowerCase() === info.to.toLowerCase() && flight.to.toLowerCase() === info.from.toLowerCase()
-    )
 
   return (
     <div>
@@ -82,12 +121,12 @@ function ShowFlights() {
                 </div>
 
                 <div className='text-center'>
-                  <label >{info.return != null ? info.return : ''}</label>
+                  <label >{info.arrival != null ? info.arrival : ''}</label>
 
                 </div>
 
                 <div className='text-center'>
-                  <label > {info.passenger} {info.class =='Premium_Economy'? 'Premium' :info.class }</label>
+                  <label > {info.passenger} {info.Tclass == 'Premium_Economy' ? 'Premium' : info.Tclass}</label>
                 </div>
               </div>
             </div>
@@ -128,7 +167,7 @@ function ShowFlights() {
             <div className='col-6  d-flex flex-column align-items-center' >
               {/* flight card  */}
 
-              {filteredOneWay.map(flight => (
+              {oneWayFlights.map(flight => (
                 <div className={`col-11 rounded m-2 p-2 ${selectedOneway?.id === flight.id ? 'bg-success text-white' : 'bg-info'}`}
                   onClick={() => { setSelectedOneway(flight) }}
                   style={{ cursor: 'pointer' }}
@@ -136,6 +175,7 @@ function ShowFlights() {
                   <p className='mx-3'>{flight.airline}</p>
                   <div className='d-flex justify-content-around'>
                     <div>
+                      {/* removing spaces and sperating time and date */}
                       <h4>{flight.dep}</h4>
                       <h5>{flight.from}</h5>
                     </div>
@@ -161,7 +201,7 @@ function ShowFlights() {
             <div className='col-6  d-flex flex-column align-items-center'>
               {/* flight card  */}
 
-              {filteredRoundTripWay.map(flight => (
+              {roundTripFlights.map(flight => (
                 <div className={`col-11 rounded m-2 p-2 ${selectedRoundtrip?.id === flight.id ? 'bg-success text-white' : 'bg-info'}`}
                   onClick={() => { setSelectedRoundtrip(flight) }}
                   style={{ cursor: 'pointer' }}
@@ -202,7 +242,7 @@ function ShowFlights() {
             {/* oneway cards  */}
             <div className='col  d-flex flex-column align-items-center'>
               {/* flight card  */}
-              {filteredOneWay.map(flight => (
+              {oneWayFlights.map(flight => (
                 <div className={`col-11 rounded m-2 p-2 ${selectedOneway?.id === flight.id ? 'bg-success text-white' : 'bg-info'}`}
                   onClick={() => { setSelectedOneway(flight) }}
                   style={{ cursor: 'pointer' }}
@@ -282,7 +322,7 @@ function ShowFlights() {
                 <h3 className='py-3'>₹{total}</h3>
                 <div className='my-4'>
                   <button className='btn btn-success '
-                  onClick={bookFlights}
+                    onClick={bookFlights}
                   >Book</button>
                 </div>
 
@@ -334,11 +374,11 @@ function ShowFlights() {
         </div>
       )}
 
-      {filteredOneWay.length === 0 && info.trip === 'OneWay' &&(
+      {oneWayFlights.length === 0 && info.trip === 'OneWay' && (
         <h3 className='text-center'>No one-way flights found for this route.</h3>
       )}
 
-      {filteredRoundTripWay.length === 0 && info.trip === 'RoundTrip' && (
+      {roundTripFlights.length === 0 && info.trip === 'RoundTrip' && (
         <h3 className='text-center'>No Round trip flights found for this route.</h3>
       )}
 

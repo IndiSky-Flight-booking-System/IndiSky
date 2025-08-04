@@ -18,7 +18,7 @@ import java.util.List;
 @Table(name = "flight_status_logs")
 public class FlightStatusLog {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer logId;
+    private Long logId;
 
     @ManyToOne
     @JoinColumn(name = "flight_id")
