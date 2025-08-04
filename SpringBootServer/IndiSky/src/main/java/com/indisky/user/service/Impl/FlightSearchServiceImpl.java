@@ -1,7 +1,8 @@
-package com.indisky.user.service;
+package com.indisky.user.service.Impl;
 
 import com.indisky.repository.FlightRepository;
 import com.indisky.entities.Flight;
+import com.indisky.user.service.FlightSearchService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +14,7 @@ import java.util.Map;
 @Service
 @Transactional
 @AllArgsConstructor
-public class FlightSearchServiceImpl implements FlightSearchService{
+public class FlightSearchServiceImpl implements FlightSearchService {
 
     private final FlightRepository repo;
 
