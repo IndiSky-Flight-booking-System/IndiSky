@@ -1,0 +1,77 @@
+/* Toggle Button */
+.sidebar-toggle {
+  position: fixed;
+  top: 8px;
+  left: 6px;
+  z-index: 1100;
+  background-color: #512888;
+  color: #f1faee;
+  border: none;
+  border-radius: 10px;
+  padding: 6px 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.sidebar-toggle:hover {
+  background-color: #301e47;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  background: linear-gradient(to bottom, #512888, #854fee);
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: -220px;
+  padding-top: 20px;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: left 0.3s ease-in-out;
+}
+.sidebar.open {
+  left: 0;
+}
+
+.sidebar-header {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.sidebar-nav {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 12px 20px;
+  color: #f1faee;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+.sidebar-link:hover {
+  background-color: #ffffff;
+  color: #512888;
+  border-radius: 4px;
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: #f1faee;
+  width: 100%;
+  text-align: left;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-weight: 500;
+}
+.logout-btn:hover {
+  background-color: #e63946;
+  color: white;
+  border-radius: 4px;
+}

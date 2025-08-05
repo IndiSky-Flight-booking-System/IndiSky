@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
+import Sidebar from '../Component/Sidebar';
 
 function Contact() {
   const [form, setForm] = useState({
@@ -25,6 +26,7 @@ function Contact() {
   return (
     <div>
       <SlideBar />
+      <Sidebar />
       <div className="container mt-5 mb-5">
         <h2 className="text-center mb-4" style={{ color: '#512888' }}>Contact Support</h2>
 

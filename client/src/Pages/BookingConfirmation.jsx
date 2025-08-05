@@ -1,13 +1,13 @@
 import React from 'react';
-
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import { useNavigate } from 'react-router-dom';
+import '../css/StaticPage.css'; // ✅ Reuse shared styles
+import Sidebar from '../Component/Sidebar';
 
 function BookingConfirmation() {
   const navigate = useNavigate();
 
-  // Dummy data
   const confirmation = {
     bookingId: 'IND123456789',
     tickets: [
@@ -36,32 +36,56 @@ function BookingConfirmation() {
   return (
     <div>
       <SlideBar />
-      <div className="container mt-5 mb-5">
-        <h2 className="text-center mb-4" style={{ color: '#512888' }}>Booking Confirmation</h2>
+      <Sidebar />
+      <div className="container mt-5 mb-5 static-page">
+        <div className="text-center mb-4">
+          <h2 className="text-success fw-bold">Booking Confirmed!</h2>
+          <p className="text-muted">Your tickets have been booked successfully.</p>
+        </div>
 
-        <div className="border p-4 bg-light shadow-sm rounded">
-          <p><b>Booking ID:</b> {confirmation.bookingId}</p>
+        <div className="card shadow-sm p-4">
+          <div className="mb-3">
+            <h5 className="text-primary"><i className="fa-solid fa-receipt me-2"></i>Booking ID:</h5>
+            <p className="ms-4 fw-bold">{confirmation.bookingId}</p>
+          </div>
 
-          <h5 className="mt-4">Tickets</h5>
-          {confirmation.tickets.map((ticket, index) => (
-            <p key={index}><b>Ticket ID:</b> {ticket.ticketId} — <b>Seat:</b> {ticket.seat}</p>
-          ))}
+          <hr />
 
-          <h5 className="mt-4">Flight Info</h5>
-          <p><b>From:</b> {confirmation.flight.from} → <b>To:</b> {confirmation.flight.to}</p>
-          <p><b>Date:</b> {confirmation.flight.date}</p>
+          <h5 className="text-primary"><i className="fa-solid fa-ticket me-2"></i>Tickets</h5>
+          <ul className="ms-4">
+            {confirmation.tickets.map((ticket, index) => (
+              <li key={index}>
+                <b>Ticket ID:</b> {ticket.ticketId} &nbsp; | &nbsp; <b>Seat:</b> {ticket.seat}
+              </li>
+            ))}
+          </ul>
 
-          <h5 className="mt-4">Passengers</h5>
-          {confirmation.passengers.map((p, i) => (
-            <p key={i}>{p.name} (Age: {p.age})</p>
-          ))}
+          <hr />
 
-          <div className="mt-4 d-flex gap-3">
-            <button className="btn btn-outline-primary" onClick={handleDownload}>Download E-Ticket</button>
-            <button className="btn btn-success" onClick={handleGoToBookings}>Go to My Bookings</button>
+          <h5 className="text-primary"><i className="fa-solid fa-plane me-2"></i>Flight Info</h5>
+          <p className="ms-4"><b>From:</b> {confirmation.flight.from} → <b>To:</b> {confirmation.flight.to}</p>
+          <p className="ms-4"><b>Date:</b> {confirmation.flight.date}</p>
+
+          <hr />
+
+          <h5 className="text-primary"><i className="fa-solid fa-users me-2"></i>Passengers</h5>
+          <ul className="ms-4">
+            {confirmation.passengers.map((p, i) => (
+              <li key={i}>{p.name} (Age: {p.age})</li>
+            ))}
+          </ul>
+
+          <div className="mt-4 d-flex gap-3 flex-wrap justify-content-center">
+            <button className="btn btn-outline-primary px-4" onClick={handleDownload}>
+              <i className="fa-solid fa-download me-2"></i>Download E-Ticket
+            </button>
+            <button className="btn btn-success px-4" onClick={handleGoToBookings}>
+              <i className="fa-solid fa-list-check me-2"></i>Go to My Bookings
+            </button>
           </div>
         </div>
       </div>
+
       <Footer />
     </div>
   );

@@ -2,30 +2,29 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../css/Popup.css';
-import { HashLink } from 'react-router-hash-link';
+import '../css/SlideBar.css'; // ✅ NEW CSS file
+
 function SlideBar() {
   const navigate = useNavigate();
-  // const fullname = sessionStorage.getItem('full_name');
 
   function onLogout() {
-    // Uncomment if needed:
-    // sessionStorage.clear();
     toast.success('Logout Successful');
     navigate('/log');
   }
 
   return (
     <div>
-      <nav className="navbar navbar-expand-lg navbar-light px-5 bg-dark " >
-        <Link className="navbar-brand active text-light" to="/" >
-          <img src="Logo.png" alt="logo" style={{ width: '30px' }} /> IndiSky 
+      <nav className="navbar navbar-expand-lg custom-navbar px-2">
+        <Link className="navbar-brand d-flex align-items-center" to="/">
+          <img src="Logo.png" alt="logo" className="brand-logo" />
+          <span className="brand-name ms-2">IndiSky</span>
         </Link>
 
         <button
           className="navbar-toggler"
           type="button"
-          data-toggle="collapse"
-          data-target="#navbarNav"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
           aria-controls="navbarNav"
           aria-expanded="false"
           aria-label="Toggle navigation"
@@ -33,44 +32,33 @@ function SlideBar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse justify-content-around text-dark"  id="navbarNav">
-          <ul className="navbar-nav mx-auto  fs-6">
-            <li className="nav-item active">
-              <Link className="nav-link text-light small" to="/">Home</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-light small" to="/show-flights">Show Flights</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-light small" to="/dashboard">DashBoard</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-light small" to="/flight-status">Flight Status</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-light small" to="/payment-history">Payment History</Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link text-light small" to="/my-bookings">My Bookings</Link>
-            </li>
-            <li className="nav-item">
-              <HashLink smooth className="nav-link text-light small"  to="/#about">About Us</HashLink>  
-              {/* imported hashlink to have smooth  */}
-            </li>
-            <li className="nav-item">
-              <HashLink smooth className="nav-link text-light small" to="/#contact">Contact Us</HashLink>
-            </li>
-            
+        <div className="collapse navbar-collapse justify-content-between" id="navbarNav">
+          <ul className="navbar-nav mx-auto">
+            {[
+              { name: 'Home', path: '/' },
+              //{ name: 'Bookings', path: '/bookings' },
+              //{ name: 'About Us', path: '/home#about' },
+              //{ name: 'Contact Us', path: '/home#contact' },
+              { name: 'Flight Status', path: '/flight-status' },
+              { name: 'Payment History', path: '/payment-history' },
+              { name: 'Profile', path: '/profile' },
+              { name: 'My Bookings', path: '/my-bookings' },
+              { name: 'Show Flights', path: '/show-flights' },
+
+              {/* { name: 'Review Payment', path: '/review-payment' },
+              { name: 'Booking Confirmation', path: '/booking-confirmation' }, */}
+            ].map((link, idx) => (
+              <li className="nav-item" key={idx}>
+                <Link className="nav-link nav-hover" to={link.path}>
+                  {link.name}
+                </Link>
+              </li>
+            ))}
           </ul>
 
-          <div className="d-flex align-items-center gap-3">
-            <h6 className="mb-0 mr-3 text-light">
-              Hello ,
-              {/* {fullname} */}
-            </h6>
-            <Link className="btn btn-outline-light btn-sm" to="/profile">User Profile</Link>
-          
-            <button type="button" className="btn btn-light text-dark btn-sm" onClick={onLogout}>
+          <div className="d-flex align-items-center gap-2">
+            <span className="welcome-text">Hello, {/* fullname */}</span>
+            <button type="button" className="btn btn-outline-light logout-btn" onClick={onLogout}>
               Logout
             </button>
           </div>

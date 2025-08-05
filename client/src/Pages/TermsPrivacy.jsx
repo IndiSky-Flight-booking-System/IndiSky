@@ -1,37 +1,88 @@
 import React from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
+import '../css/StaticPage.css'; // ✅ Ensure this file exists
+import Sidebar from '../Component/Sidebar';
 
 function TermsPrivacy() {
   return (
     <div>
+    <Sidebar />
       <SlideBar />
-      <div className="container mt-5 mb-5">
-        <h2 className="text-center mb-4" style={{ color: '#512888' }}>Terms & Conditions / Privacy Policy</h2>
 
-        <div className="p-4 border rounded bg-light shadow-sm">
-          <h4 className="mb-3">Terms & Conditions</h4>
-          <p>
-            By using IndiSky, you agree to comply with and be bound by the following terms and conditions of use.
-            All bookings are subject to availability and confirmation.
-            IndiSky reserves the right to change pricing and policies at any time without prior notice.
-            Users are responsible for the accuracy of personal and booking details provided.
-            Refund and cancellation policies apply based on the airline's rules and IndiSky's internal policies.
-          </p>
+      <div className="container mt-5 mb-5 static-page">
+        <h2 className="page-title text-center mb-4">Terms & Conditions / Privacy Policy</h2>
 
-          <h4 className="mt-4 mb-3">Privacy Policy</h4>
-          <p>
-            IndiSky is committed to protecting your personal data. Your information is used only to facilitate bookings and improve user experience.
-            We do not sell or share your data with third parties except when required by law or necessary for service fulfillment.
-            We implement standard security practices to protect your data from unauthorized access.
-            By using our services, you consent to our data collection and use as outlined in this policy.
-          </p>
+        <div className="accordion" id="termsAccordion">
+          {/* Terms Section */}
+          <div className="accordion-item">
+            <h2 className="accordion-header" id="termsHeading">
+              <button
+                className="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#termsCollapse"
+                aria-expanded="true"
+              >
+                Terms & Conditions
+              </button>
+            </h2>
+            <div
+              id="termsCollapse"
+              className="accordion-collapse collapse show"
+              aria-labelledby="termsHeading"
+            >
+              <div className="accordion-body">
+                <p>
+                  By using <b>IndiSky</b>, you agree to comply with and be bound by the following terms:
+                </p>
+                <ul>
+                  <li>All bookings are subject to availability and confirmation.</li>
+                  <li>IndiSky reserves the right to update pricing and policies without notice.</li>
+                  <li>Users are responsible for providing accurate personal and travel details.</li>
+                  <li>Refund and cancellation policies depend on the airline's rules and IndiSky’s internal policies.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
 
-          <p className="mt-4">
-            If you have any concerns about privacy or our terms, please contact support via the <a href="/contact">Contact Page</a>.
-          </p>
+          {/* Privacy Section */}
+          <div className="accordion-item">
+            <h2 className="accordion-header" id="privacyHeading">
+              <button
+                className="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#privacyCollapse"
+              >
+                Privacy Policy
+              </button>
+            </h2>
+            <div
+              id="privacyCollapse"
+              className="accordion-collapse collapse"
+              aria-labelledby="privacyHeading"
+            >
+              <div className="accordion-body">
+                <p>
+                  <b>IndiSky</b> is committed to protecting your personal data:
+                </p>
+                <ul>
+                  <li>Your data is used to manage bookings and enhance your experience.</li>
+                  <li>We never sell your data and only share with third parties when necessary.</li>
+                  <li>We follow industry-standard security protocols to protect your information.</li>
+                  <li>By using our services, you consent to this privacy policy.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <p className="text-center mt-4">
+          For any concerns, please reach out via our <a href="/home#contact">Contact Page</a>.
+        </p>
       </div>
+
       <Footer />
     </div>
   );
