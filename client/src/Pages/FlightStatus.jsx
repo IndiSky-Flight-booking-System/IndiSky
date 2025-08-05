@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
+import Sidebar from '../Component/Sidebar';
+
+import '../css/FlightStatus.css'; // ✅ New custom styles
+
 
 function FlightStatus() {
   const [query, setQuery] = useState('');
   const [result, setResult] = useState(null);
 
-  // Dummy flight status data
   const dummyStatusData = {
     IS123: {
       flightNo: 'IS123',
@@ -29,20 +32,29 @@ function FlightStatus() {
 
   const handleCheckStatus = () => {
     if (!query) return alert('Please enter Flight Number or Booking ID');
-
     const data = dummyStatusData[query.toUpperCase()];
-    if (data) setResult(data);
-    else setResult({ error: 'No data found for entered input.' });
+    setResult(data || { error: 'No data found for entered input.' });
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case 'CANCELLED': return 'badge badge-danger';
+      case 'DELAYED': return 'badge badge-warning';
+      case 'SCHEDULED': return 'badge badge-info';
+      case 'ON TIME': return 'badge badge-success';
+      default: return 'badge badge-secondary';
+    }
   };
 
   return (
     <div>
       <SlideBar />
+      <Sidebar />
       <div className="container mt-5 mb-5">
-        <h2 className="text-center mb-4" style={{ color: '#512888' }}>Flight Status Tracking</h2>
+        <h2 className="text-center mb-4 title-purple">Flight Status Tracking</h2>
 
-        <div className="border p-4 rounded bg-light shadow-sm">
-          <div className="mb-3">
+        <div className="status-box shadow-sm">
+          <div className="form-group mb-3">
             <label className="form-label">Enter Flight Number or Booking ID</label>
             <input
               type="text"
@@ -56,20 +68,16 @@ function FlightStatus() {
         </div>
 
         {result && (
-          <div className="mt-4 border p-4 bg-light rounded shadow-sm">
+          <div className="result-box mt-4 shadow-sm">
             {result.error ? (
-              <p className="text-danger">{result.error}</p>
+              <p className="text-danger"><b>{result.error}</b></p>
             ) : (
               <>
                 <p><b>Flight Number:</b> {result.flightNo}</p>
-                <p><b>Status:</b> <span className={
-                  result.status === 'CANCELLED' ? 'text-danger' :
-                  result.status === 'DELAYED' ? 'text-warning' :
-                  'text-success'
-                }>{result.status}</span></p>
+                <p><b>Status:</b> <span className={getStatusBadge(result.status)}>{result.status}</span></p>
 
                 <h5 className="mt-3">Update Logs:</h5>
-                <ul className="list-group">
+                <ul className="list-group custom-log-list">
                   {result.logs.map((log, index) => (
                     <li key={index} className="list-group-item">
                       <b>{log.time}</b> – {log.message}

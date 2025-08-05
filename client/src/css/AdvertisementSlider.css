@@ -1,0 +1,28 @@
+/* AdvertisementSlider.css */
+.ad-slider {
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(33, 147, 176, 0.3);
+}
+
+.ad-slider img {
+  height: 480px;
+  object-fit: cover;
+}
+
+.carousel-caption {
+  background: rgba(0, 0, 0, 0.55);
+  padding: 1rem 2rem;
+  border-radius: 10px;
+}
+
+.carousel-caption h3 {
+  font-size: 2rem;
+  color: #ffd700;
+  font-weight: 700;
+}
+
+.carousel-caption p {
+  font-size: 1.1rem;
+  color: #fff;
+}

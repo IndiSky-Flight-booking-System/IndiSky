@@ -1,0 +1,139 @@
+/* SlideBar.css */
+
+.custom-navbar {
+  background: linear-gradient(135deg, #512888, #854fee);
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.brand-logo {
+  width: 40px;
+  height: 30px;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 600;
+}
+
+.navbar-nav .nav-link {
+  color: #f8f9fa;
+  font-weight: 500;
+  margin: 0 10px;
+  transition: color 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link.nav-hover:hover {
+  color: #ffd700;
+}
+
+.logout-btn {
+  color: #512888;
+  background-color: white;
+  border: none;
+  font-weight: 500;
+  transition: background-color 0.3s ease-in-out;
+  border-radius: 25px;
+  padding: 5px 15px;
+}
+
+.logout-btn:hover {
+  background-color: #ffd700;
+  color: #512888;
+}
+
+.welcome-text {
+  color: white;
+  font-weight: 500;
+  margin-right: 10px;
+}
+
+/* Navigation Bar */
+.custom-navbar {
+  background-color: #0d6efd;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Brand Logo */
+.brand-logo {
+  height: 40px;
+}
+
+.brand-name {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Sidebar Toggle Icon */
+.sidebar-toggle-btn {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.sidebar-toggle-btn:focus {
+  outline: none;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 58px;
+  left: -240px;
+  width: 240px;
+  height: 100vh;
+  background-color: #f8f9fa;
+  transition: left 0.3s ease;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+  padding-top: 1rem;
+}
+
+.sidebar.open {
+  left: 0;
+}
+
+/* Sidebar Links */
+.sidebar-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-links li {
+  padding: 12px 24px;
+}
+
+.sidebar-links li a {
+  text-decoration: none;
+  color: #0d6efd;
+  font-weight: 500;
+  display: block;
+  transition: background 0.2s;
+}
+
+.sidebar-links li a:hover {
+  background-color: #e2e6ea;
+  border-radius: 8px;
+}
+
+/* Logout button */
+.logout-btn {
+  font-weight: 500;
+  padding: 5px 12px;
+}
+
+@media screen and (max-width: 768px) {
+  .brand-name {
+    font-size: 1.2rem;
+  }
+
+  .sidebar {
+    top: 56px;
+  }
+}
+

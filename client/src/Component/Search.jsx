@@ -1,262 +1,197 @@
-import React, { useEffect } from 'react'
-import { useState, useContext } from 'react';
-import '../css/SearchHeader.css';
+import React, { useEffect, useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
+import '../css/SearchHeader.css';
+import '../css/Search.css';
 import { infoContext, searchedFlightsContext } from '../App';
 
-
 function Search() {
+  const { info, setInfo } = useContext(infoContext);
+  const { setSearched } = useContext(searchedFlightsContext);
 
-    const { info, setInfo } = useContext(infoContext)
-    const {setSearched} =useContext(searchedFlightsContext);
+  const [child, setChild] = useState(0);
+  const [adult, setAdult] = useState(1);
+  const [senior, setSenior] = useState(0);
+  const [trips, setTrips] = useState('OneWay');
+  const [clas, setClas] = useState('');
 
-    const [child, setChild] = useState(0);
-    const [adult, setAdult] = useState(1);
-    const [senior, setSenior] = useState(0);
-    const [trips, setTrips] = useState('OneWay');
-    const [clas, setClas] = useState('');
+  const navigate = useNavigate();
 
-    useEffect(() => {
-        if (info) {
-            setChild(info.child || 0);
-            setAdult(info.adult || 1);
-            setSenior(info.senior || 0);
-            setTrips(info.trip || 'OneWay');
-            setClas(info.Tclass || '');
-        }
-    }, []);
+  const today = new Date().toISOString().split('T')[0];
+  const next = new Date();
+  next.setDate(next.getDate() + 1);
+  const tom = next.toISOString().split('T')[0];
 
-    const today = new Date().toISOString().split('T')[0];
-    // console.log(today);
+  const maxTotal = 9;
+  const total = child + adult + senior;
 
-    const next = new Date();
-    next.setDate(next.getDate() + 1);
-    const tom = next.toISOString().split('T')[0]
-    // console.log(tom)
-
-    let total = child + adult + senior;
-    const maxTotal = 9;
-
-    //It was just giving default value when changed to roundtrip and summation of total
-    //It was not Synchronizing properly  therefore used useEffect to update it simultaneously 
-    //did for both in single useEffect  
-    useEffect(() => {
-        setInfo(e => ({
-            ...e, passenger: total,
-            trip: trips,
-            departure: e.departure || today,
-            arrival: trips == 'OneWay' ? '' : (e.arrival || tom),
-            Tclass: clas,
-            adult: adult,
-            child: child,
-            senior: senior
-        }));
-
-    }, [total, trips, clas ,adult,child,senior])
-
-
-    const navigate = useNavigate();
-    function onSearch() {
-
-        if (info.from.length == 0) {
-            toast.error("Source location is Empty")
-        } else if (info.to.length == 0) {
-            toast.error("Destination location is Empty")
-        } else if (info.departure.length === 0) {
-            toast.error("Departure date is Empty")
-        } else if (info.Tclass.length == 0) {
-            toast.error("Class Not selected")
-        }
-        else {
-            navigate('/show')
-            setSearched(true);
-        }
-
+  useEffect(() => {
+    if (info) {
+      setChild(info.child || 0);
+      setAdult(info.adult || 1);
+      setSenior(info.senior || 0);
+      setTrips(info.trip || 'OneWay');
+      setClas(info.class || '');
     }
+  }, []);
 
-    return (
-        <div>
+  useEffect(() => {
+    setInfo((e) => ({
+      ...e,
+      passenger: total,
+      trip: trips,
+      departure: e.departure || today,
+      return: trips === 'OneWay' ? '' : (e.return || tom),
+      class: clas,
+      adult,
+      child,
+      senior,
+    }));
+  }, [total, trips, clas, adult, child, senior]);
 
-            <div class="container bg-light bg-gradient py-2 " >
-                <div className="trips" >
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="Trip" id="inlineRadio1" checked={trips == 'OneWay'} value="OneWay"
-                            onChange={(e) => {
-                                setTrips(e.target.value)
-                            }}
-                        />
-                        <label className="form-check-label" for="inlineRadio1">One way</label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                        <input className="form-check-input" type="radio" name="Trip" id="inlineRadio2" value="RoundTrip" checked={trips == 'RoundTrip'}
-                            onChange={(e) => {
-                                setTrips(e.target.value)
-                            }}
-                        />
-                        <label className="form-check-label" for="inlineRadio2">Round Trip</label>
-                    </div>
-                </div>
+  function onSearch() {
+    if (!info.from?.length) {
+      toast.error("Source location is Empty");
+    } else if (!info.to?.length) {
+      toast.error("Destination location is Empty");
+    } else if (!info.departure?.length) {
+      toast.error("Departure date is Empty");
+    } else if (!info.class?.length) {
+      toast.error("Class Not selected");
+    } else {
+      navigate('/show');
+      setSearched(true);
+    }
+  }
 
-                <div className="d-flex align-items-center justify-content-around">
-                    <div className='group'>
-                        <label htmlFor="from">From</label>
-                        <input type="search" className='rounded border px-2 py-1 form-control ' placeholder='Pune' value={info.from || ''}
-                            onChange={(e) => {
-                                setInfo({ ...info, from: e.target.value })
-                            }}
-                            id='from' />
-                    </div>
+  return (
+    <div className="container search-box shadow-lg rounded p-4">
+      {/* Trip Type */}
+      <div className="d-flex justify-content-center mb-3 gap-3">
+        {["OneWay", "RoundTrip"].map((type) => (
+          <div className="form-check form-check-inline" key={type}>
+            <input
+              className="form-check-input"
+              type="radio"
+              name="Trip"
+              id={`trip-${type}`}
+              value={type}
+              checked={trips === type}
+              onChange={(e) => setTrips(e.target.value)}
+            />
+            <label className="form-check-label fw-bold" htmlFor={`trip-${type}`}>
+              {type === 'OneWay' ? 'One Way' : 'Round Trip'}
+            </label>
+          </div>
+        ))}
+      </div>
 
-                    <div className='group'>
-                        <label htmlFor="to">To</label>
-                        <input type="search" className='rounded border px-2 py-1 form-control' placeholder='Kochi' value={info.to || ''}
-                            onChange={(e) => {
-                                setInfo({ ...info, to: e.target.value })
-                            }}
-                            id='to' />
-                    </div>
-
-                    <div className='group'>
-                        <label htmlFor="dept">Departure</label>
-                        <input type="date" className='rounded border px-2 py-1 form-control'
-                            min={today} value={info.departure || today}
-
-                            onChange={(e) => {
-                                setInfo({ ...info, departure: e.target.value, arrival: '' })
-                            }}
-                            id='dept' />
-                    </div>
-
-                    <div className='group'>
-
-                        <label htmlFor="ret">Return</label>
-
-                        {trips == "RoundTrip" ? (
-                            <input type="date" className='rounded border px-2 py-1 form-control '
-                                min={today} value={info.arrival || tom}
-                                onChange={(e) => {
-                                    setInfo({ ...info, arrival: e.target.value })
-                                }}
-                                id='ret' />) :
-
-                            (<input type="date" className='rounded border px-2 py-1 form-control '
-                                min={today} value={info.arrival || tom}
-                                disabled id='ret' />)
-                        }
-
-
-
-                    </div>
-
-                    <div className="group dropdown">
-                        <label >Passengers & class</label>
-                        <span className='text-success '>{clas}</span>
-                        <button
-                            className="btn btn-primary dropdown-toggle"
-                            type="button"
-                            id="trav"
-                            data-bs-toggle="dropdown"
-                            aria-expanded="false"
-                        >
-                            Travellers ({total || info.passenger})
-                        </button>
-
-                        {/* when clicked on label name the drop down was getting closed automatically beccause of bootstrap
-                        therefore used inbuild method stop Propagation  */}
-                        <ul className="dropdown-menu " style={{ width: "350px" }} aria-labelledby="trav"
-                            onClick={(e) => e.stopPropagation()}>
-                            <li className='d-flex align-items-center justify-content-center  ' ><label className="dropdown-item m-0">Child </label>
-                                <input className="form-range ms-0" type="range" name="child" value={info.child || child} min={0}
-                                    max={Math.min(5, maxTotal - adult - senior)} onChange={(e) =>
-                                        setChild(Number(e.target.value))  //used NUmber beacuse to convert string to integer
-                                        //here range is by deafult string thats why Number
-
-                                    } ></input>
-                                <span className="mx-2 text-success">{info.child || child}</span>
-                            </li>
-
-                            <li className='d-flex align-items-center justify-content-center ' ><label className="dropdown-item m-0">Adult </label>
-                                <input className="form-range ms-1" type="range" name="adult" value={info.adult || adult} min={0}
-                                    max={Math.min(9, maxTotal - child - senior)}
-                                    onChange={(e) => {
-                                        setAdult(Number(e.target.value));
-                                        if (adult === 0 && senior === 0) {
-                                            toast.error("At one adult or Senior Citizen is required ")
-                                        }
-                                    }
-                                    } ></input>
-                                <span className="mx-2 text-success">{info.adult || adult}</span>
-                            </li>
-
-
-
-                            <li className='d-flex align-items-center justify-content-center ' ><label className="dropdown-item m-0">Senior Citizen </label>
-                                <input className="form-range ms-0" type="range" name="senior" value={info.senior ||senior} min={0}
-                                    max={Math.min(5, maxTotal - adult - child)} onChange={(e) => {
-                                        setSenior(Number(e.target.value))
-                                        if (adult === 0 && senior === 0) {
-                                            toast.error("At one adult or Senior Citizen is required ")
-                                        }
-                                    }
-
-                                    } ></input>
-                                <span className="mx-2 text-success " >{info.senior ||senior}</span>
-                            </li>
-                            <li className='d-flex  align-items-start justify-content-around bg-info text-black'>
-
-                                <label className='pt-4'>Class</label>
-
-                                <div className='d-flex align-items-start justify-content-center flex-column '>
-                                    <div className='m-1 form-check form-switch '>
-                                        <input className="form-check-input" type="radio" name="class" id="eco"
-                                            onChange={(e) => {
-                                                setClas(e.target.value)
-                                            }}
-
-                                            checked={clas == 'Economy'}
-                                            value="Economy" />
-                                        <label className="form-check-label" htmlFor="eco">Economy</label>
-                                    </div>
-                                    <div className='form-check form-switch m-1 '>
-                                        <input className="form-check-input" type="radio" name="class" id="preeco"
-                                            onChange={(e) => {
-                                                setClas(e.target.value)
-                                            }}
-
-                                            checked={clas == 'Premium_Economy'}
-                                            value="Premium_Economy" />
-                                        <label className="form-check-label" htmlFor="preeco">Premium Economy</label>
-                                    </div>
-                                    <div className='form-check form-switch m-1'>
-                                        <input className="form-check-input" type="radio" name="class" id="bus"
-                                            onChange={(e) => {
-                                                setClas(e.target.value)
-                                            }}
-
-                                            checked={clas == 'Business'}
-                                            value="Business" />
-                                        <label className="form-check-label" htmlFor="bus">Business</label>
-                                    </div>
-
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-
-                    <div >
-                        <button className='btn btn-warning' onClick={onSearch}>Search <i class="fa-solid fa-magnifying-glass"></i></button>
-                    </div>
-
-                </div>
-
-            </div>
-
-
-
+      {/* Main Fields */}
+      <div className="row g-3">
+        <div className="col-md">
+          <label htmlFor="from" className="form-label">From</label>
+          <input
+            type="text"
+            className="form-control"
+            id="from"
+            placeholder="Pune"
+            value={info.from || ''}
+            onChange={(e) => setInfo({ ...info, from: e.target.value })}
+          />
         </div>
-    )
+        <div className="col-md">
+          <label htmlFor="to" className="form-label">To</label>
+          <input
+            type="text"
+            className="form-control"
+            id="to"
+            placeholder="Delhi"
+            value={info.to || ''}
+            onChange={(e) => setInfo({ ...info, to: e.target.value })}
+          />
+        </div>
+        <div className="col-md">
+          <label htmlFor="dept" className="form-label">Departure</label>
+          <input
+            type="date"
+            className="form-control"
+            id="dept"
+            min={today}
+            value={info.departure || today}
+            onChange={(e) => setInfo({ ...info, departure: e.target.value, return: '' })}
+          />
+        </div>
+        <div className="col-md">
+          <label htmlFor="ret" className="form-label">Return</label>
+          <input
+            type="date"
+            className="form-control"
+            id="ret"
+            min={today}
+            value={info.return || tom}
+            onChange={(e) => setInfo({ ...info, return: e.target.value })}
+            disabled={trips === 'OneWay'}
+          />
+        </div>
+      </div>
+
+      {/* Passenger and Class Dropdown */}
+      <div className="dropdown mt-4">
+        <label className="form-label">Passengers & Class</label>
+        <button
+          className="btn btn-outline-primary dropdown-toggle w-100"
+          type="button"
+          data-bs-toggle="dropdown"
+        >
+          {total} Travellers | {clas || 'Select Class'}
+        </button>
+        <ul className="dropdown-menu w-100 p-3" onClick={(e) => e.stopPropagation()}>
+          {[{ label: 'Child', key: 'child', value: child, setter: setChild },
+            { label: 'Adult', key: 'adult', value: adult, setter: setAdult },
+            { label: 'Senior Citizen', key: 'senior', value: senior, setter: setSenior },
+          ].map(({ label, key, value, setter }) => (
+            <li className="d-flex align-items-center justify-content-between my-2" key={key}>
+              <span>{label}</span>
+              <input
+                type="range"
+                className="form-range w-50"
+                min={0}
+                max={Math.min(9, maxTotal - (key === 'child' ? adult + senior : key === 'adult' ? child + senior : adult + child))}
+                value={value}
+                onChange={(e) => setter(Number(e.target.value))}
+              />
+              <span className="text-success">{value}</span>
+            </li>
+          ))}
+          <hr />
+          <label className="mb-1">Select Class</label>
+          {['Economy', 'Premium_Economy', 'Business'].map((option) => (
+            <div className="form-check" key={option}>
+              <input
+                className="form-check-input"
+                type="radio"
+                name="class"
+                id={option}
+                value={option}
+                checked={clas === option}
+                onChange={(e) => setClas(e.target.value)}
+              />
+              <label className="form-check-label" htmlFor={option}>
+                {option.replace('_', ' ')}
+              </label>
+            </div>
+          ))}
+        </ul>
+      </div>
+
+      {/* Search Button */}
+      <div className="text-center mt-4">
+        <button className="btn btn-warning px-5 py-2 fw-bold" onClick={onSearch}>
+          Search <i className="fa-solid fa-magnifying-glass ms-2"></i>
+        </button>
+      </div>
+    </div>
+  );
 }
 
-export default Search
-
+export default Search;
