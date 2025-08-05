@@ -1,23 +1,58 @@
+import React, { useContext, useEffect } from 'react';
 import SlideBar from '../Component/SlideBar';
-import React, { useContext, useEffect, useState } from 'react'
 import Search from '../Component/Search';
-import { infoContext , flightDetailsContext, totalPriceContext } from '../App';
+import { infoContext, flightDetailsContext, totalPriceContext } from '../App';
 import { useNavigate } from 'react-router-dom';
+import '../css/ShowFlights.css';
+import Sidebar from '../Component/Sidebar';
 
+function FlightCard({ flight, isSelected, onSelect }) {
+  return (
+    <div
+      role="button"
+      aria-selected={isSelected}
+      tabIndex={0}
+      className={`flight-card ${isSelected ? 'selected' : ''}`}
+      onClick={() => onSelect(flight)}
+      onKeyDown={(e) => e.key === 'Enter' && onSelect(flight)}
+    >
+      <p className="flight-airline">{flight.airline}</p>
+      <div className="flight-details">
+        <div className="flight-time">
+          <h4>{flight.dep}</h4>
+          <h5>{flight.from}</h5>
+        </div>
+        <div className="flight-duration">
+          <p>{flight.duration}</p>
+          <hr />
+        </div>
+        <div className="flight-time">
+          <h4>{flight.arr}</h4>
+          <h5>{flight.to}</h5>
+        </div>
+        <div className="flight-price">₹{flight.price}</div>
+      </div>
+    </div>
+  );
+}
 
 function ShowFlights() {
-
   const { info } = useContext(infoContext);
-   const {total, setTotal} = useContext(totalPriceContext)
-  const {selectedOneway, setSelectedOneway,selectedRoundtrip, setSelectedRoundtrip} = useContext(flightDetailsContext)
-  
+  const { total, setTotal } = useContext(totalPriceContext);
+  const {
+    selectedOneway,
+    setSelectedOneway,
+    selectedRoundtrip,
+    setSelectedRoundtrip,
+  } = useContext(flightDetailsContext);
+
+  const navigate = useNavigate();
 
   const oneWayFlights = [
     { id: 1, airline: 'IndiGo', from: 'PUNE', to: 'Kochi', dep: '04:30', arr: '06:30', duration: '2hr', price: 4000 },
     { id: 2, airline: 'Air India', from: 'PUNE', to: 'Kochi', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
     { id: 3, airline: 'Emirates', from: 'London', to: 'MUMBAI', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
     { id: 4, airline: 'Air India', from: 'Delhi', to: 'MUMBAI', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-
   ];
 
   const roundTripFlights = [
@@ -27,323 +62,178 @@ function ShowFlights() {
     { id: 4, airline: 'Air India', from: 'MUMBAI', to: 'Delhi', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
   ];
 
-  
-
-  useEffect( ()=>{
-    if(info.trip === 'OneWay'){
+  useEffect(() => {
+    if (info.trip === 'OneWay') {
       setSelectedRoundtrip(null);
     }
+    const totalPrice =
+      (selectedOneway ? selectedOneway.price : 0) + (selectedRoundtrip ? selectedRoundtrip.price : 0);
+    setTotal(totalPrice);
+  }, [selectedOneway, selectedRoundtrip, info.trip, setSelectedRoundtrip, setTotal]);
 
-    const cal = (selectedOneway ? selectedOneway.price : 0) +  (selectedRoundtrip !=null ? selectedRoundtrip.price : 0) ;
+  const filteredOneWay = oneWayFlights.filter(
+    (flight) =>
+      flight.from.toLowerCase() === info.from.toLowerCase() &&
+      flight.to.toLowerCase() === info.to.toLowerCase()
+  );
 
-    setTotal(cal)
+  const filteredRoundTrip = roundTripFlights.filter(
+    (flight) =>
+      flight.from.toLowerCase() === info.to.toLowerCase() &&
+      flight.to.toLowerCase() === info.from.toLowerCase()
+  );
 
-  },[selectedOneway,selectedRoundtrip,info.trip])
-
-  const navigate = useNavigate();
-  function bookFlights() {
-    navigate('/review')
-  }
-
-  const filteredOneWay = oneWayFlights.filter(flight => 
-    flight.from.toLowerCase() === info.from.toLowerCase() && flight.to.toLowerCase() === info.to.toLowerCase()
-  )
-
-  const filteredRoundTripWay = roundTripFlights.filter(flight => 
-    flight.from.toLowerCase() === info.to.toLowerCase() && flight.to.toLowerCase() === info.from.toLowerCase()
-    )
+  const bookFlights = () => navigate('/review');
 
   return (
-    <div>
+    <>
       <SlideBar />
+      <Sidebar />
       <Search />
-      <div className="container">
-        <div className="row">
 
-          <div className="col"></div>
-          <div className="col-12 p-2">
-
-            <div className="row text-center">
-
-              <div className="col-12 bg-info p-2  rounded d-flex align-items-center justify-content-around">
-
-                <div className='text-center'>
-                  <label >{info.from}</label>
-                </div>
-
-                <div className='text-center'>
-                  <label >{info.to}</label>
-
-                </div>
-
-                <div className='text-center'>
-                  <label >{info.departure}</label>
-
-                </div>
-
-                <div className='text-center'>
-                  <label >{info.return != null ? info.return : ''}</label>
-
-                </div>
-
-                <div className='text-center'>
-                  <label > {info.passenger} {info.class =='Premium_Economy'? 'Premium' :info.class }</label>
-                </div>
-              </div>
-            </div>
-          </div>
-
-
-          <div className="col"></div>
+      <div className="container my-3">
+        {/* Search summary bar */}
+        <div className="trip-summary d-flex justify-content-around bg-info p-3 rounded text-white mb-4">
+          <span>{info.from}</span>
+          <span>{info.to}</span>
+          <span>{info.departure}</span>
+          <span>{info.return || ''}</span>
+          <span>
+            {info.passenger} {info.class === 'Premium_Economy' ? 'Premium' : info.class}
+          </span>
         </div>
 
-        <br />
+        {/* Trip Type Tabs */}
+        {/* <div className="row text-center mb-3">
+          <div className={`col ${info.trip === 'OneWay' ? 'tab-active' : 'tab'}`}>
+            One Way
+          </div>
+          {info.trip === 'RoundTrip' && <div className="col tab-active">Round Trip</div>}
+        </div> */}
+
+        <div className="row text-center mb-3 trip-tabs" role="tablist">
+          <div
+            role="tab"
+            tabIndex={0}
+            aria-selected={info.trip === 'OneWay'}
+            className={`col tab ${info.trip === 'OneWay' ? 'tab-active' : ''}`}
+            onClick={() => {
+              setInfo({ ...info, trip: 'OneWay' });
+            }}
+            onKeyDown={e => { if (e.key === 'Enter') {/* set trip to OneWay */ } }}
+          >
+            One Way
+          </div>
+
+          {info.trip === 'RoundTrip' && (
+            <div
+              role="tab"
+              tabIndex={0}
+              aria-selected={info.trip === 'RoundTrip'}
+              className="col tab tab-active"
+              onClick={() => {
+                setInfo({ ...info, trip: 'RoundTrip' });
+              }}
+              onKeyDown={e => { if (e.key === 'Enter') {/* set trip to RoundTrip */ } }}
+            >
+              Round Trip
+            </div>
+          )}
+        </div>
 
 
-        {(info.trip == 'RoundTrip') ? (
-          <div className="row text-center  rounded m-0">
-            <div className="col bg-light rounded">
-              <h3>One Way</h3>
+
+
+        {/* Flights Listing */}
+        <div className="row">
+          {info.trip === 'RoundTrip' ? (
+            <>
+              <div className="col-6 d-flex flex-column align-items-center">
+                {filteredOneWay.length > 0 ? (
+                  filteredOneWay.map((flight) => (
+                    <FlightCard
+                      key={flight.id}
+                      flight={flight}
+                      isSelected={selectedOneway?.id === flight.id}
+                      onSelect={setSelectedOneway}
+                    />
+                  ))
+                ) : (
+                  <p className="text-muted">No one-way flights found for this route.</p>
+                )}
+              </div>
+              <div className="col-6 d-flex flex-column align-items-center">
+                {filteredRoundTrip.length > 0 ? (
+                  filteredRoundTrip.map((flight) => (
+                    <FlightCard
+                      key={flight.id}
+                      flight={flight}
+                      isSelected={selectedRoundtrip?.id === flight.id}
+                      onSelect={setSelectedRoundtrip}
+                    />
+                  ))
+                ) : (
+                  <p className="text-muted">No round trip flights found for this route.</p>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="col d-flex flex-column align-items-center">
+              {filteredOneWay.length > 0 ? (
+                filteredOneWay.map((flight) => (
+                  <FlightCard
+                    key={flight.id}
+                    flight={flight}
+                    isSelected={selectedOneway?.id === flight.id}
+                    onSelect={setSelectedOneway}
+                  />
+                ))
+              ) : (
+                <p className="text-muted">No one-way flights found for this route.</p>
+              )}
             </div>
-            <div className="col bg-dark rounded text-white">
-              <h3>Round Trip</h3>
-            </div>
-          </div>
-        ) : (
-          <div className="row text-center  rounded m-0">
-            <div className="col bg-light rounded">
-              <h3>One Way</h3>
-            </div>
-          </div>
-        )}
-        <br />
+          )}
+        </div>
       </div>
 
-      {/* add else */}
-      {info.trip == 'RoundTrip' && (
-        <div className="container">
-          <div className="row  row-col-2">
+      {/* Booking Summary Bar */}
+      {(info.trip === 'OneWay' && selectedOneway) ||
+        (info.trip === 'RoundTrip' && selectedOneway && selectedRoundtrip) ? (
+        <div className="fixed-bottom booking-summary-container p-3 bg-light shadow-lg">
+          <div className="container d-flex justify-content-between align-items-center">
+            <div className="booking-flight-details d-flex">
+              <div className="booking-flight-card">
+                <p>{selectedOneway.airline}</p>
+                <div className="d-flex justify-content-around">
+                  <span>{selectedOneway.from}</span>
+                  <span>{selectedOneway.to}</span>
+                  <span>₹{selectedOneway.price}</span>
+                </div>
+              </div>
 
-            {/* oneway cards  */}
-            <div className='col-6  d-flex flex-column align-items-center' >
-              {/* flight card  */}
-
-              {filteredOneWay.map(flight => (
-                <div className={`col-11 rounded m-2 p-2 ${selectedOneway?.id === flight.id ? 'bg-success text-white' : 'bg-info'}`}
-                  onClick={() => { setSelectedOneway(flight) }}
-                  style={{ cursor: 'pointer' }}
-                  key={flight.id}  >
-                  <p className='mx-3'>{flight.airline}</p>
-                  <div className='d-flex justify-content-around'>
-                    <div>
-                      <h4>{flight.dep}</h4>
-                      <h5>{flight.from}</h5>
-                    </div>
-
-                    <div className=' d-flex flex-column align-items-center'>
-                      <p className='m-0 p-0'>{flight.duration} </p>
-                      <p className='m-0 p-0'>---------------------------</p>
-                    </div>
-
-                    <div>
-                      <h4>{flight.arr}</h4>
-                      <h5>{flight.to}</h5>
-                    </div>
-                    <div>
-                      <h2>₹{flight.price}</h2>
-                    </div>
+              {info.trip === 'RoundTrip' && selectedRoundtrip && (
+                <div className="booking-flight-card ms-4">
+                  <p>{selectedRoundtrip.airline}</p>
+                  <div className="d-flex justify-content-around">
+                    <span>{selectedRoundtrip.from}</span>
+                    <span>{selectedRoundtrip.to}</span>
+                    <span>₹{selectedRoundtrip.price}</span>
                   </div>
                 </div>
-              ))}
+              )}
             </div>
 
-            {/* roundtrip cards  */}
-            <div className='col-6  d-flex flex-column align-items-center'>
-              {/* flight card  */}
-
-              {filteredRoundTripWay.map(flight => (
-                <div className={`col-11 rounded m-2 p-2 ${selectedRoundtrip?.id === flight.id ? 'bg-success text-white' : 'bg-info'}`}
-                  onClick={() => { setSelectedRoundtrip(flight) }}
-                  style={{ cursor: 'pointer' }}
-                  key={flight.id}>
-                  <p className='mx-3'>{flight.airline}</p>
-                  <div className='d-flex justify-content-around'>
-                    <div>
-                      <h4>{flight.dep}</h4>
-                      <h5>{flight.from}</h5>
-                    </div>
-
-                    <div className=' d-flex flex-column align-items-center'>
-                      <p className='m-0 p-0'>{flight.duration} </p>
-                      <p className='m-0 p-0'>---------------------------</p>
-                    </div>
-
-                    <div>
-                      <h4>{flight.arr}</h4>
-                      <h5>{flight.to}</h5>
-                    </div>
-                    <div>
-                      <h2>₹{flight.price}</h2>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-
+            <div className="booking-total d-flex align-items-center">
+              <h3 className="me-3">₹{total}</h3>
+              <button className="btn btn-success btn-lg" onClick={bookFlights}>
+                Book
+              </button>
             </div>
           </div>
         </div>
-      )}
-
-      {info.trip === 'OneWay' && (
-        <div className="container">
-          <div className="row ">
-
-            {/* oneway cards  */}
-            <div className='col  d-flex flex-column align-items-center'>
-              {/* flight card  */}
-              {filteredOneWay.map(flight => (
-                <div className={`col-11 rounded m-2 p-2 ${selectedOneway?.id === flight.id ? 'bg-success text-white' : 'bg-info'}`}
-                  onClick={() => { setSelectedOneway(flight) }}
-                  style={{ cursor: 'pointer' }}
-                  key={flight.id}>
-                  <p className='mx-3'>{flight.airline}</p>
-                  <div className='d-flex justify-content-around'>
-                    <div>
-                      <h4>{flight.dep}</h4>
-                      <h5>{flight.from}</h5>
-                    </div>
-
-                    <div className=' d-flex flex-column align-items-center'>
-                      <p className='m-0 p-0'>{flight.duration} </p>
-                      <p className='m-0 p-0'>---------------------------</p>
-                    </div>
-
-                    <div>
-                      <h4>{flight.arr}</h4>
-                      <h5>{flight.to}</h5>
-                    </div>
-                    <div>
-                      <h2>₹{flight.price}</h2>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-      )}
-
-      {/* bottom */}
-      {info.trip === 'RoundTrip' && selectedOneway && selectedRoundtrip && (
-
-        <div className='fixed-bottom'>
-          <div className='container '>
-
-            <div className="row bg-light text-center rounded ">
-
-              <div className="col-5  border border-right border-dark rounded">
-                <div className='col-11  rounded m-2 d-flex flex-column  '>
-                  <p className='mx-3'>{selectedOneway.airline}</p>
-                  <div className='d-flex justify-content-around'>
-                    <div>
-                      <h5>{selectedOneway.from}</h5>
-                    </div>
-                    <div>
-                      <h5>{selectedOneway.to}</h5>
-                    </div>
-                    <div>
-                      <h2>₹{selectedOneway.price}</h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="col-5  border border-right border-dark  rounded">
-                <div className='col-11  rounded m-2 d-flex flex-column  '>
-                  <p className='mx-3'>{selectedRoundtrip.airline}</p>
-                  <div className='d-flex justify-content-around'>
-                    <div>
-                      <h5>{selectedRoundtrip.from}</h5>
-                    </div>
-                    <div>
-
-                      <h5>{selectedRoundtrip.to}</h5>
-                    </div>
-                    <div>
-                      <h2>₹{selectedRoundtrip.price}</h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className='col-2 d-flex justify-content-around align-item-center  '>
-                <h3 className='py-3'>₹{total}</h3>
-                <div className='my-4'>
-                  <button className='btn btn-success '
-                  onClick={bookFlights}
-                  >Book</button>
-                </div>
-
-              </div>
-
-
-            </div>
-          </div>
-        </div>
-
-      )}
-
-      {info.trip === 'OneWay' && selectedOneway && (
-        <div className='fixed-bottom'>
-          <div className='container '>
-
-            <div className="row bg-light text-center rounded ">
-
-              <div className="col  border border-right border-dark rounded">
-                <div className='col-11  rounded m-2 d-flex flex-column  '>
-                  <p className='mx-3'>{selectedOneway.airline}</p>
-                  <div className='d-flex justify-content-around'>
-                    <div>
-                      <h5>{selectedOneway.from}</h5>
-                    </div>
-                    <div>
-                      <h5>{selectedOneway.to}</h5>
-                    </div>
-                    <div>
-                      <h2>₹{selectedOneway.price}</h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className='col d-flex justify-content-around align-item-center  '>
-                <h3 className='py-3'>₹{total}</h3>
-                <div className='my-4'>
-                  <button className='btn btn-success '
-                    onClick={bookFlights}
-                  >Book</button>
-                </div>
-
-              </div>
-
-
-            </div>
-          </div>
-        </div>
-      )}
-
-      {filteredOneWay.length === 0 && info.trip === 'OneWay' &&(
-        <h3 className='text-center'>No one-way flights found for this route.</h3>
-      )}
-
-      {filteredRoundTripWay.length === 0 && info.trip === 'RoundTrip' && (
-        <h3 className='text-center'>No Round trip flights found for this route.</h3>
-      )}
-
-    </div>
-  )
+      ) : null}
+    </>
+  );
 }
 
-export default ShowFlights
+export default ShowFlights;

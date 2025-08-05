@@ -1,0 +1,228 @@
+/* Flight Cards */
+.flight-card {
+  background: linear-gradient(135deg, #d0ecff, #a0d8ff);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 10px 0;
+  width: 90%;
+  box-shadow: 0 3px 7px rgba(33, 147, 176, 0.2);
+  color: #0d2f4a;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+  user-select: none;
+}
+
+.flight-card:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 10px 25px rgba(33, 147, 176, 0.4);
+  background: linear-gradient(135deg, #6dd5ed, #2193b0);
+  color: white;
+}
+
+.flight-card.selected {
+  background: linear-gradient(135deg, #2193b0, #6dd5ed);
+  color: white;
+  box-shadow: 0 14px 30px rgba(33, 147, 176, 0.7);
+}
+
+.flight-airline {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+}
+
+.flight-details {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.flight-time h4 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.flight-time h5 {
+  margin: 0;
+  font-weight: 400;
+  color: #09527a;
+}
+
+.flight-duration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 0.9rem;
+  color: #004a77;
+}
+
+.flight-duration hr {
+  width: 100%;
+  border: none;
+  border-top: 1px solid #004a77;
+  margin: 2px 0;
+}
+
+.flight-price {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: inherit;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+/* Trip summary bar */
+.trip-summary span {
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+/* Tabs */
+.tab, .tab-active {
+  padding: 10px 0;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: default;
+  user-select: none;
+}
+
+.tab {
+  background-color: #e3f2fd;
+  color: #1976d2;
+  border: 1px solid #90caf9;
+}
+
+.tab-active {
+  background-color: #1976d2;
+  color: white;
+  border: 1px solid #1976d2;
+}
+
+/* Booking summary fixed bottom bar */
+.booking-summary-container {
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  box-shadow: 0 -5px 25px rgba(33, 147, 176, 0.15);
+}
+
+.booking-flight-details {
+  flex-grow: 1;
+}
+
+.booking-flight-card {
+  background: #e3f2fd;
+  border-radius: 10px;
+  padding: 10px 15px;
+  margin-right: 10px;
+  min-width: 180px;
+  box-shadow: 0 2px 8px rgba(33, 147, 176, 0.15);
+  color: #1976d2;
+}
+
+.booking-flight-card p {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 6px;
+}
+
+.booking-flight-card span {
+  font-weight: 600;
+  margin: 0 8px;
+  font-size: 1rem;
+}
+
+/* Booking total */
+.booking-total h3 {
+  margin: 0;
+  color: #1976d2;
+  font-weight: 800;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .flight-details {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .booking-summary-container .container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .booking-flight-details {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .booking-flight-card {
+    width: 100%;
+    margin: 5px 0;
+  }
+  .booking-total {
+    justify-content: center !important;
+  }
+}
+
+.trip-summary {
+  background: linear-gradient(90deg, #2193b0 0%, #6dd5ed 100%);
+  box-shadow: 0 4px 12px rgba(33, 147, 176, 0.3);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.trip-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.2rem;
+  user-select: none;
+  min-width: 100px;
+  justify-content: center;
+}
+
+.trip-icon {
+  font-size: 1.5rem;
+}
+
+@media (max-width: 576px) {
+  .trip-summary {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .trip-item {
+    min-width: 45%;
+    justify-content: flex-start;
+  }
+}
+
+.trip-tabs {
+  cursor: default;
+  user-select: none;
+  font-weight: 600;
+  font-size: 1.2rem;
+}
+
+.tab {
+  padding: 12px 0;
+  color: #1976d2;
+  background-color: #e3f2fd;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+.tab:hover {
+  background-color: #bbdefb;
+  color: #0d47a1;
+}
+
+.tab-active {
+  background-color: #1976d2;
+  color: white !important;
+  border-color: #115293;
+  box-shadow: 0 4px 10px rgba(25, 118, 210, 0.5);
+  cursor: default;
+}
+
+.tab:focus-visible {
+  outline: 3px solid #64b5f6;
+  outline-offset: 2px;
+}
+

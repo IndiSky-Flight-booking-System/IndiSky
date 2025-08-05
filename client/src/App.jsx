@@ -3,6 +3,8 @@ import Register from '../src/Pages/Register';
 import { Routes, Route } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import 'bootstrap/dist/css/bootstrap.min.css';
+//import 'bootstrap-icons/font/bootstrap-icons.css';
+
 import Login from '../src/Pages/Login';
 import Home from '../src/Pages/Home';
 import Passengers from '../src/Pages/Passengers'

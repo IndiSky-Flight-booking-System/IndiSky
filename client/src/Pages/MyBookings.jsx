@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
+import '../css/MyBookings.css'; // Don't forget to create or replace this CSS file
+import Sidebar from '../Component/Sidebar';
 
 function MyBookings() {
   const [bookings, setBookings] = useState([
@@ -23,10 +25,9 @@ function MyBookings() {
   ]);
 
   const handleCancel = (id) => {
-    const updated = bookings.map(b => {
-      if (b.id === id) return { ...b, status: 'CANCELLED' };
-      return b;
-    });
+    const updated = bookings.map(b =>
+      b.id === id ? { ...b, status: 'CANCELLED' } : b
+    );
     setBookings(updated);
   };
 
@@ -37,21 +38,29 @@ function MyBookings() {
   return (
     <div>
       <SlideBar />
-      <div className="container mt-5 mb-5">
-        <h2 className="text-center mb-4" style={{ color: '#512888' }}>My Bookings</h2>
+      <Sidebar />
+      <div className="my-bookings-container">
+        <h2 className="heading">My Bookings</h2>
 
         {bookings.map((b, index) => (
-          <div key={index} className="border bg-light shadow-sm rounded p-3 mb-4">
-            <p><b>Booking ID:</b> {b.id}</p>
-            <p><b>Date:</b> {b.date}</p>
-            <p><b>Flight:</b> {b.flight}</p>
-            <p><b>Status:</b> <span className={b.status === 'CANCELLED' ? 'text-danger' : 'text-success'}>{b.status}</span></p>
-            <p><b>Total Price:</b> ₹{b.totalPrice}</p>
-
-            <div className="d-flex gap-3">
-              <button className="btn btn-info btn-sm" onClick={() => handleViewTickets(b.ticketIds)}>View Ticket(s)</button>
+          <div key={index} className="booking-card">
+            <div className="booking-header">
+              <h5><i className="bi bi-airplane-engines-fill icon" /> {b.flight}</h5>
+              <span className={`status-badge ${b.status === 'CANCELLED' ? 'cancelled' : 'confirmed'}`}>
+                {b.status}
+              </span>
+            </div>
+            <hr />
+            <div className="booking-info">
+              <p><strong>Booking ID:</strong> {b.id}</p>
+              <p><strong>Date:</strong> {b.date}</p>
+              <p><strong>Total Price:</strong> ₹{b.totalPrice}</p>
+              <p><strong>Ticket ID(s):</strong> {b.ticketIds.join(', ')}</p>
+            </div>
+            <div className="booking-actions">
+              <button className="view-btn" onClick={() => handleViewTickets(b.ticketIds)}>View Ticket(s)</button>
               {b.status !== 'CANCELLED' && (
-                <button className="btn btn-danger btn-sm" onClick={() => handleCancel(b.id)}>Cancel Booking</button>
+                <button className="cancel-btn" onClick={() => handleCancel(b.id)}>Cancel Booking</button>
               )}
             </div>
           </div>
