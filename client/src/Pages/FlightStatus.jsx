@@ -36,7 +36,7 @@ function FlightStatus() {
   };
 
   return (
-    <div>
+    <div className="d-flex flex-column min-vh-100">
       <SlideBar />
       <div className="container mt-5 mb-5">
         <h2 className="text-center mb-4" style={{ color: '#512888' }}>Flight Status Tracking</h2>
@@ -81,7 +81,7 @@ function FlightStatus() {
           </div>
         )}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

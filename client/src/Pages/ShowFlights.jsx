@@ -32,17 +32,22 @@ function ShowFlights() {
     const { trip, from, to, departure, arrival, Tclass, passenger } = info
 
     const result = await GetFlightSearch(trip, from, to, departure, arrival, Tclass, passenger)
-    console.log(result);
+    // console.log(result);
 
     if (result) {
 
       const onewayformat = (result.onewayFlights || []).map(f => ({
         id: f.flightId,
         airline: f.airline.airlineName,
-        from: f.sourceAirport.iataCode,
+        from: f.sourceAirport.iataCode, 
         to: f.destinationAirport.iataCode,
+        sourceName : f.sourceAirport.city,
+        destName: f.destinationAirport.city,
         dep: f.departureTime.split("T")[1].substring(0,5),
         arr: f.arrivalTime.split("T")[1].substring(0,5),
+        depDate:f.departureTime.split("T")[0],
+        arrDate:f.arrivalTime.split("T")[0],
+        flightNo : f.flightNumber,
         duration: formatDuration(f.departureTime, f.arrivalTime),
         price: f.basePrice
       }));
@@ -51,9 +56,14 @@ function ShowFlights() {
         id: f.flightId,
         airline: f.airline.airlineName,
         from: f.sourceAirport.iataCode,
+        fromName : f.sourceAirport.city,
+        toName: f.destinationAirport.city,
         to: f.destinationAirport.iataCode,
         dep: f.departureTime.split("T")[1].substring(0,5),
         arr: f.arrivalTime.split("T")[1].substring(0,5),
+        depDate:f.departureTime.split("T")[0],
+        arrDate:f.arrivalTime.split("T")[0],
+        flightNo : f.flightNumber,
         duration: formatDuration(f.departureTime, f.arrivalTime),
         price: f.basePrice
       }));
@@ -104,7 +114,8 @@ function ShowFlights() {
 
             <div className="row text-center">
 
-              <div className="col-12 bg-info p-2  rounded d-flex align-items-center justify-content-around">
+              {info.from && info.to && info.Tclass && (
+                <div className="col-12 bg-dark text-light p-2  rounded d-flex align-items-center justify-content-around">
 
                 <div className='text-center'>
                   <label >{info.from}</label>
@@ -129,6 +140,9 @@ function ShowFlights() {
                   <label > {info.passenger} {info.Tclass == 'Premium_Economy' ? 'Premium' : info.Tclass}</label>
                 </div>
               </div>
+              )}
+              
+
             </div>
           </div>
 
@@ -318,8 +332,8 @@ function ShowFlights() {
                 </div>
               </div>
 
-              <div className='col-2 d-flex justify-content-around align-item-center  '>
-                <h3 className='py-3'>₹{total}</h3>
+              <div className='col-2 d-flex justify-content-around align-item-center   '>
+                <h3 className='py-3'> Total ₹{total}</h3>
                 <div className='my-4'>
                   <button className='btn btn-success '
                     onClick={bookFlights}
@@ -336,7 +350,10 @@ function ShowFlights() {
       )}
 
       {info.trip === 'OneWay' && selectedOneway && (
-        <div className='fixed-bottom'>
+        <div className='fixed-bottom' style={{
+          bottom:0,
+          position:'fixed'
+        }}>
           <div className='container '>
 
             <div className="row bg-light text-center rounded ">
@@ -359,7 +376,7 @@ function ShowFlights() {
               </div>
 
               <div className='col d-flex justify-content-around align-item-center  '>
-                <h3 className='py-3'>₹{total}</h3>
+                <h3 className='py-3'> Total  ₹{total}</h3>
                 <div className='my-4'>
                   <button className='btn btn-success '
                     onClick={bookFlights}
@@ -375,12 +392,18 @@ function ShowFlights() {
       )}
 
       {oneWayFlights.length === 0 && info.trip === 'OneWay' && (
-        <h3 className='text-center'>No one-way flights found for this route.</h3>
+        <h3 className='text-center'>No one-way flights found for this route </h3>
       )}
 
-      {roundTripFlights.length === 0 && info.trip === 'RoundTrip' && (
-        <h3 className='text-center'>No Round trip flights found for this route.</h3>
+      {roundTripFlights.length === 0 && oneWayFlights.length===0 && info.trip === 'RoundTrip'  && (
+        <h3 className='text-center'>No Oneway and Round trip flights found for this route </h3>
       )}
+
+      {roundTripFlights.length === 0 && info.trip === 'RoundTrip' && oneWayFlights.length>0 && (
+        <h3 className='text-center mt-5'>No Round trip flights found for this route </h3>
+      )}
+
+
 
     </div>
   )

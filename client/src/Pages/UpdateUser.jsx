@@ -1,12 +1,11 @@
-import React, { useContext, useState } from 'react'
+import React from 'react'
+import { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { RegisterBody } from '../Service/user';
-// import { UserContext } from './../App';
+import SlideBar from '../Component/SlideBar';
 
 
-function Register() {
-
+function updateUser() {
     const [info, setInfo] = useState({
         full_name: '',
         email: '',
@@ -19,7 +18,7 @@ function Register() {
 
     const navigate = useNavigate()
 
-    async function onRegister() {
+    async function onUpdate() {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z.-]+\.[a-zA-Z]{2,}$/;
 
         if (info.full_name.length == 0) {
@@ -56,8 +55,8 @@ function Register() {
         }
         else {
 
-            const {  full_name, email, password, phone_no, dob, passport_no } = info
-            const result = await RegisterBody( full_name, email, password, phone_no, dob, passport_no);
+            const { full_name, email, password, phone_no, dob, passport_no } = info
+            const result = await RegisterBody(full_name, email, password, phone_no, dob, passport_no);
             console.log(result);
             if (result.status === 201) {
                 toast.success(result.data);
@@ -71,11 +70,13 @@ function Register() {
         }
     }
 
-
     return (
+        <> <SlideBar/>
+        
         <div className='p-4'>
+            
             <div className="container">
-                <h1 style={{ textAlign: 'center ' }}>User Registration</h1>
+                <h1 style={{ textAlign: 'center ' }} className='text-warning'>Update Profile</h1>
 
                 <hr />
 
@@ -83,9 +84,6 @@ function Register() {
                     <div className="col"></div>
 
                     <div className="col">
-
-            
-
                         <div className="form-group m-2">
                             <label >Full Name </label>
                             <input type="text" className="form-control"
@@ -150,8 +148,7 @@ function Register() {
                         </div>
 
                         <div className='text-center'>
-                            <h6>Already Registered ? <Link to='/log'>Login here</Link></h6>
-                            <button type="button" className="btn btn-success btn-block " onClick={onRegister}>Create Account</button>
+                            <button type="button" className="btn btn-warning btn-block" onClick={onUpdate}>Update</button>
                         </div>
 
 
@@ -160,7 +157,8 @@ function Register() {
                 </div>
             </div>
         </div>
+        </>
     )
 }
 
-export default Register
+export default updateUser

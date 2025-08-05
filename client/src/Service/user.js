@@ -6,7 +6,7 @@ import axios from 'axios'
 export async function RegisterBody(role, full_name, email, password, phone_no, dob, passport_no) {
     try {
 
-        const url = `${config.serverUrl}/user`
+        const url = `${config.serverUrl}/api/user`
 
         const body = {
             personRole : role,

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 function UserProfile() {
   const navigate = useNavigate();
@@ -43,9 +44,14 @@ function UserProfile() {
               <p><b>Phone:</b> {profile.phone}</p>
               <p><b>Passport No:</b> {profile.passport_no}</p>
 
+              <div className='d-flex align-items-center justify-content-center gap-4'> 
               <button className="btn btn-outline-info mt-3" onClick={() => navigate('/my-bookings')}>
                 View Booking History
               </button>
+              <button className='btn btn-outline-warning mt-3' onClick={()=>{
+                navigate('/update-user')
+              }} >Update Profile</button>
+              </div>
             </div>
           </div>
 

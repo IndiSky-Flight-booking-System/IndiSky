@@ -203,7 +203,7 @@ function Search() {
                                     } ></input>
                                 <span className="mx-2 text-success " >{info.senior ||senior}</span>
                             </li>
-                            <li className='d-flex  align-items-start justify-content-around bg-info text-black'>
+                            <li className='d-flex  align-items-start justify-content-around bg-light text-black'>
 
                                 <label className='pt-4'>Class</label>
 

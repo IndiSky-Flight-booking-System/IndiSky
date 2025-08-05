@@ -25,8 +25,8 @@ function FlightDetails() {
                         key={selectedOneway.id}
                     >
                         <div>
-                            <h3 >{selectedOneway.from} <i className="fa-solid fa-arrow-right"></i> {selectedOneway.to}</h3>
-                            <p>{info.departure} - class - {selectedOneway.duration}</p>
+                            <h3 >{selectedOneway.sourceName} <i className="fa-solid fa-arrow-right"></i> {selectedOneway.destName}</h3>
+                            <p>{selectedOneway.depDate} - class - {selectedOneway.duration}</p>
                         </div>
 
                         <div>
@@ -82,7 +82,7 @@ function FlightDetails() {
                         key={selectedRoundtrip.id}
                     >
                         <div>
-                            <h3 >{selectedRoundtrip.from} <i className="fa-solid fa-arrow-right"></i> {selectedRoundtrip.to}</h3>
+                            <h3 >{selectedRoundtrip.sourceName} <i className="fa-solid fa-arrow-right"></i> {selectedRoundtrip.destName}</h3>
                             <p>{info.departure} - class - {selectedRoundtrip.duration}</p>
                         </div>
 
