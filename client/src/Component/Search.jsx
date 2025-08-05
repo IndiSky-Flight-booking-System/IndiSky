@@ -1,17 +1,20 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { infoContext } from '../App';
 import '../css/SearchHeader.css';
-import '../css/Search.css'; // ✅ New custom styling
+import '../css/Search.css';
+import { infoContext, searchedFlightsContext } from '../App';
 
 function Search() {
   const { info, setInfo } = useContext(infoContext);
+  const { setSearched } = useContext(searchedFlightsContext);
+
   const [child, setChild] = useState(0);
   const [adult, setAdult] = useState(1);
   const [senior, setSenior] = useState(0);
   const [trips, setTrips] = useState('OneWay');
   const [clas, setClas] = useState('');
+
   const navigate = useNavigate();
 
   const today = new Date().toISOString().split('T')[0];
@@ -19,8 +22,8 @@ function Search() {
   next.setDate(next.getDate() + 1);
   const tom = next.toISOString().split('T')[0];
 
-  let total = child + adult + senior;
   const maxTotal = 9;
+  const total = child + adult + senior;
 
   useEffect(() => {
     if (info) {
@@ -40,9 +43,9 @@ function Search() {
       departure: e.departure || today,
       return: trips === 'OneWay' ? '' : (e.return || tom),
       class: clas,
-      adult: adult,
-      child: child,
-      senior: senior,
+      adult,
+      child,
+      senior,
     }));
   }, [total, trips, clas, adult, child, senior]);
 
@@ -57,6 +60,7 @@ function Search() {
       toast.error("Class Not selected");
     } else {
       navigate('/show');
+      setSearched(true);
     }
   }
 
@@ -142,8 +146,7 @@ function Search() {
           {total} Travellers | {clas || 'Select Class'}
         </button>
         <ul className="dropdown-menu w-100 p-3" onClick={(e) => e.stopPropagation()}>
-          {[
-            { label: 'Child', key: 'child', value: child, setter: setChild },
+          {[{ label: 'Child', key: 'child', value: child, setter: setChild },
             { label: 'Adult', key: 'adult', value: adult, setter: setAdult },
             { label: 'Senior Citizen', key: 'senior', value: senior, setter: setSenior },
           ].map(({ label, key, value, setter }) => (
@@ -153,14 +156,13 @@ function Search() {
                 type="range"
                 className="form-range w-50"
                 min={0}
-                max={maxTotal - (key === 'child' ? adult + senior : key === 'adult' ? child + senior : adult + child)}
+                max={Math.min(9, maxTotal - (key === 'child' ? adult + senior : key === 'adult' ? child + senior : adult + child))}
                 value={value}
                 onChange={(e) => setter(Number(e.target.value))}
               />
               <span className="text-success">{value}</span>
             </li>
           ))}
-
           <hr />
           <label className="mb-1">Select Class</label>
           {['Economy', 'Premium_Economy', 'Business'].map((option) => (

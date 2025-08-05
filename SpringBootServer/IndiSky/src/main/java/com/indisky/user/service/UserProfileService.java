@@ -1,9 +1,15 @@
 package com.indisky.user.service;
 
-import com.indisky.entities.User;
+import com.indisky.user.dto.UserRequestDto;
+import com.indisky.user.dto.UserResponseDto;
 
 public interface UserProfileService {
-    String register(User user);
+    String register(UserRequestDto userddto);
 
-    boolean isEmailRegistered(String email);
+//    boolean isEmailRegistered(String email);
+
+//    UserResponseDto getUserProfile();
+
+    String updateUser(UserRequestDto userdto, String email);
+
 }

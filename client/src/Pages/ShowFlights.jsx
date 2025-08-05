@@ -1,16 +1,21 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Search from '../Component/Search';
-import { infoContext, flightDetailsContext, totalPriceContext } from '../App';
-import { useNavigate } from 'react-router-dom';
-import '../css/ShowFlights.css';
 import Sidebar from '../Component/Sidebar';
+import { useNavigate } from 'react-router-dom';
+import { GetFlightSearch } from '../Service/flightSearch';
+import {
+  infoContext,
+  flightDetailsContext,
+  totalPriceContext,
+  searchedFlightsContext,
+} from '../App';
+import '../css/ShowFlights.css';
 
 function FlightCard({ flight, isSelected, onSelect }) {
   return (
     <div
       role="button"
-      aria-selected={isSelected}
       tabIndex={0}
       className={`flight-card ${isSelected ? 'selected' : ''}`}
       onClick={() => onSelect(flight)}
@@ -37,50 +42,88 @@ function FlightCard({ flight, isSelected, onSelect }) {
 }
 
 function ShowFlights() {
-  const { info } = useContext(infoContext);
+  const { info, setInfo } = useContext(infoContext);
+  const { selectedOneway, setSelectedOneway, selectedRoundtrip, setSelectedRoundtrip } =
+    useContext(flightDetailsContext);
   const { total, setTotal } = useContext(totalPriceContext);
-  const {
-    selectedOneway,
-    setSelectedOneway,
-    selectedRoundtrip,
-    setSelectedRoundtrip,
-  } = useContext(flightDetailsContext);
+  const { searched } = useContext(searchedFlightsContext);
 
   const navigate = useNavigate();
-
-  const oneWayFlights = [
-    { id: 1, airline: 'IndiGo', from: 'PUNE', to: 'Kochi', dep: '04:30', arr: '06:30', duration: '2hr', price: 4000 },
-    { id: 2, airline: 'Air India', from: 'PUNE', to: 'Kochi', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-    { id: 3, airline: 'Emirates', from: 'London', to: 'MUMBAI', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-    { id: 4, airline: 'Air India', from: 'Delhi', to: 'MUMBAI', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-  ];
-
-  const roundTripFlights = [
-    { id: 1, airline: 'Air India Express', from: 'Kochi', to: 'PUNE', dep: '14:00', arr: '16:00', duration: '2hr', price: 4100 },
-    { id: 2, airline: 'IndiGo', from: 'Kochi', to: 'PUNE', dep: '18:00', arr: '20:00', duration: '2hr', price: 4300 },
-    { id: 3, airline: 'Emirates', from: 'MUMBAI', to: 'London', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-    { id: 4, airline: 'Air India', from: 'MUMBAI', to: 'Delhi', dep: '10:00', arr: '12:00', duration: '2hr', price: 4200 },
-  ];
+  const [oneWayFlights, setOneWayFlights] = useState([]);
+  const [roundTripFlights, setRoundTripFlights] = useState([]);
 
   useEffect(() => {
     if (info.trip === 'OneWay') {
       setSelectedRoundtrip(null);
     }
     const totalPrice =
-      (selectedOneway ? selectedOneway.price : 0) + (selectedRoundtrip ? selectedRoundtrip.price : 0);
+      (selectedOneway ? selectedOneway.price : 0) +
+      (selectedRoundtrip ? selectedRoundtrip.price : 0);
     setTotal(totalPrice);
-  }, [selectedOneway, selectedRoundtrip, info.trip, setSelectedRoundtrip, setTotal]);
+  }, [selectedOneway, selectedRoundtrip, info.trip]);
+
+  function formatDuration(dep, arr) {
+    const depTime = new Date(dep);
+    const arrTime = new Date(arr);
+    const diffMs = arrTime - depTime;
+    const diffMinutes = Math.floor(diffMs / 60000);
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+    return `${hours}h ${minutes}m`;
+  }
+
+  async function onGetFlightSearch() {
+    const { trip, from, to, departure, arrival, Tclass, passenger } = info;
+    const result = await GetFlightSearch(trip, from, to, departure, arrival, Tclass, passenger);
+
+    if (result) {
+      const oneWayData = (result.onewayFlights || []).map((f) => ({
+        id: f.flightId,
+        airline: f.airline.airlineName,
+        from: f.sourceAirport.iataCode,
+        to: f.destinationAirport.iataCode,
+        dep: f.departureTime.split('T')[1].substring(0, 5),
+        arr: f.arrivalTime.split('T')[1].substring(0, 5),
+        duration: formatDuration(f.departureTime, f.arrivalTime),
+        price: f.basePrice,
+      }));
+
+      const roundTripData = (result.roundTripFlights || []).map((f) => ({
+        id: f.flightId,
+        airline: f.airline.airlineName,
+        from: f.sourceAirport.iataCode,
+        to: f.destinationAirport.iataCode,
+        dep: f.departureTime.split('T')[1].substring(0, 5),
+        arr: f.arrivalTime.split('T')[1].substring(0, 5),
+        duration: formatDuration(f.departureTime, f.arrivalTime),
+        price: f.basePrice,
+      }));
+
+      setOneWayFlights(oneWayData);
+      setRoundTripFlights(roundTripData);
+    }
+  }
+
+  useEffect(() => {
+    onGetFlightSearch();
+  }, []);
+
+  useEffect(() => {
+    if (searched) {
+      onGetFlightSearch();
+    }
+  }, [searched, info]);
 
   const filteredOneWay = oneWayFlights.filter(
-    (flight) =>
-      flight.from.toLowerCase() === info.from.toLowerCase() &&
-      flight.to.toLowerCase() === info.to.toLowerCase()
+    (f) =>
+      f.from.toLowerCase() === info.from.toLowerCase() &&
+      f.to.toLowerCase() === info.to.toLowerCase()
   );
 
   const filteredRoundTrip = roundTripFlights.filter(
-    (flight) =>
-      flight.from.toLowerCase() === info.to.toLowerCase() &&
-      flight.to.toLowerCase() === info.from.toLowerCase()
+    (f) =>
+      f.from.toLowerCase() === info.to.toLowerCase() &&
+      f.to.toLowerCase() === info.from.toLowerCase()
   );
 
   const bookFlights = () => navigate('/review');
@@ -92,59 +135,43 @@ function ShowFlights() {
       <Search />
 
       <div className="container my-3">
-        {/* Search summary bar */}
+        {/* Trip Summary */}
         <div className="trip-summary d-flex justify-content-around bg-info p-3 rounded text-white mb-4">
           <span>{info.from}</span>
           <span>{info.to}</span>
           <span>{info.departure}</span>
-          <span>{info.return || ''}</span>
+          <span>{info.arrival || ''}</span>
           <span>
-            {info.passenger} {info.class === 'Premium_Economy' ? 'Premium' : info.class}
+            {info.passenger} {info.Tclass === 'Premium_Economy' ? 'Premium' : info.Tclass}
           </span>
         </div>
 
-        {/* Trip Type Tabs */}
-        {/* <div className="row text-center mb-3">
-          <div className={`col ${info.trip === 'OneWay' ? 'tab-active' : 'tab'}`}>
-            One Way
-          </div>
-          {info.trip === 'RoundTrip' && <div className="col tab-active">Round Trip</div>}
-        </div> */}
-
+        {/* Tabs */}
         <div className="row text-center mb-3 trip-tabs" role="tablist">
           <div
             role="tab"
             tabIndex={0}
             aria-selected={info.trip === 'OneWay'}
             className={`col tab ${info.trip === 'OneWay' ? 'tab-active' : ''}`}
-            onClick={() => {
-              setInfo({ ...info, trip: 'OneWay' });
-            }}
-            onKeyDown={e => { if (e.key === 'Enter') {/* set trip to OneWay */ } }}
+            onClick={() => setInfo({ ...info, trip: 'OneWay' })}
+            onKeyDown={(e) => e.key === 'Enter' && setInfo({ ...info, trip: 'OneWay' })}
           >
             One Way
           </div>
 
-          {info.trip === 'RoundTrip' && (
-            <div
-              role="tab"
-              tabIndex={0}
-              aria-selected={info.trip === 'RoundTrip'}
-              className="col tab tab-active"
-              onClick={() => {
-                setInfo({ ...info, trip: 'RoundTrip' });
-              }}
-              onKeyDown={e => { if (e.key === 'Enter') {/* set trip to RoundTrip */ } }}
-            >
-              Round Trip
-            </div>
-          )}
+          <div
+            role="tab"
+            tabIndex={0}
+            aria-selected={info.trip === 'RoundTrip'}
+            className={`col tab ${info.trip === 'RoundTrip' ? 'tab-active' : ''}`}
+            onClick={() => setInfo({ ...info, trip: 'RoundTrip' })}
+            onKeyDown={(e) => e.key === 'Enter' && setInfo({ ...info, trip: 'RoundTrip' })}
+          >
+            Round Trip
+          </div>
         </div>
 
-
-
-
-        {/* Flights Listing */}
+        {/* Flight Cards */}
         <div className="row">
           {info.trip === 'RoundTrip' ? (
             <>
@@ -198,7 +225,7 @@ function ShowFlights() {
 
       {/* Booking Summary Bar */}
       {(info.trip === 'OneWay' && selectedOneway) ||
-        (info.trip === 'RoundTrip' && selectedOneway && selectedRoundtrip) ? (
+      (info.trip === 'RoundTrip' && selectedOneway && selectedRoundtrip) ? (
         <div className="fixed-bottom booking-summary-container p-3 bg-light shadow-lg">
           <div className="container d-flex justify-content-between align-items-center">
             <div className="booking-flight-details d-flex">

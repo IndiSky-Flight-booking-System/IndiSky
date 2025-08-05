@@ -3,6 +3,7 @@ package com.indisky.entities;
 import com.indisky.enums.*;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class Booking {
     @JoinColumn(name = "flight_id")
     private Flight flight;
 
+    @CreationTimestamp
     private LocalDateTime bookingDate;
 
     private BigDecimal totalPrice;
