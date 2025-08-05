@@ -2,7 +2,7 @@ import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../css/Popup.css';
-import '../css/SlideBar.css'; // ✅ NEW CSS file
+import '../css/SlideBar.css'; 
 
 function SlideBar() {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ function SlideBar() {
   return (
     <div>
       <nav className="navbar navbar-expand-lg custom-navbar px-2">
-        <Link className="navbar-brand d-flex align-items-center" to="/">
+        <Link className="navbar-brand d-flex align-items-center mx-5" to="/">
           <img src="Logo.png" alt="logo" className="brand-logo" />
           <span className="brand-name ms-2">IndiSky</span>
         </Link>
@@ -37,8 +37,8 @@ function SlideBar() {
             {[
               { name: 'Home', path: '/' },
               //{ name: 'Bookings', path: '/bookings' },
-              //{ name: 'About Us', path: '/home#about' },
-              //{ name: 'Contact Us', path: '/home#contact' },
+              // { name: 'About Us', path: '#about' },
+              // { name: 'Contact Us', path: '#contact' },
               { name: 'Flight Status', path: '/flight-status' },
               { name: 'Payment History', path: '/payment-history' },
               { name: 'Profile', path: '/profile' },

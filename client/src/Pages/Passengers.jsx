@@ -1,4 +1,4 @@
-import SlideBar from '../Component/SlideBar';
+import SlideBar from '../Component/NavBar';
 import Footer from '../Component/Footer';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -11,50 +11,68 @@ import Sidebar from '../Component/Sidebar';
 
 function Passengers() {
   const { info } = useContext(infoContext);
-  const [passengerList, setPassengerList] = useState([]);
 
-  useEffect(() => {
-    let count = parseInt(info.passenger);
-    const passArray = Array.from({ length: count }, () => ({
-      full_name: '',
-      dob: '',
-      passport_no: '',
-      nationality: 'IN',
-    }));
-    setPassengerList(passArray);
-  }, [info.passenger]);
+    const [passengerList, setPassengerList] = useState([])
 
-  const onPassengerChange = (index, field, value) => {
-    const updatedList = [...passengerList];
-    updatedList[index][field] = value;
-    setPassengerList(updatedList);
-  };
 
-  const navigate = useNavigate();
+    useEffect(() => {
+        let count = parseInt(info.passenger); //converted to int beacuse info.passeenger is stored in string
+        console.log(count);
 
-  const onSave = async () => {
-    for (let i = 0; i < passengerList.length; i++) {
-      const p = passengerList[i];
-      if (p.full_name.length === 0) {
-        toast.error(`Passenger ${i + 1} Name cannot be empty`);
-        return;
-      } else if (p.dob.length === 0) {
-        toast.error(`Passenger ${i + 1} DOB cannot be empty`);
-        return;
-      } else if (p.passport_no.length < 8) {
-        toast.error(`Passenger ${i + 1} Passport No. is invalid`);
-        return;
-      }
+        //we are storing object into array
+        const passArray = Array.from({ length: count }, () => ({
+            full_name: '',
+            dob: '',
+            passport_no: '',
+            nationality: 'IN',
+        }))
+
+        setPassengerList(passArray);
+    }, [info.passenger])
+
+
+    function onPassengerChange(index, field, value) {
+        const newPass = [...passengerList]; //destructuring passengerlist from that selecting particular object and then from it 
+        //particular field means key and appending in it as per the sequence
+        newPass[index][field] = value;
+        setPassengerList(newPass);//later updateing it 
     }
 
-    const result = await addPassenger(passengerList);
-    if (result.status === 'success') {
-      toast.success("Passenger Saved Successfully!");
-      navigate('/');
-    } else {
-      toast.error(result.error);
+    const navigate = useNavigate();
+
+    async function onSave() {
+
+        for (let i = 0; i < passengerList.length; i++) {
+            const p = passengerList[i];
+            if (p.full_name.length == 0) {
+                toast.error("Passenger " + i + 1 + " Name cannot be Empty")
+                return;
+            }
+            else if (p.dob.length == 0) {
+                toast.error("Passenger " + i + 1 + " Date of Birth cannot be Empty")
+                return;
+            }
+            else if (p.passport_no.length == 0) {
+                toast.error("Passenger " + i + 1 + " Phone Num cannot be Empty")
+                return;
+            }
+            else if (p.passport_no.length < 8) {
+                toast.error("Passenger " + i + 1 + " Invalid Passport not 1 character and 6 digit")
+                return;
+            }
+        }
+
+        // const { full_name, dob, passport_no } = pinfo
+        // const result=await RegisterBody(full_name,dob,passport_no);
+
+        const result = await addPassenger(passengerList)
+        if (result.status == 'success') {
+            toast.success("Passenger Saved Successfully!")
+            navigate('/')
+        } else {
+            toast.error(result.error)
+        }
     }
-  };
 
   return (
     <div>

@@ -59,7 +59,7 @@
 // export default UserDashBoard
 
 import React from 'react';
-import SlideBar from '../Component/SlideBar';
+import SlideBar from '../Component/NavBar';
 import Search from './../Component/Search';
 import '../css/UserDashBoard.css';
 import Sidebar from '../Component/Sidebar';

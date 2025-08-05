@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import SlideBar from '../Component/SlideBar';
+import SlideBar from '../Component/NavBar';
 import Footer from '../Component/Footer';
 import '../css/MyBookings.css'; // Don't forget to create or replace this CSS file
 import Sidebar from '../Component/Sidebar';

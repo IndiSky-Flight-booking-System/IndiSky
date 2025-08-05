@@ -1,8 +1,8 @@
 import React from 'react';
-import SlideBar from '../Component/SlideBar';
+import SlideBar from '../Component/NavBar';
 import Footer from '../Component/Footer';
 import { useNavigate } from 'react-router-dom';
-import '../css/StaticPage.css'; // ✅ Reuse shared styles
+import '../css/StaticPage.css'; 
 import Sidebar from '../Component/Sidebar';
 
 function BookingConfirmation() {
