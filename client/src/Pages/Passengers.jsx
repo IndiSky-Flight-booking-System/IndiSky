@@ -7,7 +7,7 @@ import { infoContext } from '../App';
 import { countries } from '../Component/country';
 import { addPassenger } from '../Service/passenger';
 import '../css/Passengers.css';
-import Sidebar from '../Component/Sidebar';
+import Sidebar from '../Component/Navbar';
 
 function Passengers() {
   const { info } = useContext(infoContext);

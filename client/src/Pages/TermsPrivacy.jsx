@@ -2,7 +2,7 @@ import React from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import '../css/StaticPage.css'; // ✅ Ensure this file exists
-import Sidebar from '../Component/Sidebar';
+import Sidebar from '../Component/Navbar';
 
 function TermsPrivacy() {
   return (

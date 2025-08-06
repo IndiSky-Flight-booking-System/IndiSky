@@ -3,7 +3,7 @@ import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import { useNavigate } from 'react-router-dom';
 import '../css/UserProfile.css';
-import Sidebar from '../Component/Sidebar';
+import Sidebar from '../Component/Navbar';
 
 function UserProfile() {
   const navigate = useNavigate();

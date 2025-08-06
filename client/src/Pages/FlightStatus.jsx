@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
-import Sidebar from '../Component/Sidebar';
+import Sidebar from '../Component/Navbar';
 
 import '../css/FlightStatus.css'; // ✅ New custom styles
 

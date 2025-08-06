@@ -3,7 +3,7 @@ import SlideBar from '../Component/SlideBar';
 import { useNavigate } from 'react-router-dom';
 import { flightDetailsContext, infoContext, totalPriceContext } from '../App';
 import '../css/FlightDetails.css';
-import Sidebar from '../Component/Sidebar';
+import Sidebar from '../Component/Navbar';
 
 function FlightDetails() {
   const { info } = useContext(infoContext);
