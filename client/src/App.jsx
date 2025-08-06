@@ -32,6 +32,7 @@ import ManageSeats from './Pages/Admin/ManageSeats';
 
 import ManageUsers from './Pages/Admin/ManageUsers';
 import FlightStatusManagement from './Pages/Admin/ManageFlightStatus';
+import SeatSelection from './Pages/SeatSelection';
 
 export const infoContext = createContext();
 export const flightDetailsContext = createContext();
@@ -83,6 +84,7 @@ function App() {
                 <Route path='/show' element={<ShowFlights />}></Route>
                 <Route path='/review' element={<FlightDetails />}></Route>
                 <Route path='/dashboard' element={<UserDashBoard />}></Route>
+                <Route path='/seat-selection' element={<SeatSelection />}></Route>
 
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/terms" element={<TermsPrivacy />} />

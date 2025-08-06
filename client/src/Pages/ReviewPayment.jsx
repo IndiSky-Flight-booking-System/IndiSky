@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import '../css/StaticPage.css'; // Assume you add styles here or add below
-import Sidebar from '../Component/Navbar';
+import Sidebar from '../Component/NavBar';
 
 function ReviewPayment() {
   const [paymentMethod, setPaymentMethod] = useState('');

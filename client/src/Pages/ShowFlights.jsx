@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Search from '../Component/Search';
-import Sidebar from '../Component/Sidebar';
+import Sidebar from '../Component/NavBar';
 import { useNavigate } from 'react-router-dom';
 import { GetFlightSearch } from '../Service/flightSearch';
 import {
