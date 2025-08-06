@@ -28,23 +28,11 @@ public class AuthService implements UserDetailsService {
         User user = userRepository.findByEmail(email);
 
         if(user == null){
-            System.out.println("User not found.");
             throw new UsernameNotFoundException("User not found");
         }
 
         return new CustomUserDetails(user);
     }
 
-//    public ResponseEntity<?> verify(UserRequestDto userRequestDto) {
-//        Authentication authentication =
-//                authenticationManager.authenticate(
-//                        new UsernamePasswordAuthenticationToken(userRequestDto.getFullName(),
-//                                userRequestDto.getPassword()));
-//
-//        if(authentication == null){
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//        return ResponseEntity.status(HttpStatus
-//                .FOUND).build();
-//    }
+
 }

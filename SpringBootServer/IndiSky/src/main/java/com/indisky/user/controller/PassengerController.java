@@ -1,12 +1,12 @@
 package com.indisky.user.controller;
-import com.indisky.user.dto.PassengerReqDto;
+import com.indisky.user.dto.PassengerRequestDto;
 import com.indisky.user.service.PassengerService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import com.indisky.user.dto.PassengerRequestDto;
+
 import com.indisky.user.dto.PassengerResponseDto;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +20,7 @@ public class PassengerController {
 
 
     @PostMapping("/addlist")
-    public ResponseEntity<String> addPassengers(@RequestBody List<PassengerReqDto> psDto){
+    public ResponseEntity<String> addPassengers(@RequestBody List<PassengerRequestDto> psDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.addPassengers(psDto));
     }
 

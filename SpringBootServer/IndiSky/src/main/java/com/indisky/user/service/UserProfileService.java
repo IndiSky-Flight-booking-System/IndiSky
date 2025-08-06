@@ -1,16 +1,15 @@
 package com.indisky.user.service;
 
-import com.indisky.entities.User;
-import com.indisky.user.dto.UserProfileDto;
 import com.indisky.user.dto.UserRequestDto;
-import com.indisky.user.dto.UserResponseDto;
-import org.springframework.http.ResponseEntity;
 
 public interface UserProfileService {
-    ResponseEntity<UserResponseDto> register(UserRequestDto user);
+    String register(UserRequestDto userddto);
 
-//    UserProfileDto getUserProfile();
+//    boolean isEmailRegistered(String email);
 
-    String updateUser(UserProfileDto userdto, String email);
+//    UserResponseDto getUserProfile();
 
+    String updateUser(UserRequestDto userdto, String email);
+
+    String verify(UserRequestDto userRequestDto);
 }

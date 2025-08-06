@@ -1,16 +1,16 @@
 package com.indisky.user.service.Impl;
 
+import com.indisky.auth.jwt.JwtService;
 import com.indisky.enums.Role;
 import com.indisky.repository.UserRepository;
 import com.indisky.entities.User;
-import com.indisky.user.dto.UserProfileDto;
 import com.indisky.user.dto.UserRequestDto;
-import com.indisky.user.dto.UserResponseDto;
 import com.indisky.user.service.UserProfileService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,35 +20,35 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
 
-    private UserRepository repo;
+    private final UserRepository userRepository;
+    private final ModelMapper modelMapper;
 
-    ModelMapper modelMapper;
-
-
+    private AuthenticationManager authManager;
+    private JwtService jwtService;
 
     @Override
-    public ResponseEntity<UserResponseDto> register(UserRequestDto userRequestDto) {
+    public String register(UserRequestDto userdto) {
 
-        if( repo.findByEmail(userRequestDto.getEmail()) !=null){
-            return new ResponseEntity<>(modelMapper.map(userRequestDto,UserResponseDto.class),HttpStatus.BAD_REQUEST);
-
+        User userEntity = userRepository.findByEmail(userdto.getEmail());
+        if(userEntity!=null){
+            return "User Already Registered with Email id- " + userEntity.getEmail();
         }
 
-        User user = modelMapper.map(userRequestDto , User.class);
-        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        user.setPersonRole(Role.USER);
-        repo.save(user);
-
-        UserResponseDto response = modelMapper.map(user,UserResponseDto.class);
-
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
+        User user = modelMapper.map(userdto, User.class);
+        if(user!=null){
+            user.setPersonRole(Role.USER);
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            userRepository.save(user);
+            return user.getFullName() + " Registered Successfully!";
+        }
+        return "Failed to Registered!";
     }
 
 
     @Override
-    public String updateUser(UserProfileDto userdto, String email) {
+    public String updateUser(UserRequestDto userdto, String email) {
         //        String email = from security  and remove email from parameter
-                User user = repo.findByEmail(email);
+                User user = userRepository.findByEmail(email);
         System.out.println(user.toString());
 
          if(userdto.getFullName()!=null){
@@ -75,21 +75,20 @@ public class UserProfileServiceImpl implements UserProfileService {
              user.setPassword(userdto.getPassword());
          }
 
-         repo.save(user);
+         userRepository.save(user);
 
         return "User Updated Successfully";
     }
 
-//    @Override
-//    public UserProfileDto getUserProfile() {                //dashboard
-////        String email = from security
-////        User user = repo.findByEmail();
-//        UserProfileDto dto = modelMapper.map(user, UserProfileDto.class);
-//
-//        return dto;
-//    }
+    @Override
+    public String verify(UserRequestDto userRequestDto) {
 
-
-
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(
+                userRequestDto.getEmail(),userRequestDto.getPassword()));
+        if(authentication.isAuthenticated()){
+            return jwtService.generateToken(userRequestDto.getEmail());
+        }
+        return null;
+    }
 
 }
