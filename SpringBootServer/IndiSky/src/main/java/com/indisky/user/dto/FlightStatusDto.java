@@ -12,6 +12,6 @@ import java.time.LocalDateTime;
 @ToString
 public class FlightStatusDto {
     private Long flightId;
-    private FlightStatus currentStatus;
+    private FlightStatus status;;
     private LocalDateTime updatedAt;
 }

@@ -6,10 +6,7 @@ import lombok.*;
 
 import java.util.Date;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class PaymentResponseDto {
     private Long paymentId;
     private double amountPaid;

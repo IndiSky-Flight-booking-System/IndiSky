@@ -1,33 +1,64 @@
 package com.indisky.user.service.Impl;
 
 import com.indisky.entities.*;
-import com.indisky.repository.TicketRepository;
+import com.indisky.exception.ResourceNotFoundException;
+import com.indisky.repository.BookingRepository;
+import com.indisky.user.dto.TicketPdfDto;
 import com.indisky.user.service.TicketService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
+@RequiredArgsConstructor
+@Transactional
 public class TicketServiceImpl implements TicketService {
 
-    @Autowired
-    private TicketRepository ticketRepo;
+    private final BookingRepository bookingRepo;
+    private final ModelMapper modelMapper;
 
     @Override
-    public Ticket createTicket(Ticket ticket) {
-        return ticketRepo.save(ticket);
-    }
+    public TicketPdfDto generateTicketData(Long bookingId) {
+        Booking booking = bookingRepo.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-    @Override
-    public List<Ticket> getAllTickets() {
-        return ticketRepo.findAll();
-    }
+        TicketPdfDto dto = new TicketPdfDto();
 
-    @Override
-    public Ticket getTicketById(Long id) {
-        return ticketRepo.findById(id).orElse(null);
+        modelMapper.map(booking, dto);
+        dto.setBookingId(booking.getBookingId());
+        dto.setUserName(booking.getUser().getFullName());
+
+        Flight flight = booking.getFlight();
+        dto.setFlightNumber(flight.getFlightNumber());
+        dto.setSource(flight.getSourceAirport().getAirportName());
+        dto.setDestination(flight.getDestinationAirport().getAirportName());
+        dto.setFlightDateTime(flight.getDepartureTime());
+        dto.setAmountPaid(booking.getTotalPrice());
+
+        dto.setFlightStatus(flight.getStatus());
+        dto.setBookingStatus(booking.getStatus());
+
+        if (!booking.getTickets().isEmpty()) {
+            Ticket firstTicket = booking.getTickets().get(0);
+            dto.setTicketClass(firstTicket.getTicketClass().name());
+            dto.setTicketType(firstTicket.getTicketType().name());
+            dto.setIssuedDate(firstTicket.getIssuedDate());
+        }
+
+        dto.setPassengerNames(
+                booking.getTickets().stream()
+                        .map(t -> t.getPassenger().getFullName())
+                        .toList()
+        );
+
+        dto.setSeatNumbers(
+                booking.getTickets().stream()
+                        .map(t -> t.getSeat().getSeatNumber())
+                        .toList()
+        );
+
+        return dto;
     }
 }
-
 
