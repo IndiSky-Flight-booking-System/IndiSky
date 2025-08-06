@@ -44,8 +44,8 @@ public class FlightController {
     }
 
     @GetMapping("/status")
-    public FlightStatusDto getFlightStatusByBooking(@RequestParam Long bookingId) {
-        return flightService.getFlightStatusByBookingId(bookingId);
+    public FlightStatusDto getFlightStatusByFlightNumber(@RequestParam String flightNumber) {
+        return flightService.getFlightStatusByFlightNumber(flightNumber);
     }
 
 }

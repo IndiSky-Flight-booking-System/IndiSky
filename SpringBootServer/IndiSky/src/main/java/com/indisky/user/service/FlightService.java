@@ -12,8 +12,7 @@ import java.util.Map;
 public interface FlightService {
     FlightDetailsDto getFlightDetails(Long id);
     List<FlightSeatDto> getFlightSeats(Long id);
-    FlightStatusDto getFlightStatusByBookingId(Long bookingId);
-
+    FlightStatusDto getFlightStatusByFlightNumber(String flightNumber);
     //List<Flight> getAllFlights();
 
     Map< String ,List<FlightResponseDto>> getSearchFlights(String source , String destination, LocalDate departure,

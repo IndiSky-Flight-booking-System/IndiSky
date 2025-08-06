@@ -11,8 +11,8 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,11 +24,17 @@ public class AirlineServiceImpl implements AirlineService {
 
     @Override
     public List<AirlineDto> getAllAirlines() {
-        return airlineRepository.findAll()
-                .stream()
-                .map(airline -> mapper.map(airline, AirlineDto.class))
-                .collect(Collectors.toList());
+        List<Airline> airlines = airlineRepository.findAll();
+        List<AirlineDto> dtos = new ArrayList<>();
+
+        for (Airline airline : airlines) {
+            AirlineDto dto = mapper.map(airline, AirlineDto.class);
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
+
 
     @Override
     public AirlineDto addAirline(AirlineDto dto) {

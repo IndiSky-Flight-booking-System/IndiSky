@@ -1,31 +1,19 @@
 package com.indisky.user.controller;
 
-import com.indisky.entities.*;
-import com.indisky.user.service.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.indisky.user.dto.TicketPdfDto;
+import com.indisky.user.service.TicketService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/api/tickets")
+@RequestMapping("/api/ticket")
+@RequiredArgsConstructor
 public class TicketController {
 
-    @Autowired
-    private TicketService ticketService;
+    private final TicketService ticketPdfService;
 
-    @PostMapping
-    public Ticket createTicket(@RequestBody Ticket ticket) {
-        return ticketService.createTicket(ticket);
-    }
-
-    @GetMapping
-    public List<Ticket> getAllTickets() {
-        return ticketService.getAllTickets();
-    }
-
-    @GetMapping("/{id}")
-    public Ticket getTicketById(@PathVariable Long id) {
-        return ticketService.getTicketById(id);
+    @GetMapping("/download/{bookingId}")
+    public TicketPdfDto getTicketData(@PathVariable Long bookingId) {
+        return ticketPdfService.generateTicketData(bookingId);
     }
 }
