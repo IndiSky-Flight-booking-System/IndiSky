@@ -12,10 +12,11 @@ import com.indisky.repository.AirportRepository;
 import com.indisky.repository.FlightRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,13 +26,18 @@ public class FlightAdminServiceImpl implements FlightAdminService {
     private final FlightRepository flightRepository;
     private final AirlineRepository airlineRepository;
     private final AirportRepository airportRepository;
+    private final ModelMapper mapper;
 
     @Override
     public List<FlightAdminDto> getAllFlights() {
-        return flightRepository.fetchFlightsWithJoins()
-                .stream()
-                .map(this::mapEntityToDto)
-                .collect(Collectors.toList());
+        List<Flight> flights = flightRepository.fetchFlightsWithJoins();
+        List<FlightAdminDto> dtos = new ArrayList<>();
+
+        for (Flight flight : flights) {
+            dtos.add(mapEntityToDto(flight));
+        }
+
+        return dtos;
     }
 
     @Override
@@ -68,8 +74,10 @@ public class FlightAdminServiceImpl implements FlightAdminService {
 
         Airline airline = airlineRepository.findByAirlineName(dto.getAirlineName())
                 .orElseThrow(() -> new ResourceNotFoundException("Airline not found"));
+
         Airport source = airportRepository.findByIataCode(dto.getSourceAirportIataCode())
                 .orElseThrow(() -> new ResourceNotFoundException("Source Airport not found"));
+
         Airport destination = airportRepository.findByIataCode(dto.getDestinationAirportIataCode())
                 .orElseThrow(() -> new ResourceNotFoundException("Destination Airport not found"));
 
@@ -79,16 +87,11 @@ public class FlightAdminServiceImpl implements FlightAdminService {
     }
 
     private FlightAdminDto mapEntityToDto(Flight flight) {
-        FlightAdminDto dto = new FlightAdminDto();
-        dto.setFlightId(flight.getFlightId());
-        dto.setFlightNumber(flight.getFlightNumber());
-        dto.setDepartureTime(flight.getDepartureTime());
-        dto.setArrivalTime(flight.getArrivalTime());
-        dto.setBasePrice(flight.getBasePrice());
-        dto.setStatus(flight.getStatus().name());
+        FlightAdminDto dto = mapper.map(flight, FlightAdminDto.class);
         dto.setAirlineName(flight.getAirline().getAirlineName());
         dto.setSourceAirportIataCode(flight.getSourceAirport().getIataCode());
         dto.setDestinationAirportIataCode(flight.getDestinationAirport().getIataCode());
+        dto.setStatus(flight.getStatus().name());
         return dto;
     }
 }

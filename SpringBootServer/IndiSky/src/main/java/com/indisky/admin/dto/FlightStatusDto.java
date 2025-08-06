@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class FlightStatusDto {
     private Long logId;
     private Long flightId;
+    private String flightNumber;
     private FlightStatus status;
     private LocalDateTime updatedAt;
 }

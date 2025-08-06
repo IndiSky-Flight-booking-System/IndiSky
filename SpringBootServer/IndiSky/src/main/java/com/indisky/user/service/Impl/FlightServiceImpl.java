@@ -121,17 +121,33 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
-    public FlightStatusDto getFlightStatusByBookingId(Long bookingId) {
-        Booking booking = bookingRepo.findById(bookingId)
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + bookingId));
+    public FlightStatusDto getFlightStatusByFlightNumber(String flightNumber) {
+        Flight flight = flightRepo.findByFlightNumber(flightNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with number: " + flightNumber));
 
-        Flight flight = booking.getFlight();
+        List<FlightStatusLog> logs = flight.getStatusLogs();
+        if (logs == null || logs.isEmpty()) {
+            throw new ResourceNotFoundException("No status logs found for flight number: " + flightNumber);
+        }
 
-        return flight.getStatusLogs().stream()
-                .max(Comparator.comparing(FlightStatusLog::getUpdatedAt))
-                .map(log -> new FlightStatusDto(flight.getFlightId(), log.getStatus(), log.getUpdatedAt()))
-                .orElseThrow(() -> new ResourceNotFoundException("No status logs found for flight ID: " + flight.getFlightId()));
+        // Find latest log without using streams
+        FlightStatusLog latestLog = logs.get(0);
+        for (int i = 1; i < logs.size(); i++) {
+            if (logs.get(i).getUpdatedAt().isAfter(latestLog.getUpdatedAt())) {
+                latestLog = logs.get(i);
+            }
+        }
+
+        // Map to DTO
+        FlightStatusDto dto = modelMapper.map(latestLog, FlightStatusDto.class);
+
+        // Set flightId explicitly if not part of log
+        dto.setFlightId(flight.getFlightId());
+
+        return dto;
     }
+
+
 
 
 }

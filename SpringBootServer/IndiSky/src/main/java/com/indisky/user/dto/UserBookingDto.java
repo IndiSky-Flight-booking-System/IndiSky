@@ -4,15 +4,19 @@ import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
-@Getter
-@Setter
-@NoArgsConstructor
+@Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserBookingDto {
     private Long bookingId;
+    private Long flightId;
+    private String sourceAirport;
+    private String destinationAirport;
     private String flightNumber;
     private LocalDateTime bookingDate;
-    private String bookingStatus;
     private BigDecimal totalPrice;
+    private String status;
+    private List<Long> ticketIds;
 }

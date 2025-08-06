@@ -2,11 +2,12 @@ package com.indisky.user.service.Impl;
 
 import com.indisky.entities.*;
 import com.indisky.enums.BookingStatus;
-import com.indisky.enums.TicketClass;
-import com.indisky.enums.TicketType;
 import com.indisky.exception.ResourceNotFoundException;
 import com.indisky.repository.*;
-import com.indisky.user.dto.*;
+import com.indisky.user.dto.BookingRequestDto;
+import com.indisky.user.dto.BookingResponseDto;
+import com.indisky.user.dto.BookingConfirmationDto;
+import com.indisky.user.dto.UserBookingDto;
 import com.indisky.user.service.BookingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -27,79 +27,69 @@ public class BookingServiceImpl implements BookingService {
     private final FlightRepository flightRepository;
     private final PassengerRepository passengerRepository;
     private final FlightSeatRepository flightSeatRepository;
-    private final TicketRepository ticketRepository;
     private final ModelMapper mapper;
 
     @Override
     public BookingResponseDto createBooking(BookingRequestDto request) {
-        Booking booking = new Booking();
 
-        // Set core booking fields
-        booking.setUser(userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new ResourceNotFoundException("User not found")));
-        booking.setFlight(flightRepository.findById(request.getFlightId())
-                .orElseThrow(() -> new ResourceNotFoundException("Flight not found")));
-        booking.setBookingDate(LocalDateTime.now());
-        booking.setStatus(BookingStatus.PENDING);
-        booking.setTotalPrice(request.getTotalPrice());
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        Flight flight = flightRepository.findById(request.getFlightId())
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
 
-        // Save booking
-        Booking savedBooking = bookingRepository.save(booking);
+        for (Long seatId : request.getSeatIds()) {
+            FlightSeat seat = flightSeatRepository.findById(seatId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Seat with ID " + seatId + " not found"));
 
-        // Save tickets
-        List<Ticket> tickets = new ArrayList<>();
-        for (int i = 0; i < request.getPassengerIds().size(); i++) {
-            Ticket ticket = new Ticket();
-            ticket.setBooking(savedBooking);
-            ticket.setPassenger(passengerRepository.findById(request.getPassengerIds().get(i))
-                    .orElseThrow(() -> new ResourceNotFoundException("Passenger not found")));
-            ticket.setSeat(flightSeatRepository.findById(request.getSeatIds().get(i))
-                    .orElseThrow(() -> new ResourceNotFoundException("Seat not found")));
-            ticket.setTicketClass(TicketClass.valueOf(request.getTicketClass()));
-            ticket.setTicketType(TicketType.valueOf(request.getTicketType()));
-            tickets.add(ticket);
-
-            // Mark seat booked
-            ticket.getSeat().setBooked(true);
+            if (!seat.getFlight().getFlightId().equals(request.getFlightId())) {
+                throw new IllegalArgumentException("Seat ID " + seatId + " does not belong to flight ID " + request.getFlightId());
+            }
         }
 
-        ticketRepository.saveAll(tickets);
-        flightSeatRepository.saveAll(
-                tickets.stream().map(Ticket::getSeat).toList()
-        );
 
-        // Map Booking to DTO manually
-        BookingResponseDto responseDto = new BookingResponseDto();
-        responseDto.setBookingId(savedBooking.getBookingId());
+        Booking booking = new Booking();
+        booking.setUser(user);
+        booking.setFlight(flight);
+        booking.setTotalPrice(request.getTotalPrice());
+        booking.setBookingDate(LocalDateTime.now());
+        booking.setStatus(BookingStatus.PENDING);
+        Booking savedBooking = bookingRepository.save(booking);
+
+        BookingResponseDto responseDto = mapper.map(savedBooking, BookingResponseDto.class);
+        responseDto.setTicketIds(List.of()); // no tickets until payment
         responseDto.setUserId(savedBooking.getUser().getId());
         responseDto.setFlightId(savedBooking.getFlight().getFlightId());
-        responseDto.setTotalPrice(savedBooking.getTotalPrice());
-        responseDto.setBookingDate(savedBooking.getBookingDate());
-        responseDto.setStatus(savedBooking.getStatus().name());
-        responseDto.setTicketIds(tickets.stream().map(Ticket::getId).toList());
 
         return responseDto;
     }
 
-
     @Override
     public void cancelBooking(Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
         booking.setStatus(BookingStatus.CANCELLED);
         bookingRepository.save(booking);
 
-        booking.getTickets().forEach(ticket -> {
-            FlightSeat seat = ticket.getSeat();
-            seat.setBooked(false);
-            flightSeatRepository.save(seat);
-        });
+        if (booking.getTickets() != null) {
+            booking.getTickets().forEach(ticket -> {
+                FlightSeat seat = ticket.getSeat();
+                seat.setBooked(false);
+                flightSeatRepository.save(seat);
+            });
+        }
     }
 
     @Override
     public BookingConfirmationDto getBookingConfirmation(Long bookingId) {
-        Booking booking = bookingRepository.findById(bookingId).orElseThrow();
-        List<String> passengerNames = booking.getTickets().stream().map(t -> t.getPassenger().getFullName()).toList();
-        List<String> seatNumbers = booking.getTickets().stream().map(t -> t.getSeat().getSeatNumber()).toList();
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        List<String> passengerNames = booking.getTickets().stream()
+                .map(t -> t.getPassenger().getFullName()).toList();
+
+        List<String> seatNumbers = booking.getTickets().stream()
+                .map(t -> t.getSeat().getSeatNumber()).toList();
 
         return new BookingConfirmationDto(
                 booking.getBookingId(),
@@ -107,6 +97,7 @@ public class BookingServiceImpl implements BookingService {
                 booking.getFlight().getFlightNumber(),
                 booking.getBookingDate(),
                 booking.getFlight().getStatus().name(),
+                booking.getStatus().name(),
                 booking.getTotalPrice(),
                 passengerNames,
                 seatNumbers
@@ -116,27 +107,36 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<UserBookingDto> getUserBookings(Long userId) {
         List<Booking> bookings = bookingRepository.findByUserId(userId);
-        return bookings.stream().map(b -> new UserBookingDto(
-                b.getBookingId(),
-                b.getFlight().getFlightNumber(),
-                b.getBookingDate(),
-                b.getStatus().name(),
-                b.getTotalPrice()
-        )).toList();
+
+        return bookings.stream().map(booking -> {
+            Flight flight = booking.getFlight();
+
+            return new UserBookingDto(
+                    booking.getBookingId(),
+                    flight.getFlightId(),
+                    flight.getSourceAirport().getAirportName(),
+                    flight.getDestinationAirport().getAirportName(),
+                    flight.getFlightNumber(),
+                    booking.getBookingDate(),
+                    booking.getTotalPrice(),
+                    booking.getStatus().name(),
+                    booking.getTickets() != null
+                            ? booking.getTickets().stream().map(Ticket::getId).toList()
+                            : List.of()
+            );
+        }).toList();
     }
+
 
     @Override
     public BookingResponseDto getUserBookingById(Long userId, Long bookingId) {
-        Booking booking = bookingRepository.findByIdAndUserId(bookingId, userId).orElseThrow();
-        List<Long> ticketIds = booking.getTickets().stream().map(Ticket::getId).toList();
-        return new BookingResponseDto(
-                booking.getBookingId(),
-                booking.getUser().getId(),
-                booking.getFlight().getFlightId(),
-                booking.getTotalPrice(),
-                booking.getBookingDate(),
-                booking.getStatus().name(),
-                ticketIds
-        );
+        Booking booking = bookingRepository.findByIdAndUserId(bookingId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found for user"));
+
+        BookingResponseDto dto = mapper.map(booking, BookingResponseDto.class);
+        dto.setUserId(booking.getUser().getId());
+        dto.setFlightId(booking.getFlight().getFlightId());
+        dto.setTicketIds(booking.getTickets().stream().map(Ticket::getId).toList());
+        return dto;
     }
 }
