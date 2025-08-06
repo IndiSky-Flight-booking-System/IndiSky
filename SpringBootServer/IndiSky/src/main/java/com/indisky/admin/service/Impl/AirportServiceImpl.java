@@ -11,6 +11,7 @@ import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,11 +25,17 @@ public class AirportServiceImpl implements AirportService {
 
     @Override
     public List<AirportDto> getAllAirports() {
-        return airportRepository.findAll()
-                .stream()
-                .map(airport -> mapper.map(airport, AirportDto.class))
-                .collect(Collectors.toList());
+        List<Airport> airports = airportRepository.findAll();
+        List<AirportDto> dtos = new ArrayList<>();
+
+        for (Airport airport : airports) {
+            AirportDto dto = mapper.map(airport, AirportDto.class);
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
+
 
     @Override
     public AirportDto addAirport(AirportDto dto) {

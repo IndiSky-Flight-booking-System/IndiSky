@@ -12,8 +12,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -25,17 +25,17 @@ public class FlightStatusServiceImpl implements FlightStatusService {
 
     @Override
     public List<FlightStatusDto> getAllLogs() {
-        return logRepository.findAll()
-                .stream()
-                .map(log -> {
-                    FlightStatusDto dto = new FlightStatusDto();
-                    dto.setLogId(log.getLogId());
-                    dto.setFlightId(log.getFlight().getFlightId());
-                    dto.setStatus(log.getStatus());
-                    dto.setUpdatedAt(log.getUpdatedAt());
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        List<FlightStatusLog> logs = logRepository.findAll();
+        List<FlightStatusDto> dtos = new ArrayList<>();
+
+        for (FlightStatusLog log : logs) {
+            FlightStatusDto dto = mapper.map(log, FlightStatusDto.class);
+            dto.setFlightId(log.getFlight().getFlightId());
+            dto.setFlightNumber(log.getFlight().getFlightNumber());
+            dtos.add(dto);
+        }
+
+        return dtos;
     }
 
     @Override
@@ -52,8 +52,12 @@ public class FlightStatusServiceImpl implements FlightStatusService {
         flightRepository.save(flight);
 
         FlightStatusLog saved = logRepository.save(log);
-        dto.setLogId(saved.getLogId());
-        dto.setUpdatedAt(saved.getUpdatedAt());
-        return dto;
+
+        FlightStatusDto responseDto = mapper.map(saved, FlightStatusDto.class);
+        responseDto.setFlightId(flight.getFlightId());
+        responseDto.setFlightNumber(flight.getFlightNumber());
+        responseDto.setUpdatedAt(saved.getUpdatedAt());
+
+        return responseDto;
     }
 }

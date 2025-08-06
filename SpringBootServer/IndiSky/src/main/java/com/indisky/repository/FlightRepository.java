@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FlightRepository extends JpaRepository<Flight,Long> {
@@ -55,4 +56,7 @@ public interface FlightRepository extends JpaRepository<Flight,Long> {
 
     @Query("select f from Flight f left join fetch f.bookings where f.flightId=?1")
     Flight findByFlightByBooking(Long flightId);
+
+    Optional<Flight> findByFlightNumber(String flightNumber);
+
 }

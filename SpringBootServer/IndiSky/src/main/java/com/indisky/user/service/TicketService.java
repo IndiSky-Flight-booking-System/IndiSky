@@ -1,10 +1,7 @@
 package com.indisky.user.service;
-import com.indisky.entities.*;
-import java.util.List;
+
+import com.indisky.user.dto.TicketPdfDto;
 
 public interface TicketService {
-    Ticket createTicket(Ticket ticket);
-    List<Ticket> getAllTickets();
-    Ticket getTicketById(Long id);
+    TicketPdfDto generateTicketData(Long bookingId);
 }
-
