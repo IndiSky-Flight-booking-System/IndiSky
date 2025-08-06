@@ -28,7 +28,6 @@ public class FlightResponseDto {
     private LocalDateTime arrivalTime;
     private BigDecimal basePrice;
 
-//    private FlightStatus status;
 
 
 }

@@ -10,6 +10,7 @@ public class BookingResponseDto {
     private Long bookingId;
     private Long userId;
     private Long flightId;
+    private Long returnBookingId;
     private BigDecimal totalPrice;
     private LocalDateTime bookingDate;
     private String status;
