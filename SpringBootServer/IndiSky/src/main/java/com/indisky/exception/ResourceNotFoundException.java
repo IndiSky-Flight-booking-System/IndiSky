@@ -1,9 +1,8 @@
 package com.indisky.exception;
 
-@SuppressWarnings("Serial")
-public class ResourceNotFoundException extends RuntimeException {
 
-    public ResourceNotFoundException(String mesg) {
-        super(mesg);
+public class ResourceNotFoundException extends RuntimeException{
+    public ResourceNotFoundException(String  msg){
+        super(msg);
     }
 }
