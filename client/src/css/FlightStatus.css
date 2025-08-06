@@ -1,51 +1,111 @@
-/* FlightStatus.css */
-
+/* Typography */
 .title-purple {
   color: #512888;
+  font-weight: 700;
+  font-size: 1.6rem;
+}
+
+/* Status Card Containers */
+.status-box,
+.result-box {
+  border-radius: 12px;
+  padding: 25px 30px;
+  background: #fdfdfd;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease-in-out;
 }
 
 .status-box {
-  background: #f9f9ff;
-  border-left: 5px solid #512888;
-  border-radius: 10px;
-  padding: 25px;
+  border-left: 6px solid #512888;
 }
 
 .result-box {
-  background: #fdfdfd;
-  border-left: 5px solid #28a745;
-  border-radius: 10px;
-  padding: 25px;
+  border-left: 6px solid #28a745;
 }
 
+/* Badges */
 .badge {
-  font-size: 0.9rem;
-  padding: 5px 12px;
-  border-radius: 15px;
+  font-size: 0.85rem;
   font-weight: 600;
+  padding: 6px 14px;
+  border-radius: 20px;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.2s ease-in-out;
 }
 
 .badge-danger {
-  background-color: #f8d7da;
-  color: #721c24;
+  background-color: #fcebea;
+  color: #b71c1c;
 }
 
 .badge-warning {
-  background-color: #fff3cd;
-  color: #856404;
+  background-color: #fff9e6;
+  color: #b26a00;
 }
 
 .badge-info {
-  background-color: #d1ecf1;
-  color: #0c5460;
+  background-color: #e0f7fa;
+  color: #007c91;
 }
 
 .badge-success {
-  background-color: #d4edda;
-  color: #155724;
+  background-color: #e6f4ea;
+  color: #1b5e20;
 }
 
+/* Scrollable Log List */
 .custom-log-list {
   max-height: 250px;
   overflow-y: auto;
+  padding-right: 10px;
+  scrollbar-width: thin;
+}
+
+.custom-log-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.custom-log-list::-webkit-scrollbar-thumb {
+  background-color: rgba(128, 128, 128, 0.3);
+  border-radius: 4px;
+}
+
+/* Admin Layout */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: #f5f7fb;
+}
+
+.admin-main {
+  flex-grow: 1;
+  margin-left: 240px;
+  transition: margin-left 0.3s ease-in-out;
+}
+
+.admin-sidebar.collapsed + .admin-main {
+  margin-left: 70px;
+}
+
+.main-content {
+  padding: 30px 40px;
+  padding-bottom: 60px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .admin-main {
+    margin-left: 70px !important;
+  }
+
+  .main-content {
+    padding: 20px;
+  }
+
+  .title-purple {
+    font-size: 1.3rem;
+  }
 }

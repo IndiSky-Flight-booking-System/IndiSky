@@ -1,29 +1,55 @@
 .admin-sidebar {
-  width: 220px;
+  width: 240px;
+  transition: width 0.3s ease;
   height: 100vh;
-  position: relative;
+  overflow: visible;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  position: fixed;
   top: 0;
   left: 0;
+  z-index: 1030;
+  padding-top: 80px;
+}
+
+.admin-sidebar.collapsed {
+  width: 70px;
+}
+
+.admin-sidebar .nav-link {
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.admin-sidebar .nav-link:hover {
   background-color: #343a40;
-  padding: 20px 10px;
-  overflow-y: auto;
+  color: #f8f9fa !important;
 }
 
-.nav-link {
-  padding: 10px 15px;
-  color: #ffffff;
-  text-decoration: none;
-  display: block;
-  border-radius: 4px;
-  transition: all 0.2s ease-in-out;
+.admin-sidebar .active-link {
+  background-color: #f8f9fa !important;
+  color: #212529 !important;
 }
 
-.nav-link:hover {
-  background-color: #495057;
-  color: #f8f9fa;
+.sidebar-toggle {
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }
 
-.active-link {
-  background-color: #0d6efd;
-  color: #ffffff !important;
+.admin-sidebar {
+  width: 240px;
+  transition: width 0.3s ease;
+  min-height: 100vh;
+}
+
+.admin-sidebar.collapsed {
+  width: 70px;
+}
+
+.admin-main {
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+.admin-main.collapsed {
+  margin-left: 70px;
 }

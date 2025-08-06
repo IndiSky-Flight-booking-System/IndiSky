@@ -1,6 +1,8 @@
 // /src/Pages/Admin/ManageSeats.jsx
 import React, { useState } from 'react';
 import AdminSidebar from '../../Component/Admin/AdminSidebar';
+import '../../css/ManageSeats.css'; // Optional CSS if you created one
+import "../../css/AdminHeader.css";
 
 const dummySeats = [
   { seat_id: 1, seat_number: '1A', seat_class: 'ECONOMY', is_booked: false, flight_id: 101 },
@@ -9,6 +11,7 @@ const dummySeats = [
 ];
 
 export default function ManageSeats() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false); // ✅ Added this
   const [seats, setSeats] = useState(dummySeats);
   const [form, setForm] = useState({ seat_id: '', seat_number: '', seat_class: 'ECONOMY', is_booked: false, flight_id: '' });
   const [editing, setEditing] = useState(false);
@@ -39,9 +42,12 @@ export default function ManageSeats() {
   };
 
   return (
-    <div className="d-flex">
-      <AdminSidebar />
-      <div className="p-4 w-100">
+    <div className={`admin-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+
+      <div className="admin-main p-4">
+       <h1 className="indisky-admin-heading">IndiSky Admin</h1>
+
         <h2>Manage Flight Seats</h2>
 
         <form onSubmit={handleSubmit} className="row g-3 mb-4">
