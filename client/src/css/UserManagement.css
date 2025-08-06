@@ -1,0 +1,7 @@
+.table th, .table td {
+  vertical-align: middle;
+}
+
+select.form-select {
+  min-width: 180px;
+}

@@ -1,7 +1,6 @@
 package com.indisky.user.service;
 
 import com.indisky.user.dto.UserRequestDto;
-import com.indisky.user.dto.UserResponseDto;
 
 public interface UserProfileService {
     String register(UserRequestDto userddto);
@@ -12,4 +11,5 @@ public interface UserProfileService {
 
     String updateUser(UserRequestDto userdto, String email);
 
+    String verify(UserRequestDto userRequestDto);
 }

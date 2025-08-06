@@ -29,11 +29,16 @@ import ManageAirlines from './Pages/Admin/ManageAirlines';
 import ManageAirports from './Pages/Admin/ManageAirports';
 import ManageFlights from './Pages/Admin/ManageFlights';
 import ManageSeats from './Pages/Admin/ManageSeats';
+import AdminViewBookings from './Pages/Admin/AdminViewBookings';
+import PaymentsManagement from './Pages/Admin/PaymentsManagement';
+import PassengersList from './Pages/Admin/PassengersList';
+import UserManagement from './Pages/Admin/UserManagement';
+
 
 import ManageUsers from './Pages/Admin/ManageUsers';
 import FlightStatusManagement from './Pages/Admin/ManageFlightStatus';
-import SeatSelection from './Pages/SeatSelection';
 
+import SeatSelection from './Pages/SeatSelection';
 export const infoContext = createContext();
 export const flightDetailsContext = createContext();
 export const totalPriceContext = createContext();
@@ -79,6 +84,15 @@ function App() {
                 <Route path='/admin/seats' element={<ManageSeats />} />
                 <Route path='/admin/users' element={<ManageUsers />} />
                 <Route path='/admin/flight-status' element={<FlightStatusManagement />} />
+                <Route path="/admin/view-bookings" element={<AdminViewBookings />} />
+                <Route path="/admin/payments" element={<PaymentsManagement />} />
+                <Route path="/admin/passengers" element={<PassengersList />} />
+                <Route path="/admin/flight-status" element={<FlightStatusManagement />} />
+                <Route path="/admin/users-management" element={<UserManagement />} />
+                {/* //<Route path="/admin/bookings/:bookingId" element={<AdminBookingDetails />} /> */}
+
+
+
 
                 <Route path='/pass' element={<Passengers />}></Route>
                 <Route path='/show' element={<ShowFlights />}></Route>
@@ -95,6 +109,7 @@ function App() {
                 <Route path="/flight-status" element={<FlightStatus />} />
                 <Route path="/payment-history" element={<PaymentHistory />} />
                 <Route path="/show-flights" element={<ShowFlights />} />
+                <Route path="/seat-selection" element={<SeatSelection />} />
 
 
               </Routes>

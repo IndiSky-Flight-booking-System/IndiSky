@@ -1,13 +1,17 @@
 package com.indisky.user.service.Impl;
 
+import com.indisky.auth.jwt.JwtService;
 import com.indisky.enums.Role;
 import com.indisky.repository.UserRepository;
 import com.indisky.entities.User;
 import com.indisky.user.dto.UserRequestDto;
-import com.indisky.user.dto.UserResponseDto;
 import com.indisky.user.service.UserProfileService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,13 +20,16 @@ import org.springframework.transaction.annotation.Transactional;
 @AllArgsConstructor
 public class UserProfileServiceImpl implements UserProfileService {
 
-    private final UserRepository repo;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+
+    private AuthenticationManager authManager;
+    private JwtService jwtService;
 
     @Override
     public String register(UserRequestDto userdto) {
 
-        User userEntity = repo.findByEmail(userdto.getEmail());
+        User userEntity = userRepository.findByEmail(userdto.getEmail());
         if(userEntity!=null){
             return "User Already Registered with Email id- " + userEntity.getEmail();
         }
@@ -30,7 +37,8 @@ public class UserProfileServiceImpl implements UserProfileService {
         User user = modelMapper.map(userdto, User.class);
         if(user!=null){
             user.setPersonRole(Role.USER);
-            repo.save(user);
+            user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+            userRepository.save(user);
             return user.getFullName() + " Registered Successfully!";
         }
         return "Failed to Registered!";
@@ -40,7 +48,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     @Override
     public String updateUser(UserRequestDto userdto, String email) {
         //        String email = from security  and remove email from parameter
-                User user = repo.findByEmail(email);
+                User user = userRepository.findByEmail(email);
         System.out.println(user.toString());
 
          if(userdto.getFullName()!=null){
@@ -67,20 +75,20 @@ public class UserProfileServiceImpl implements UserProfileService {
              user.setPassword(userdto.getPassword());
          }
 
-         repo.save(user);
+         userRepository.save(user);
 
         return "User Updated Successfully";
     }
 
-//    @Override
-//    public UserResponseDto getUserProfile() {                //dashboard
-////        String email = from security
-////        User user = repo.findByEmail();
-//        UserResponseDto dto = modelMapper.map(user, UserResponseDto.class);
-//
-//        return dto;
-//    }
+    @Override
+    public String verify(UserRequestDto userRequestDto) {
 
-
+        Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(
+                userRequestDto.getEmail(),userRequestDto.getPassword()));
+        if(authentication.isAuthenticated()){
+            return jwtService.generateToken(userRequestDto.getEmail());
+        }
+        return null;
+    }
 
 }
