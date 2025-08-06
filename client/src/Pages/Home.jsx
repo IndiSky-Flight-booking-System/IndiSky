@@ -1,5 +1,5 @@
 import React from 'react'
-import SlideBar from '../Component/NavBar';
+import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import '../css/HomeCustom.css';
 import '../css/Popup.css';
