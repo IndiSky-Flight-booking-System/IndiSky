@@ -2,6 +2,7 @@ package com.indisky.user.service.Impl;
 
 import com.indisky.entities.*;
 import com.indisky.enums.BookingStatus;
+import com.indisky.enums.TicketType;
 import com.indisky.exception.ResourceNotFoundException;
 import com.indisky.repository.*;
 import com.indisky.user.dto.BookingRequestDto;
@@ -31,36 +32,60 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto createBooking(BookingRequestDto request) {
-
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         Flight flight = flightRepository.findById(request.getFlightId())
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
 
-        for (Long seatId : request.getSeatIds()) {
-            FlightSeat seat = flightSeatRepository.findById(seatId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Seat with ID " + seatId + " not found"));
+        validateSeatOwnership(request.getSeatIds(), request.getFlightId());
 
-            if (!seat.getFlight().getFlightId().equals(request.getFlightId())) {
-                throw new IllegalArgumentException("Seat ID " + seatId + " does not belong to flight ID " + request.getFlightId());
-            }
+        Booking mainBooking = new Booking();
+        mainBooking.setUser(user);
+        mainBooking.setFlight(flight);
+        mainBooking.setTotalPrice(request.getTotalPrice());
+        mainBooking.setBookingDate(LocalDateTime.now());
+        mainBooking.setStatus(BookingStatus.PENDING);
+        Booking savedBooking = bookingRepository.save(mainBooking);
+
+        Booking returnBooking = null;
+        if (request.getTicketType().equalsIgnoreCase(TicketType.ROUND_TRIP.name())
+                && request.getReturnFlightId() != null) {
+
+            Flight returnFlight = flightRepository.findById(request.getReturnFlightId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Return Flight not found"));
+
+            validateSeatOwnership(request.getReturnSeatIds(), request.getReturnFlightId());
+
+            returnBooking = new Booking();
+            returnBooking.setUser(user);
+            returnBooking.setFlight(returnFlight);
+            returnBooking.setTotalPrice(request.getTotalPrice());
+            returnBooking.setBookingDate(LocalDateTime.now());
+            returnBooking.setStatus(BookingStatus.PENDING);
+            returnBooking = bookingRepository.save(returnBooking);
         }
 
-
-        Booking booking = new Booking();
-        booking.setUser(user);
-        booking.setFlight(flight);
-        booking.setTotalPrice(request.getTotalPrice());
-        booking.setBookingDate(LocalDateTime.now());
-        booking.setStatus(BookingStatus.PENDING);
-        Booking savedBooking = bookingRepository.save(booking);
-
         BookingResponseDto responseDto = mapper.map(savedBooking, BookingResponseDto.class);
-        responseDto.setTicketIds(List.of()); // no tickets until payment
+        responseDto.setTicketIds(List.of());
         responseDto.setUserId(savedBooking.getUser().getId());
         responseDto.setFlightId(savedBooking.getFlight().getFlightId());
 
+        if (returnBooking != null) {
+            responseDto.setReturnBookingId(returnBooking.getBookingId());
+        }
+
         return responseDto;
+    }
+
+    private void validateSeatOwnership(List<Long> seatIds, Long flightId) {
+        for (Long seatId : seatIds) {
+            FlightSeat seat = flightSeatRepository.findById(seatId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Seat with ID " + seatId + " not found"));
+            if (!seat.getFlight().getFlightId().equals(flightId)) {
+                throw new IllegalArgumentException("Seat ID " + seatId + " does not belong to flight ID " + flightId);
+            }
+        }
     }
 
     @Override

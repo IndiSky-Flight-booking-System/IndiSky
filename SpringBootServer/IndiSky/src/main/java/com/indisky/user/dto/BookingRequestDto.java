@@ -1,4 +1,3 @@
-
 package com.indisky.user.dto;
 
 import lombok.*;
@@ -9,8 +8,9 @@ import java.util.List;
 public class BookingRequestDto {
     private Long userId;
     private Long flightId;
-    private List<Long> passengerIds;
+    private Long returnFlightId;
     private List<Long> seatIds;
+    private List<Long> returnSeatIds;
     private BigDecimal totalPrice;
     private String ticketClass;
     private String ticketType;

@@ -35,8 +35,6 @@ import java.util.Map;
 @AllArgsConstructor
 public class FlightServiceImpl implements FlightService {
 
-    private final FlightRepository repo;
-
     private final ModelMapper modelMapper;
     private final FlightRepository flightRepo;
     private final FlightSeatRepository seatRepo;
@@ -93,7 +91,7 @@ public class FlightServiceImpl implements FlightService {
 
         System.out.println(source + " " + destination + " " + departure + " " + arrival + " -> " + depStartDate + " " + depEndDate);
 
-        List<Flight> onewayFlights = repo.findByDepartureDate(source, destination, depStartDate, depEndDate);
+        List<Flight> onewayFlights = flightRepo.findByDepartureDate(source, destination, depStartDate, depEndDate);
 
         List<FlightResponseDto> onewayDtoList = new ArrayList<>();
         for (Flight flight : onewayFlights) {
@@ -108,7 +106,7 @@ public class FlightServiceImpl implements FlightService {
             LocalDateTime ArrStartDate = arrival.atStartOfDay();
             LocalDateTime ArrEndDate = arrival.atTime(LocalTime.MAX);
             System.out.println(source + " " + destination + " " + departure + " " + arrival + " -> " + ArrStartDate + " " + ArrEndDate);
-            List<Flight> roundTripFlightsE = repo.findByDepartureDate(destination, source, ArrStartDate, ArrEndDate);
+            List<Flight> roundTripFlightsE = flightRepo.findByDepartureDate(destination, source, ArrStartDate, ArrEndDate);
             for (Flight flight : roundTripFlightsE) {
                 FlightResponseDto dto = modelMapper.map(flight, FlightResponseDto.class);
                 roundTripFlightsDtoList.add(dto);
