@@ -1,8 +1,10 @@
-
 import React, { useState } from 'react';
 import AdminSidebar from '../../Component/Admin/AdminSidebar';
+import "../../css/AdminHeader.css";
 
 export default function ManageFlights() {
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
   const [flights, setFlights] = useState([
     {
       flight_id: 1,
@@ -39,9 +41,7 @@ export default function ManageFlights() {
       const newFlight = { ...form, flight_id: flights.length + 1 };
       setFlights([...flights, newFlight]);
     } else {
-      setFlights(
-        flights.map(f => f.flight_id === form.flight_id ? form : f)
-      );
+      setFlights(flights.map(f => f.flight_id === form.flight_id ? form : f));
     }
     setForm({
       flight_id: null,
@@ -65,12 +65,15 @@ export default function ManageFlights() {
   };
 
   return (
-    <div className="d-flex">
-      <AdminSidebar />
-      <div className="p-4 w-100">
-        <h2>Manage Flights</h2>
+    <div className={`admin-layout d-flex ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+      
+      <div className="admin-main flex-grow-1 p-4">
+       <h1 className="indisky-admin-heading">IndiSky Admin</h1>
 
-        <form className="row g-3 mt-3" onSubmit={handleSubmit}>
+        <h2 className="fw-bold mb-4">Manage Flights</h2>
+
+        <form className="row g-3" onSubmit={handleSubmit}>
           <div className="col-md-3">
             <input type="text" className="form-control" name="flight_number" placeholder="Flight No" value={form.flight_number} onChange={handleChange} required />
           </div>
@@ -86,7 +89,6 @@ export default function ManageFlights() {
           <div className="col-md-2">
             <input type="number" className="form-control" name="base_price" placeholder="Price" value={form.base_price} onChange={handleChange} required />
           </div>
-
           <div className="col-md-3">
             <input type="datetime-local" className="form-control" name="departure_time" value={form.departure_time} onChange={handleChange} required />
           </div>
@@ -107,40 +109,56 @@ export default function ManageFlights() {
           </div>
         </form>
 
-        <table className="table table-bordered mt-4">
-          <thead>
-            <tr>
-              <th>Flight No</th>
-              <th>Airline</th>
-              <th>Source</th>
-              <th>Destination</th>
-              <th>Departure</th>
-              <th>Arrival</th>
-              <th>Status</th>
-              <th>Price</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {flights.map(f => (
-              <tr key={f.flight_id}>
-                <td>{f.flight_number}</td>
-                <td>{f.airline}</td>
-                <td>{f.source}</td>
-                <td>{f.destination}</td>
-                <td>{f.departure_time}</td>
-                <td>{f.arrival_time}</td>
-                <td>{f.status}</td>
-                <td>{f.base_price}</td>
-                <td>
-                  <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(f)}>Edit</button>
-                  <button className="btn btn-sm btn-danger" onClick={() => handleDelete(f.flight_id)}>Delete</button>
-                </td>
+        <div className="table-responsive shadow-sm rounded mt-4">
+          <table className="table table-bordered table-hover align-middle">
+            <thead className="table-dark">
+              <tr>
+                <th>Flight No</th>
+                <th>Airline</th>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Departure</th>
+                <th>Arrival</th>
+                <th>Status</th>
+                <th>Price (₹)</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {flights.map(f => (
+                <tr key={f.flight_id}>
+                  <td>{f.flight_number}</td>
+                  <td>{f.airline}</td>
+                  <td>{f.source}</td>
+                  <td>{f.destination}</td>
+                  <td>{f.departure_time}</td>
+                  <td>{f.arrival_time}</td>
+                  <td>
+                    <span className={`badge ${getStatusBadge(f.status)} py-1 px-2`}>
+                      {f.status}
+                    </span>
+                  </td>
+                  <td>{f.base_price}</td>
+                  <td>
+                    <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(f)}>Edit</button>
+                    <button className="btn btn-sm btn-danger" onClick={() => handleDelete(f.flight_id)}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
+}
+
+// Utility for badge styling
+function getStatusBadge(status) {
+  switch (status) {
+    case 'SCHEDULED': return 'bg-success';
+    case 'DELAYED': return 'bg-warning text-dark';
+    case 'CANCELLED': return 'bg-danger';
+    default: return 'bg-secondary';
+  }
 }

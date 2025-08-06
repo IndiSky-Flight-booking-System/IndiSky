@@ -23,5 +23,15 @@
   padding: 20px;
 }
 
+.admin-content {
+  margin-left: 240px; /* same as expanded sidebar width */
+  padding-top: 70px;  /* navbar height */
+  transition: margin-left 0.3s;
+}
+
+.admin-content.collapsed {
+  margin-left: 70px; /* sidebar collapsed width */
+}
+
 
   
