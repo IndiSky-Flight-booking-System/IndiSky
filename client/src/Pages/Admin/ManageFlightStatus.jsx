@@ -1,136 +1,196 @@
-import React, { useState } from 'react';
-import AdminSidebar from '../../Component/Admin/AdminSidebar';
+
+import React, { useEffect, useState } from "react";
+import AdminSidebar from "../../Component/Admin/AdminSidebar";
+import { getAllFlightStatusLogs, addFlightStatusLog } from "../../Service/flightStatusLog";
+import { toast } from "react-toastify";
+import "../../css/FlightStatusManagement.css";
 import "../../css/AdminHeader.css";
 
-const initialFlights = [
-  {
-    flight_id: 1,
-    flight_number: '6E234',
-    status: 'SCHEDULED',
-  },
-  {
-    flight_id: 2,
-    flight_number: 'AI567',
-    status: 'DELAYED',
-  },
-];
-
-const initialLogs = [
-  {
-    log_id: 1,
-    flight_id: 1,
-    status: 'SCHEDULED',
-    updated_at: '2025-07-24T08:00:00',
-  },
-  {
-    log_id: 2,
-    flight_id: 2,
-    status: 'DELAYED',
-    updated_at: '2025-07-23T12:30:00',
-  },
-];
-
-export default function FlightStatusManagement() {
+function FlightStatusManagement() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [flights, setFlights] = useState(initialFlights);
-  const [logs, setLogs] = useState(initialLogs);
+  const [logs, setLogs] = useState([]);
+  const [newStatus, setNewStatus] = useState("SCHEDULED");
+  const [newFlightNumber, setNewFlightNumber] = useState("");
+  const [search, setSearch] = useState("");
 
-  const updateStatus = (flight_id, newStatus) => {
-    // Update flight status
-    setFlights(flights.map(f => f.flight_id === flight_id ? { ...f, status: newStatus } : f));
+  const [currentPage, setCurrentPage] = useState(1);
+  const logsPerPage = 5;
 
-    // Add new log entry
-    const newLog = {
-      log_id: logs.length + 1,
-      flight_id,
-      status: newStatus,
-      updated_at: new Date().toISOString(),
-    };
-    setLogs([newLog, ...logs]);
+  useEffect(() => {
+    fetchLogs();
+  }, []);
+
+  const fetchLogs = async () => {
+    try {
+      const res = await getAllFlightStatusLogs();
+      const sortedLogs = res.data.sort(
+        (a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)
+      );
+      setLogs(sortedLogs);
+    } catch (error) {
+      console.error("Error fetching logs:", error);
+      toast.error("Failed to fetch flight status logs");
+    }
+  };
+
+  const handleAddStatus = async (e) => {
+    e.preventDefault();
+    if (!newFlightNumber.trim()) {
+      toast.warning("Please enter a flight number");
+      return;
+    }
+
+    try {
+      await addFlightStatusLog({
+        flightNumber: newFlightNumber.trim(),
+        status: newStatus,
+      });
+      toast.success("Flight status updated successfully");
+      setNewFlightNumber("");
+      setNewStatus("SCHEDULED");
+      fetchLogs();
+    } catch (error) {
+      console.error("Error adding flight status log:", error);
+      toast.error("Failed to add flight status");
+    }
+  };
+
+  const filteredLogs = logs.filter((log) =>
+    log.flightNumber.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
+  const startIndex = (currentPage - 1) * logsPerPage;
+  const currentLogs = filteredLogs.slice(startIndex, startIndex + logsPerPage);
+
+  const handlePrev = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNext = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
   return (
-    <div className={`admin-layout d-flex ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    <div className={`admin-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
 
-      <div className="admin-main flex-grow-1 p-4">
-       <h1 className="indisky-admin-heading">IndiSky Admin</h1>
+      <div className="admin-main p-4">
+        <h1 className="indisky-admin-heading">IndiSky Admin</h1>
+        <h2>Flight Status Management</h2>
 
-        <h2 className="fw-bold mb-4">Flight Status Management</h2>
+        <form onSubmit={handleAddStatus} className="row g-3 align-items-end mb-4">
+          <div className="col-md-4">
+            <label className="form-label">Flight Number</label>
+            <input
+              type="text"
+              className="form-control"
+              value={newFlightNumber}
+              onChange={(e) => setNewFlightNumber(e.target.value)}
+              placeholder="e.g., IN101"
+              required
+            />
+          </div>
+          <div className="col-md-4">
+            <label className="form-label">Status</label>
+            <select
+              className="form-select"
+              value={newStatus}
+              onChange={(e) => setNewStatus(e.target.value)}
+            >
+              <option value="SCHEDULED">Scheduled</option>
+              <option value="DELAYED">Delayed</option>
+              <option value="CANCELLED">Cancelled</option>
+            </select>
+          </div>
+          <div className="col-md-4">
+            <button type="submit" className="btn btn-primary w-100">
+              Add / Update Status
+            </button>
+          </div>
+        </form>
 
-        <div className="table-responsive shadow-sm rounded">
-          <table className="table table-bordered align-middle">
-            <thead className="table-dark">
-              <tr>
-                <th>Flight No</th>
-                <th>Current Status</th>
-                <th>Update Status</th>
-              </tr>
-            </thead>
-            <tbody>
-              {flights.map(f => (
-                <tr key={f.flight_id}>
-                  <td>{f.flight_number}</td>
-                  <td>
-                    <span className={`badge ${getBadgeClass(f.status)} py-2 px-3`}>
-                      {f.status}
-                    </span>
-                  </td>
-                  <td>
-                    <select
-                      className="form-select w-auto"
-                      value={f.status}
-                      onChange={(e) => updateStatus(f.flight_id, e.target.value)}
-                    >
-                      <option value="SCHEDULED">Scheduled</option>
-                      <option value="DELAYED">Delayed</option>
-                      <option value="CANCELLED">Cancelled</option>
-                    </select>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by Flight Number"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1); 
+            }}
+          />
         </div>
 
-        <h3 className="mt-5 fw-semibold">Flight Status Logs</h3>
         <div className="table-responsive shadow-sm rounded">
-          <table className="table table-striped align-middle">
-            <thead className="table-dark">
+          <table className="table table-bordered table-hover align-middle">
+            <thead className="table-light">
               <tr>
-                <th>Log ID</th>
-                <th>Flight ID</th>
+                <th>Flight Number</th>
                 <th>Status</th>
                 <th>Updated At</th>
               </tr>
             </thead>
             <tbody>
-              {logs.map(log => (
-                <tr key={log.log_id}>
-                  <td>{log.log_id}</td>
-                  <td>{log.flight_id}</td>
-                  <td>
-                    <span className={`badge ${getBadgeClass(log.status)} py-1 px-3`}>
-                      {log.status}
-                    </span>
+              {currentLogs.length > 0 ? (
+                currentLogs.map((log) => (
+                  <tr key={log.logId}>
+                    <td>{log.flightNumber}</td>
+                    <td>
+                      <span className={`badge ${getStatusBadge(log.status)} py-2 px-3`}>
+                        {log.status}
+                      </span>
+                    </td>
+                    <td>{new Date(log.updatedAt).toLocaleString()}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="3" className="text-center py-3">
+                    No flight logs found.
                   </td>
-                  <td>{new Date(log.updated_at).toLocaleString()}</td>
                 </tr>
-              ))}
+              )}
             </tbody>
           </table>
         </div>
+
+        {totalPages > 1 && (
+          <div className="d-flex justify-content-between align-items-center mt-3">
+            <button
+              className="btn btn-outline-secondary"
+              onClick={handlePrev}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span>Page {currentPage} of {totalPages}</span>
+            <button
+              className="btn btn-outline-secondary"
+              onClick={handleNext}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
-// Badge styling utility
-function getBadgeClass(status) {
+function getStatusBadge(status) {
   switch (status) {
-    case 'SCHEDULED': return 'bg-success';
-    case 'DELAYED': return 'bg-warning text-dark';
-    case 'CANCELLED': return 'bg-danger';
-    default: return 'bg-secondary';
+    case "SCHEDULED":
+      return "bg-success";
+    case "DELAYED":
+      return "bg-warning text-dark";
+    case "CANCELLED":
+      return "bg-danger";
+    default:
+      return "bg-secondary";
   }
 }
+
+export default FlightStatusManagement;
