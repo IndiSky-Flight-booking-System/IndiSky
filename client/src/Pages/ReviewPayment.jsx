@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // ✅ Import navigate
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import '../css/StaticPage.css'; // Assume you add styles here or add below
@@ -7,6 +8,7 @@ import Sidebar from '../Component/Sidebar';
 function ReviewPayment() {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [confirmed, setConfirmed] = useState(false);
+  const navigate = useNavigate(); // ✅ useNavigate from react-router-dom
 
   const booking = {
     flight: {
@@ -28,12 +30,17 @@ function ReviewPayment() {
   const handleConfirm = () => {
     if (!paymentMethod) return alert('Please select a payment method');
     setConfirmed(true);
+
+    // Simulate a short delay then navigate to confirmation page
+    setTimeout(() => {
+      navigate('/booking-confirmation');
+    }, 1500); // Optional delay for visual effect
   };
 
   return (
     <div>
       <SlideBar />
-     <Sidebar />
+      <Sidebar />
       <div className="container mt-5 mb-5 static-page">
         <h2 className="text-center text-success mb-5 fw-bold">Review & Payment</h2>
 

@@ -2,7 +2,7 @@ import { toast } from "react-toastify";
 import { config } from "./config";
 import axios from 'axios';
 
-// ✅ Existing function (kept as it is)
+
 export async function GetFlightSearch(trip, from, to, dep, arr, Tclass, passenger) {
     try {
         let url = `${config.serverUrl}/search?source=${from}&destination=${to}&departure=${dep}&passengers=${passenger}&travelclass=${Tclass}&tripType=${trip}`;
@@ -17,7 +17,7 @@ export async function GetFlightSearch(trip, from, to, dep, arr, Tclass, passenge
     }
 }
 
-// ✅ Get all flights
+
 export const getFlights = async () => {
     try {
         const response = await axios.get(`${config.serverUrl}/admin/flights`);
@@ -29,7 +29,6 @@ export const getFlights = async () => {
     }
 };
 
-// ✅ Add new flight
 export const addFlight = async (flightData) => {
     try {
         const response = await axios.post(`${config.serverUrl}/admin/flights`, flightData);
@@ -41,7 +40,7 @@ export const addFlight = async (flightData) => {
     }
 };
 
-// ✅ Edit flight
+
 export const editFlight = async (flightId, flightData) => {
     try {
         const response = await axios.put(`${config.serverUrl}/admin/flights/${flightId}`, flightData);
@@ -53,7 +52,7 @@ export const editFlight = async (flightId, flightData) => {
     }
 };
 
-// ✅ Delete flight
+
 export const deleteFlight = async (flightId) => {
     try {
         const response = await axios.delete(`${config.serverUrl}/admin/flights/${flightId}`);

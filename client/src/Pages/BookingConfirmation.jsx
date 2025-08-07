@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import { useNavigate } from 'react-router-dom';
-import '../css/StaticPage.css'; // ✅ Reuse shared styles
+import '../css/StaticPage.css';
 import Sidebar from '../Component/Sidebar';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas'; // Install this as well: npm install html2canvas
 
 function BookingConfirmation() {
   const navigate = useNavigate();
+  const pdfRef = useRef(); // Reference to the section to export
 
   const confirmation = {
     bookingId: 'IND123456789',
@@ -26,7 +29,16 @@ function BookingConfirmation() {
   };
 
   const handleDownload = () => {
-    alert('E-Ticket Downloaded (dummy)');
+    const input = pdfRef.current;
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('E-Ticket.pdf');
+    });
   };
 
   const handleGoToBookings = () => {
@@ -37,7 +49,7 @@ function BookingConfirmation() {
     <div>
       <SlideBar />
       <Sidebar />
-      <div className="container mt-5 mb-5 static-page">
+      <div className="container mt-5 mb-5 static-page" ref={pdfRef}>
         <div className="text-center mb-4">
           <h2 className="text-success fw-bold">Booking Confirmed!</h2>
           <p className="text-muted">Your tickets have been booked successfully.</p>

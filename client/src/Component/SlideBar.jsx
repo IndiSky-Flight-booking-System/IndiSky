@@ -40,10 +40,10 @@ function SlideBar() {
               //{ name: 'About Us', path: '/home#about' },
               //{ name: 'Contact Us', path: '/home#contact' },
               { name: 'Flight Status', path: '/flight-status' },
-              { name: 'Payment History', path: '/payment-history' },
+             // { name: 'Payment History', path: '/payment-history' },
               { name: 'Profile', path: '/profile' },
               { name: 'My Bookings', path: '/my-bookings' },
-              { name: 'Show Flights', path: '/show-flights' },
+              { name: 'Search Flights', path: '/show-flights' },
 
               {/* { name: 'Review Payment', path: '/review-payment' },
               { name: 'Booking Confirmation', path: '/booking-confirmation' }, */}

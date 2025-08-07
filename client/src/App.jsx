@@ -33,6 +33,8 @@ import AdminViewBookings from './Pages/Admin/AdminViewBookings';
 import PaymentsManagement from './Pages/Admin/PaymentsManagement';
 import PassengersList from './Pages/Admin/PassengersList';
 import UserManagement from './Pages/Admin/UserManagement';
+import AdminLogin from './Pages/Admin/AdminLogin';
+
 
 
 import ManageUsers from './Pages/Admin/ManageUsers';
@@ -90,6 +92,7 @@ function App() {
                 <Route path="/admin/flight-status" element={<FlightStatusManagement />} />
                 <Route path="/admin/users-management" element={<UserManagement />} />
                 {/* //<Route path="/admin/bookings/:bookingId" element={<AdminBookingDetails />} /> */}
+                <Route path='/admin/login' element={<AdminLogin />} />
 
 
 
