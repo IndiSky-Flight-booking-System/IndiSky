@@ -3,7 +3,7 @@ import SlideBar from '../Component/SlideBar';
 import Search from '../Component/Search';
 import Sidebar from '../Component/Sidebar';
 import { useNavigate } from 'react-router-dom';
-import { GetFlightSearch } from '../Service/flightSearch';
+import { GetFlightSearch } from '../Service/flight';
 import {
   infoContext,
   flightDetailsContext,

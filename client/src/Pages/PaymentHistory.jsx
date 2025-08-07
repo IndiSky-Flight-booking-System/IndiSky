@@ -3,21 +3,19 @@ import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import '../css/PaymentHistory.css';
 import Sidebar from '../Component/Sidebar';
-import axios from 'axios';
+import { getPaymentsByUser } from '../Service/payment';
 
 function PaymentHistory() {
   const [payments, setPayments] = useState([]);
   const [error, setError] = useState(null);
 
-  const userId = 1; // ✅ Replace this with dynamic value if needed
+  const userId = 1; // ✅ Replace with dynamic value if needed
 
   useEffect(() => {
     const fetchPayments = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/api/payments/user`, {
-          params: { userId }
-        });
-        setPayments(response.data);
+        const data = await getPaymentsByUser(userId);
+        setPayments(data);
       } catch (err) {
         console.error('Error fetching payment history:', err);
         setError('Failed to load payment history. Please try again later.');

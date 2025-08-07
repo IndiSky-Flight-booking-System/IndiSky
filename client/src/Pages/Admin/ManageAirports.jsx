@@ -1,66 +1,154 @@
-import React, { useState } from 'react';
+
+import React, { useEffect, useState } from 'react';
+import { Button, Modal, Table, Form, Pagination } from 'react-bootstrap';
 import AdminSidebar from "../../Component/Admin/AdminSidebar";
-import { Button, Modal, Table, Form } from 'react-bootstrap';
-import '../../css/ManageAirports.css'; // Optional CSS for styling
+import '../../css/ManageAirports.css';
 import "../../css/AdminHeader.css";
+import { getAirports, addAirport, editAirport, deleteAirport } from '../../Service/airport';
+import { toast } from 'react-toastify';
 
 export default function ManageAirports() {
-  const [airports, setAirports] = useState([
-    { id: 1, name: 'Indira Gandhi Intl', city: 'Delhi', country: 'India', iata: 'DEL' },
-    { id: 2, name: 'Chhatrapati Shivaji Intl', city: 'Mumbai', country: 'India', iata: 'BOM' }
-  ]);
-
+  const [airports, setAirports] = useState([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  const [editAirport, setEditAirport] = useState(null);
-  const [form, setForm] = useState({ name: '', city: '', country: '', iata: '' });
+  const [formData, setFormData] = useState({ airportName: '', city: '', country: '', iataCode: '' });
+  const [editIndex, setEditIndex] = useState(null);
 
-  const handleShow = () => setShowModal(true);
-  const handleClose = () => {
-    setEditAirport(null);
-    setForm({ name: '', city: '', country: '', iata: '' });
-    setShowModal(false);
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
-  const handleSubmit = () => {
-    if (editAirport) {
-      setAirports(airports.map(a => a.id === editAirport.id ? { ...editAirport, ...form } : a));
-    } else {
-      setAirports([...airports, { id: Date.now(), ...form }]);
+  useEffect(() => {
+    fetchAirports();
+  }, []);
+
+  const fetchAirports = async () => {
+    try {
+      const response = await getAirports();
+      setAirports(response);
+    } catch (error) {
+      console.error("Failed to fetch airports:", error);
+      toast.error("Failed to load airports.");
     }
-    handleClose();
   };
 
-  const handleEdit = airport => {
-    setEditAirport(airport);
-    setForm({
-      name: airport.name,
-      city: airport.city,
-      country: airport.country,
-      iata: airport.iata
-    });
+  const handleClose = () => {
+    setShowModal(false);
+    setFormData({ airportName: '', city: '', country: '', iataCode: '' });
+    setEditIndex(null);
+  };
+
+  const handleShow = () => {
     setShowModal(true);
   };
 
-  const handleDelete = id => setAirports(airports.filter(a => a.id !== id));
+  const handleSave = async () => {
+    try {
+      if (!formData.airportName || !formData.city || !formData.country || !formData.iataCode) {
+        toast.warning("Please fill in all fields.");
+        return;
+      }
+
+      if (editIndex !== null) {
+        const airportId = airports[editIndex].airportId;
+
+        const updatedAirport = await editAirport({
+          airportId,
+          airportName: formData.airportName,
+          city: formData.city,
+          country: formData.country,
+          iataCode: formData.iataCode
+        });
+
+        const updatedAirports = [...airports];
+        updatedAirports[editIndex] = updatedAirport;
+        setAirports(updatedAirports);
+        toast.success('Airport updated successfully!');
+      } else {
+        const newAirport = await addAirport({
+          airportName: formData.airportName,
+          city: formData.city,
+          country: formData.country,
+          iataCode: formData.iataCode
+        });
+
+        setAirports([...airports, newAirport]);
+        toast.success('Airport added successfully!');
+      }
+
+      handleClose();
+    } catch (error) {
+      console.error('Failed to save airport:', error);
+      toast.error('Failed to save airport. Please try again.');
+    }
+  };
+
+  const handleEdit = (index) => {
+    const realIndex = (currentPage - 1) * itemsPerPage + index;
+    if (!airports[realIndex]) return;
+
+    const selectedAirport = airports[realIndex];
+
+    setFormData({
+      airportName: selectedAirport.airportName,
+      city: selectedAirport.city,
+      country: selectedAirport.country,
+      iataCode: selectedAirport.iataCode
+    });
+
+    setEditIndex(realIndex);
+    setShowModal(true);
+  };
+
+  const handleDelete = async (index) => {
+    const realIndex = (currentPage - 1) * itemsPerPage + index;
+    const airport = airports[realIndex];
+
+    if (!airport) return;
+
+    if (!window.confirm(`Are you sure you want to delete ${airport.airportName}?`)) return;
+
+    try {
+      await deleteAirport(airport.airportId);
+      toast.success('Airport removed successfully!');
+      await fetchAirports();
+
+      if ((currentPage - 1) * itemsPerPage >= airports.length - 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      }
+    } catch (error) {
+      console.error('Failed to remove airport:', error);
+      toast.error('Failed to remove airport. Please try again.');
+    }
+  };
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAirports = airports.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(airports.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className={`admin-layout d-flex ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
       <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
-    
+
       <div className="admin-main flex-grow-1">
-       <h1 className="indisky-admin-heading">IndiSky Admin</h1>
+        <h1 className="indisky-admin-heading">IndiSky Admin</h1>
 
         <div className="main-content container-fluid mt-5 pt-3 px-4">
           <h2 className="fw-bold mb-4">Manage Airports</h2>
 
-          <Button className="mb-3" onClick={handleShow}>Add Airport</Button>
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <Button onClick={handleShow}>Add Airport</Button>
+          </div>
 
           <div className="table-responsive shadow-sm rounded">
             <Table striped bordered hover className="align-middle">
               <thead className="table-dark">
                 <tr>
-                  <th>#</th>
+                  <th>Sr. No</th>
                   <th>Name</th>
                   <th>City</th>
                   <th>Country</th>
@@ -69,76 +157,108 @@ export default function ManageAirports() {
                 </tr>
               </thead>
               <tbody>
-                {airports.map((a, idx) => (
-                  <tr key={a.id}>
-                    <td>{idx + 1}</td>
-                    <td>{a.name}</td>
-                    <td>{a.city}</td>
-                    <td>{a.country}</td>
-                    <td>{a.iata}</td>
-                    <td>
-                      <Button
-                        variant="warning"
-                        size="sm"
-                        className="me-2"
-                        onClick={() => handleEdit(a)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="danger"
-                        size="sm"
-                        onClick={() => handleDelete(a.id)}
-                      >
-                        Delete
-                      </Button>
-                    </td>
+                {currentAirports.length > 0 ? (
+                  currentAirports.map((airport, idx) => (
+                    <tr key={airport.airportId}>
+                      <td>{indexOfFirstItem + idx + 1}</td>
+                      <td>{airport.airportName}</td>
+                      <td>{airport.city}</td>
+                      <td>{airport.country}</td>
+                      <td>{airport.iataCode}</td>
+                      <td>
+                        <Button
+                          variant="warning"
+                          size="sm"
+                          className="me-2"
+                          onClick={() => handleEdit(idx)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleDelete(idx)}
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center">No Airports Available</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </Table>
           </div>
 
+          {totalPages > 1 && (
+            <Pagination className="justify-content-center mt-3">
+              <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
+              <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+
+              {[...Array(totalPages)].map((_, idx) => (
+                <Pagination.Item
+                  key={idx}
+                  active={currentPage === idx + 1}
+                  onClick={() => handlePageChange(idx + 1)}
+                >
+                  {idx + 1}
+                </Pagination.Item>
+              ))}
+
+              <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+              <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
+            </Pagination>
+          )}
+
           <Modal show={showModal} onHide={handleClose}>
             <Modal.Header closeButton>
-              <Modal.Title>{editAirport ? 'Edit Airport' : 'Add Airport'}</Modal.Title>
+              <Modal.Title>{editIndex !== null ? 'Edit Airport' : 'Add Airport'}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Form>
                 <Form.Group className="mb-3">
                   <Form.Label>Name</Form.Label>
                   <Form.Control
-                    value={form.name}
-                    onChange={e => setForm({ ...form, name: e.target.value })}
+                    type="text"
+                    value={formData.airportName}
+                    onChange={(e) => setFormData({ ...formData, airportName: e.target.value })}
                   />
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>City</Form.Label>
                   <Form.Control
-                    value={form.city}
-                    onChange={e => setForm({ ...form, city: e.target.value })}
+                    type="text"
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                   />
                 </Form.Group>
                 <Form.Group className="mb-3">
                   <Form.Label>Country</Form.Label>
                   <Form.Control
-                    value={form.country}
-                    onChange={e => setForm({ ...form, country: e.target.value })}
+                    type="text"
+                    value={formData.country}
+                    onChange={(e) => setFormData({ ...formData, country: e.target.value })}
                   />
                 </Form.Group>
-                <Form.Group className="mb-3">
+                <Form.Group>
                   <Form.Label>IATA Code</Form.Label>
                   <Form.Control
-                    value={form.iata}
-                    onChange={e => setForm({ ...form, iata: e.target.value })}
+                    type="text"
+                    value={formData.iataCode}
+                    onChange={(e) => setFormData({ ...formData, iataCode: e.target.value })}
                   />
                 </Form.Group>
               </Form>
             </Modal.Body>
             <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose}>Cancel</Button>
-              <Button variant="primary" onClick={handleSubmit}>
-                {editAirport ? 'Update' : 'Add'}
+              <Button variant="secondary" onClick={handleClose}>
+                Cancel
+              </Button>
+              <Button variant="primary" onClick={handleSave}>
+                Save
               </Button>
             </Modal.Footer>
           </Modal>
