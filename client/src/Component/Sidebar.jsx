@@ -34,12 +34,12 @@ function SlideBar() {
         <ul className="sidebar-nav">
           <li><Link to="/" className="sidebar-link" onClick={handleLinkClick}>Home</Link></li>
           <li><Link to="/my-bookings" className="sidebar-link" onClick={handleLinkClick}>My Bookings</Link></li>
-          <li><Link to="/profile" className="sidebar-link" onClick={handleLinkClick}>Profile</Link></li>
-          <li><Link to="/flight-status" className="sidebar-link" onClick={handleLinkClick}>Flight Status</Link></li>
+          {/* <li><Link to="/flight-status" className="sidebar-link" onClick={handleLinkClick}>Flight Status</Link></li> */}
           <li><Link to="/contact" className="sidebar-link" onClick={handleLinkClick}>Support</Link></li>
-          <li><Link to="/review-payment" className="sidebar-link" onClick={handleLinkClick}>Review Payment</Link></li>
           <li><Link to="/payment-history" className="sidebar-link" onClick={handleLinkClick}>Payment History</Link></li>
           <li><Link to="/booking-confirmation" className="sidebar-link" onClick={handleLinkClick}>Booking Confirmation</Link></li>
+          <li><Link to="/dashboard" className="sidebar-link" onClick={handleLinkClick}>User Dashboard</Link></li>
+          
           {/* <li><Link to="/booking-cancellation" className="sidebar-link" onClick={handleLinkClick}>Booking Cancellation</Link></li> */}
           <li>
             <button className="logout-btn" onClick={handleLogout}>
