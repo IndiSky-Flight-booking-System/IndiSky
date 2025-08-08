@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
-import Sidebar from '../Component/NavBar';
+import Sidebar from '../Component/SideBar';
 
 function Contact() {
   const [form, setForm] = useState({

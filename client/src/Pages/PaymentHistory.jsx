@@ -2,7 +2,7 @@ import React from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import '../css/PaymentHistory.css'; // ✅ Import modern styles
-import  Sidebar  from '../Component/NavBar';
+import  Sidebar  from '../Component/SideBar';
 function PaymentHistory() {
   
   const payments = [

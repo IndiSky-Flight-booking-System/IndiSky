@@ -43,6 +43,10 @@ export const infoContext = createContext();
 export const flightDetailsContext = createContext();
 export const totalPriceContext = createContext();
 export const searchedFlightsContext = createContext();
+export const passengerListContext = createContext();
+export const selectedSeatsContext = createContext();
+export const bookingContext = createContext();
+export const passengerListResponseContext = createContext();
 
 function App() {
   const [info, setInfo] = useState({
@@ -61,8 +65,16 @@ function App() {
   const [selectedOneway, setSelectedOneway] = useState(null);
   const [selectedRoundtrip, setSelectedRoundtrip] = useState(null);
   const [total, setTotal] = useState(0);
-
+  const [passengerList, setPassengerList] = useState([]);
   const [searched, setSearched] = useState(false);
+
+  const [selectedSeats, setSelectedSeats] = useState([]);
+  const [selectedReturnSeats, setSelectedReturnSeats] = useState([]);
+
+  const [mainBooking, setMainBooking] = useState([]);
+  
+
+  const [passengerRespList, setPassengerRespList] = useState([]);
 
   return (
     <div>
@@ -71,48 +83,56 @@ function App() {
         <searchedFlightsContext.Provider value={{ searched, setSearched }} >
           <flightDetailsContext.Provider value={{ selectedOneway, setSelectedOneway, selectedRoundtrip, setSelectedRoundtrip }} >
             <totalPriceContext.Provider value={{ total, setTotal }} >
-              <Routes>
-                <Route path='/log' element={<Login />}></Route>
-                <Route path='/reg' element={<Register />}></Route>
-                <Route path='/' element={<Home />}></Route>
+              <passengerListResponseContext.Provider value={{ passengerRespList, setPassengerRespList }} >
+                <passengerListContext.Provider value={{ passengerList, setPassengerList }} >
+                  <selectedSeatsContext.Provider value={{ selectedSeats, setSelectedSeats,selectedReturnSeats, setSelectedReturnSeats }} >
+                    <bookingContext.Provider value={{ mainBooking, setMainBooking }} >
+                      <Routes>
+                        <Route path='/log' element={<Login />}></Route>
+                        <Route path='/reg' element={<Register />}></Route>
+                        <Route path='/' element={<Home />}></Route>
 
-                {/* Admin Routes */}
-                <Route path='/admin/dashboard' element={<AdminDashboard />} />
-                <Route path='/admin/airlines' element={<ManageAirlines />} />
-                <Route path='/admin/airports' element={<ManageAirports />} />
-                <Route path='/admin/flights' element={<ManageFlights />} />
-                <Route path='/admin/seats' element={<ManageSeats />} />
-                <Route path='/admin/users' element={<ManageUsers />} />
-                <Route path='/admin/flight-status' element={<FlightStatusManagement />} />
-                <Route path="/admin/view-bookings" element={<AdminViewBookings />} />
-                <Route path="/admin/payments" element={<PaymentsManagement />} />
-                <Route path="/admin/passengers" element={<PassengersList />} />
-                <Route path="/admin/flight-status" element={<FlightStatusManagement />} />
-                <Route path="/admin/users-management" element={<UserManagement />} />
-                {/* //<Route path="/admin/bookings/:bookingId" element={<AdminBookingDetails />} /> */}
-
-
-
-
-                <Route path='/pass' element={<Passengers />}></Route>
-                <Route path='/show' element={<ShowFlights />}></Route>
-                <Route path='/review' element={<FlightDetails />}></Route>
-                <Route path='/dashboard' element={<UserDashBoard />}></Route>
-                <Route path='/seat-selection' element={<SeatSelection />}></Route>
-
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/terms" element={<TermsPrivacy />} />
-                <Route path="/review-payment" element={<ReviewPayment />} />
-                <Route path="/booking-confirmation" element={<BookingConfirmation />} />
-                <Route path="/my-bookings" element={<MyBookings />} />
-                <Route path="/profile" element={<UserProfile />} />
-                <Route path="/flight-status" element={<FlightStatus />} />
-                <Route path="/payment-history" element={<PaymentHistory />} />
-                <Route path="/show-flights" element={<ShowFlights />} />
-                <Route path="/seat-selection" element={<SeatSelection />} />
+                        {/* Admin Routes */}
+                        <Route path='/admin/dashboard' element={<AdminDashboard />} />
+                        <Route path='/admin/airlines' element={<ManageAirlines />} />
+                        <Route path='/admin/airports' element={<ManageAirports />} />
+                        <Route path='/admin/flights' element={<ManageFlights />} />
+                        <Route path='/admin/seats' element={<ManageSeats />} />
+                        <Route path='/admin/users' element={<ManageUsers />} />
+                        <Route path='/admin/flight-status' element={<FlightStatusManagement />} />
+                        <Route path="/admin/view-bookings" element={<AdminViewBookings />} />
+                        <Route path="/admin/payments" element={<PaymentsManagement />} />
+                        <Route path="/admin/passengers" element={<PassengersList />} />
+                        <Route path="/admin/flight-status" element={<FlightStatusManagement />} />
+                        <Route path="/admin/users-management" element={<UserManagement />} />
+                        {/* //<Route path="/admin/bookings/:bookingId" element={<AdminBookingDetails />} /> */}
 
 
-              </Routes>
+
+
+                        <Route path='/pass' element={<Passengers />}></Route>
+                        <Route path='/show' element={<ShowFlights />}></Route>
+                        <Route path='/review' element={<FlightDetails />}></Route>
+                        <Route path='/dashboard' element={<UserDashBoard />}></Route>
+                        <Route path='/seat-selection' element={<SeatSelection />}></Route>
+
+                        <Route path="/contact" element={<Contact />} />
+                        <Route path="/terms" element={<TermsPrivacy />} />
+                        <Route path="/review-payment" element={<ReviewPayment />} />
+                        <Route path="/booking-confirmation" element={<BookingConfirmation />} />
+                        <Route path="/my-bookings" element={<MyBookings />} />
+                        <Route path="/profile" element={<UserProfile />} />
+                        <Route path="/flight-status" element={<FlightStatus />} />
+                        <Route path="/payment-history" element={<PaymentHistory />} />
+                        <Route path="/show-flights" element={<ShowFlights />} />
+                        <Route path="/seat-selection" element={<SeatSelection />} />
+
+
+                      </Routes>
+                    </bookingContext.Provider>
+                  </selectedSeatsContext.Provider>
+                </passengerListContext.Provider>
+              </passengerListResponseContext.Provider>
             </totalPriceContext.Provider>
           </flightDetailsContext.Provider>
         </searchedFlightsContext.Provider>

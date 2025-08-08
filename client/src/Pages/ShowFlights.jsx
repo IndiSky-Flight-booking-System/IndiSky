@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Search from '../Component/Search';
-import Sidebar from '../Component/NavBar';
+// import Sidebar from '../Component/SideBar';
 import { useNavigate } from 'react-router-dom';
 import { GetFlightSearch } from '../Service/flight';
 import {
@@ -16,8 +16,8 @@ function FlightCard({ flight, isSelected, onSelect }) {
   return (
     <div
       role="button"
-      tabIndex={0}
-      className={`flight-card ${isSelected ? 'selected' : ''}`}
+      tabIndex={0}  
+      className={`flight-card ${isSelected ? 'selected' : ''}`  }
       onClick={() => onSelect(flight)}
       onKeyDown={(e) => e.key === 'Enter' && onSelect(flight)}
     >
@@ -73,34 +73,46 @@ function ShowFlights() {
   }
 
   async function onGetFlightSearch() {
-    const { trip, from, to, departure, arrival, Tclass, passenger } = info;
-    const result = await GetFlightSearch(trip, from, to, departure, arrival, Tclass, passenger);
+    const { trip, from, to, departure, arrival, passenger } = info;
+    const result = await GetFlightSearch(trip, from, to, departure, arrival,  passenger);
+    console.log(result);
 
     if (result) {
-      const oneWayData = (result.onewayFlights || []).map((f) => ({
+      const onewayformat = (result.onewayFlights || []).map(f => ({
         id: f.flightId,
         airline: f.airline.airlineName,
         from: f.sourceAirport.iataCode,
         to: f.destinationAirport.iataCode,
-        dep: f.departureTime.split('T')[1].substring(0, 5),
-        arr: f.arrivalTime.split('T')[1].substring(0, 5),
+        sourceName: f.sourceAirport.city,
+        destName: f.destinationAirport.city,
+        dep: f.departureTime.split("T")[1].substring(0, 5),
+        arr: f.arrivalTime.split("T")[1].substring(0, 5),
+        depDate: f.departureTime.split("T")[0],
+        arrDate: f.arrivalTime.split("T")[0],
+        flightNo: f.flightNumber,
         duration: formatDuration(f.departureTime, f.arrivalTime),
-        price: f.basePrice,
+        price: f.basePrice
       }));
 
-      const roundTripData = (result.roundTripFlights || []).map((f) => ({
+      const roudtripformat = (result.roundTripFlights || []).map(f => ({
         id: f.flightId,
         airline: f.airline.airlineName,
         from: f.sourceAirport.iataCode,
         to: f.destinationAirport.iataCode,
-        dep: f.departureTime.split('T')[1].substring(0, 5),
-        arr: f.arrivalTime.split('T')[1].substring(0, 5),
+        sourceName: f.sourceAirport.city,
+        destName: f.destinationAirport.city,
+        dep: f.departureTime.split("T")[1].substring(0, 5),
+        arr: f.arrivalTime.split("T")[1].substring(0, 5),
+        depDate: f.departureTime.split("T")[0],
+        arrDate: f.arrivalTime.split("T")[0],
+        flightNo: f.flightNumber,
         duration: formatDuration(f.departureTime, f.arrivalTime),
-        price: f.basePrice,
+        price: f.basePrice
       }));
 
-      setOneWayFlights(oneWayData);
-      setRoundTripFlights(roundTripData);
+
+      setOneWayFlights(onewayformat);
+      setRoundTripFlights(roudtripformat);
     }
   }
 
@@ -114,37 +126,30 @@ function ShowFlights() {
     }
   }, [searched, info]);
 
-  const filteredOneWay = oneWayFlights.filter(
-    (f) =>
-      f.from.toLowerCase() === info.from.toLowerCase() &&
-      f.to.toLowerCase() === info.to.toLowerCase()
-  );
-
-  const filteredRoundTrip = roundTripFlights.filter(
-    (f) =>
-      f.from.toLowerCase() === info.to.toLowerCase() &&
-      f.to.toLowerCase() === info.from.toLowerCase()
-  );
 
   const bookFlights = () => navigate('/review');
 
   return (
     <>
       <SlideBar />
-      <Sidebar />
+      {/* <SideBa /> */}
       <Search />
 
-      <div className="container my-3">
+      <div className="container my-3" style={{ paddingBottom: "120px" }}>
         {/* Trip Summary */}
-        <div className="trip-summary d-flex justify-content-around bg-info p-3 rounded text-white mb-4">
-          <span>{info.from}</span>
-          <span>{info.to}</span>
-          <span>{info.departure}</span>
-          <span>{info.arrival || ''}</span>
-          <span>
-            {info.passenger} {info.Tclass === 'Premium_Economy' ? 'Premium' : info.Tclass}
-          </span>
-        </div>
+
+        {info.from && info.to && info.passenger && info.Tclass && (
+          <div className="trip-summary d-flex justify-content-around bg-info p-3 rounded text-white mb-4">
+            <span>{info.from}</span>
+            <span>{info.to}</span>
+            <span>{info.departure}</span>
+            <span>{info.arrival || ''}</span>
+            <span>
+             Passenger {info.passenger}  {info.Tclass === 'Premium_Economy' ? 'Premium' : info.Tclass } Class
+            </span>
+          </div>
+        )}
+
 
         {/* Tabs */}
         <div className="row text-center mb-3 trip-tabs" role="tablist">
@@ -176,8 +181,8 @@ function ShowFlights() {
           {info.trip === 'RoundTrip' ? (
             <>
               <div className="col-6 d-flex flex-column align-items-center">
-                {filteredOneWay.length > 0 ? (
-                  filteredOneWay.map((flight) => (
+                {oneWayFlights.length > 0 ? (
+                  oneWayFlights.map((flight) => (
                     <FlightCard
                       key={flight.id}
                       flight={flight}
@@ -190,8 +195,8 @@ function ShowFlights() {
                 )}
               </div>
               <div className="col-6 d-flex flex-column align-items-center">
-                {filteredRoundTrip.length > 0 ? (
-                  filteredRoundTrip.map((flight) => (
+                {roundTripFlights.length > 0 ? (
+                  roundTripFlights.map((flight) => (
                     <FlightCard
                       key={flight.id}
                       flight={flight}
@@ -206,8 +211,8 @@ function ShowFlights() {
             </>
           ) : (
             <div className="col d-flex flex-column align-items-center">
-              {filteredOneWay.length > 0 ? (
-                filteredOneWay.map((flight) => (
+              {oneWayFlights.length > 0 ? (
+                oneWayFlights.map((flight) => (
                   <FlightCard
                     key={flight.id}
                     flight={flight}
@@ -225,8 +230,8 @@ function ShowFlights() {
 
       {/* Booking Summary Bar */}
       {(info.trip === 'OneWay' && selectedOneway) ||
-      (info.trip === 'RoundTrip' && selectedOneway && selectedRoundtrip) ? (
-        <div className="fixed-bottom booking-summary-container p-3 bg-light shadow-lg">
+        (info.trip === 'RoundTrip' && selectedOneway && selectedRoundtrip) ? (
+        <div className="fixed-bottom booking-summary-container p-3 bg-light shadow-lg" style={{position:'fixed', bottom:0,zIndex: 1050}} >
           <div className="container d-flex justify-content-between align-items-center">
             <div className="booking-flight-details d-flex">
               <div className="booking-flight-card">

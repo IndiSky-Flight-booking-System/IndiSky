@@ -62,7 +62,7 @@ import React from 'react';
 import SlideBar from '../Component/SlideBar';
 import Search from './../Component/Search';
 import '../css/UserDashBoard.css';
-import Sidebar from '../Component/NavBar';
+import Sidebar from '../Component/SideBar';
 
 function UserDashBoard() {
   const bookings = [

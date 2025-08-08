@@ -3,22 +3,23 @@ import Footer from '../Component/Footer';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { infoContext } from '../App';
+import { infoContext, passengerListContext, passengerListResponseContext } from '../App';
 import { countries } from '../Component/country';
 import { addPassenger } from '../Service/passenger';
 import '../css/Passengers.css';
-import Sidebar from '../Component/NavBar';
+// import Sidebar from '../Component/SideBar';
 
 function Passengers() {
   const { info } = useContext(infoContext);
-  const [passengerList, setPassengerList] = useState([]);
+  const {passengerList, setPassengerList}= useContext(passengerListContext);
+  const { setPassengerRespList} = useContext(passengerListResponseContext);
 
   useEffect(() => {
     let count = parseInt(info.passenger);
     const passArray = Array.from({ length: count }, () => ({
-      full_name: '',
+      fullName: '',
       dob: '',
-      passport_no: '',
+      passportNo: '',
       nationality: 'IN',
     }));
     setPassengerList(passArray);
@@ -29,37 +30,38 @@ function Passengers() {
     updatedList[index][field] = value;
     setPassengerList(updatedList);
   };
-
+console.log(passengerList);
   const navigate = useNavigate();
 
   const onSave = async () => {
     for (let i = 0; i < passengerList.length; i++) {
       const p = passengerList[i];
-      if (p.full_name.length === 0) {
+      if (p.fullName.length === 0) {
         toast.error(`Passenger ${i + 1} Name cannot be empty`);
         return;
       } else if (p.dob.length === 0) {
         toast.error(`Passenger ${i + 1} DOB cannot be empty`);
         return;
-      } else if (p.passport_no.length < 8) {
+      } else if (p.passportNo.length < 8) {
         toast.error(`Passenger ${i + 1} Passport No. is invalid`);
         return;
       }
     }
-
+ 
     const result = await addPassenger(passengerList);
-    if (result.status === 'success') {
-      toast.success("Passenger Saved Successfully!");
-      navigate('/');
-    } else {
-      toast.error(result.error);
-    }
+    console.log(result);
+    if (result.status === 201) {
+      setPassengerRespList(result.data);
+      toast.success(result.data);
+      navigate('/seat-selection');
+      
+    } 
   };
 
   return (
     <div>
       <SlideBar />
-      <Sidebar />
+      {/* <Sidebar /> */}
       <div className="container mt-4 mb-5">
         <h2 className="text-center title">Passenger Registration</h2>
         <hr />
@@ -76,7 +78,7 @@ function Passengers() {
                       type="text"
                       className="form-control"
                       placeholder="Virat Kohli"
-                      onChange={(e) => onPassengerChange(index, 'full_name', e.target.value)}
+                      onChange={(e) => onPassengerChange(index, 'fullName', e.target.value)}
                     />
                   </div>
 
@@ -95,7 +97,7 @@ function Passengers() {
                       type="text"
                       className="form-control"
                       placeholder="A1234567"
-                      onChange={(e) => onPassengerChange(index, 'passport_no', e.target.value)}
+                      onChange={(e) => onPassengerChange(index, 'passportNo', e.target.value)}
                     />
                   </div>
 

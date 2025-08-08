@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import '../css/MyBookings.css'; // Don't forget to create or replace this CSS file
-import Sidebar from '../Component/NavBar';
+import Sidebar from '../Component/SideBar';
 
 function MyBookings() {
   const [bookings, setBookings] = useState([
