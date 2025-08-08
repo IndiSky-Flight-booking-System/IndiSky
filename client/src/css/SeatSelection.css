@@ -68,7 +68,11 @@ h2 {
 }
 
 .seat.selected {
-  background-color: #2ecc71;
+  background-color: #2ecc71 !important;
+}
+
+.seat.first {
+  background-color: #f1c40f; /* Bright Yellow */
 }
 
 .seat.booked {

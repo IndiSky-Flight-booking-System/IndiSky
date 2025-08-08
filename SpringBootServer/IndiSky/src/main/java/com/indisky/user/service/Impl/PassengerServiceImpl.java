@@ -23,17 +23,17 @@ public class PassengerServiceImpl implements PassengerService {
     private final PassengerRepository passengerRepository;
 
     @Override
-    public String addPassengers(List<PassengerRequestDto> passDto) {
+    public List<PassengerResponseDto> addPassengers(List<PassengerRequestDto> passDto) {
         if(passDto==null || passDto.isEmpty()){
-            return "No Passengers to add ";
+            return new ArrayList<>();
         }
-        List<Passenger> entity = new ArrayList<>();
+        List<PassengerResponseDto> dtos = new ArrayList<>();
         for (PassengerRequestDto en : passDto){
             Passenger passenger=modelMapper.map(en,Passenger.class);
-            entity.add(passenger);
+            passengerRepository.save(passenger);
+            dtos.add(modelMapper.map(passenger, PassengerResponseDto.class));
         }
-        passengerRepository.saveAll(entity);
-        return "Passengers Added Successfully";
+        return dtos;
     }
 
     public PassengerResponseDto addPassenger(PassengerRequestDto dto) {

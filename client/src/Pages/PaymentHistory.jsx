@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import '../css/PaymentHistory.css';
-import Sidebar from '../Component/Sidebar';
+//import Sidebar from '../Component/Sidebar';
 import { getPaymentsByUser } from '../Service/payment';
 
 function PaymentHistory() {
   const [payments, setPayments] = useState([]);
   const [error, setError] = useState(null);
 
-  const userId = 1; // ✅ Replace with dynamic value if needed
+  const userId = 2; // ✅ Replace with dynamic value if needed
 
   useEffect(() => {
     const fetchPayments = async () => {
@@ -38,7 +38,7 @@ function PaymentHistory() {
   return (
     <div>
       <SlideBar />
-      <Sidebar />
+      {/* <Sidebar /> */}
       <div className="container mt-5 mb-5">
         <h2 className="text-center mb-4" style={{ color: '#512888' }}>Payment History</h2>
 

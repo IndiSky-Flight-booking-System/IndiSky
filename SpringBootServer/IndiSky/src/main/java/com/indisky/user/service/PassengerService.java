@@ -10,7 +10,7 @@ public interface PassengerService {
     PassengerResponseDto addPassenger(PassengerRequestDto dto);
     PassengerResponseDto getPassengerById(Long id);
 
-    String addPassengers(List<PassengerRequestDto> passDto);
+    List<PassengerResponseDto> addPassengers(List<PassengerRequestDto> passDto);
 
 //
 //    List<PassengerRespDto> getAllPassengersByFlight(Long id);  //flight id

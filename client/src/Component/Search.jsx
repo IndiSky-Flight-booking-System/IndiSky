@@ -13,9 +13,10 @@ function Search() {
   const [adult, setAdult] = useState(1);
   const [senior, setSenior] = useState(0);
   const [trips, setTrips] = useState('OneWay');
-  const [clas, setClas] = useState('');
+  
 
   const navigate = useNavigate();
+  console.log(info);
 
   const today = new Date().toISOString().split('T')[0];
   const next = new Date();
@@ -31,35 +32,36 @@ function Search() {
       setAdult(info.adult || 1);
       setSenior(info.senior || 0);
       setTrips(info.trip || 'OneWay');
-      setClas(info.class || '');
     }
   }, []);
 
+  //It was just giving default value when changed to roundtrip and summation of total
+  //It was not Synchronizing properly  therefore used useEffect to update it simultaneously 
+  //did for both in single useEffect  
   useEffect(() => {
     setInfo((e) => ({
       ...e,
       passenger: total,
       trip: trips,
       departure: e.departure || today,
-      return: trips === 'OneWay' ? '' : (e.return || tom),
-      class: clas,
+      arrival: trips === 'OneWay' ? '' : (e.arrival || tom),
       adult,
       child,
       senior,
     }));
-  }, [total, trips, clas, adult, child, senior]);
+  }, [total, trips, adult, child, senior]);
 
   function onSearch() {
-    if (!info.from?.length) {
-      toast.error("Source location is Empty");
-    } else if (!info.to?.length) {
-      toast.error("Destination location is Empty");
-    } else if (!info.departure?.length) {
-      toast.error("Departure date is Empty");
-    } else if (!info.class?.length) {
-      toast.error("Class Not selected");
+    if (info.from.length == 0) {
+      toast.error("Source location is Empty")
+    } else if (info.to.length == 0) {
+      toast.error("Destination location is Empty")
+    } else if (info.departure.length === 0) {
+      toast.error("Departure date is Empty")
+    } else if (trips === 'RoundTrip' && (!info.arrival || info.arrival.length === 0)) {
+      toast.error("Return date is Empty")
     } else {
-      navigate('/show');
+      navigate('/show')
       setSearched(true);
     }
   }
@@ -96,7 +98,7 @@ function Search() {
             id="from"
             placeholder="Pune"
             value={info.from || ''}
-            onChange={(e) => setInfo({ ...info, from: e.target.value })}
+            onChange={(e) => setInfo({ ...info, from: e.target.value.trim()})}
           />
         </div>
         <div className="col-md">
@@ -105,9 +107,9 @@ function Search() {
             type="text"
             className="form-control"
             id="to"
-            placeholder="Delhi"
+            placeholder="Kochi"
             value={info.to || ''}
-            onChange={(e) => setInfo({ ...info, to: e.target.value })}
+            onChange={(e) => setInfo({ ...info, to: e.target.value.trim() })}
           />
         </div>
         <div className="col-md">
@@ -118,7 +120,7 @@ function Search() {
             id="dept"
             min={today}
             value={info.departure || today}
-            onChange={(e) => setInfo({ ...info, departure: e.target.value, return: '' })}
+            onChange={(e) => setInfo({ ...info, departure: e.target.value, arrival: trips === 'OneWay' ? '' : info.arrival })}
           />
         </div>
         <div className="col-md">
@@ -128,27 +130,27 @@ function Search() {
             className="form-control"
             id="ret"
             min={today}
-            value={info.return || tom}
-            onChange={(e) => setInfo({ ...info, return: e.target.value })}
-            disabled={trips === 'OneWay'}
+            value={info.arrival || tom}
+            onChange={(e) => setInfo({ ...info, arrival : e.target.value })}
+          disabled={trips === 'OneWay'}
           />
         </div>
       </div>
 
       {/* Passenger and Class Dropdown */}
       <div className="dropdown mt-4">
-        <label className="form-label">Passengers & Class</label>
+        <label className="form-label">Passengers</label>
         <button
           className="btn btn-outline-primary dropdown-toggle w-100"
           type="button"
           data-bs-toggle="dropdown"
         >
-          {total} Travellers | {clas || 'Select Class'}
+          {total} Travellers 
         </button>
         <ul className="dropdown-menu w-100 p-3" onClick={(e) => e.stopPropagation()}>
           {[{ label: 'Child', key: 'child', value: child, setter: setChild },
-            { label: 'Adult', key: 'adult', value: adult, setter: setAdult },
-            { label: 'Senior Citizen', key: 'senior', value: senior, setter: setSenior },
+          { label: 'Adult', key: 'adult', value: adult, setter: setAdult },
+          { label: 'Senior Citizen', key: 'senior', value: senior, setter: setSenior },
           ].map(({ label, key, value, setter }) => (
             <li className="d-flex align-items-center justify-content-between my-2" key={key}>
               <span>{label}</span>
@@ -163,24 +165,8 @@ function Search() {
               <span className="text-success">{value}</span>
             </li>
           ))}
-          <hr />
-          <label className="mb-1">Select Class</label>
-          {['Economy', 'Premium_Economy', 'Business'].map((option) => (
-            <div className="form-check" key={option}>
-              <input
-                className="form-check-input"
-                type="radio"
-                name="class"
-                id={option}
-                value={option}
-                checked={clas === option}
-                onChange={(e) => setClas(e.target.value)}
-              />
-              <label className="form-check-label" htmlFor={option}>
-                {option.replace('_', ' ')}
-              </label>
-            </div>
-          ))}
+          
+          
         </ul>
       </div>
 

@@ -20,7 +20,7 @@ public class PassengerController {
 
 
     @PostMapping("/addlist")
-    public ResponseEntity<String> addPassengers(@RequestBody List<PassengerRequestDto> psDto){
+    public ResponseEntity<List<PassengerResponseDto>> addPassengers(@RequestBody List<PassengerRequestDto> psDto){
         return ResponseEntity.status(HttpStatus.CREATED).body(service.addPassengers(psDto));
     }
 

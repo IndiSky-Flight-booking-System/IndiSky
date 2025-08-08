@@ -12,7 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/payments")
 @RequiredArgsConstructor
-public class PaymentController {
+public class  PaymentController {
 
     private final PaymentService paymentService;
 
