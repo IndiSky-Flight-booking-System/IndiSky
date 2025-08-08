@@ -1,26 +1,24 @@
-
-import { config } from './config';
-import axios from 'axios'
+import { myAxios } from "./config";
 
 
-export async function RegisterBody(role, full_name, email, password, phone_no, dob, passport_no) {
-    try {
+export const signUp = async (userData) => {
+  try {
+    const response = await myAxios.post("/user/register", userData);
+    return { success: true, data: response.data };
+  } catch (error) {
+    const message =
+      error.response?.data || "Something went wrong while registering!";
+    return { success: false, error: message };
+  }
+};
 
-        const url = `${config.serverUrl}/user`
-
-        const body = {
-            personRole : role,
-            fullName :full_name,
-            email,
-            password,
-            phoneNo : phone_no,
-            birthDate : dob,
-            passportNo :passport_no
-        }
-
-        const response = await axios.post(url, body);
-        return response
-    } catch (ex) {
-        console.log(ex);
+export const login = async (userData) => {
+    try{
+        const response = await myAxios.post("/user/login", userData);
+        return { success: true, data: response.data };
+    }catch (error){
+        const message = 
+            error.response?.data || "Something went wrong in login !!"
+        return { success: false, error: message };
     }
-}
+};

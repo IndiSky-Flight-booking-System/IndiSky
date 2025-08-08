@@ -38,8 +38,9 @@ public class UserProfileServiceImpl implements UserProfileService {
         if(user!=null){
             user.setPersonRole(Role.USER);
             user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-            userRepository.save(user);
-            return user.getFullName() + " Registered Successfully!";
+            User  savedUser = userRepository.save(user);
+            String token = jwtService.generateToken(savedUser);
+            return "Registered successfully. Token: " + token;
         }
         return "Failed to Registered!";
     }
@@ -47,17 +48,18 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     public String updateUser(UserRequestDto userdto, String email) {
-        //        String email = from security  and remove email from parameter
-                User user = userRepository.findByEmail(email);
+        // String email = from security  and remove email from parameter
+        User user = userRepository.findByEmail(email);
         System.out.println(user.toString());
 
          if(userdto.getFullName()!=null){
              user.setFullName(userdto.getFullName());
          }
 
-         if(userdto.getEmail()!=null){
-             user.setEmail(userdto.getEmail());
-         }
+//Allowing users to update their email can break JWT-based login and is a security risk
+//         if(userdto.getEmail()!=null){
+//             user.setEmail(userdto.getEmail());
+//         }
 
          if(userdto.getBirthDate()!=null){
              user.setBirthDate(userdto.getBirthDate());
@@ -72,7 +74,7 @@ public class UserProfileServiceImpl implements UserProfileService {
          }
 
          if(userdto.getPassword()!=null && !userdto.getPassword().isEmpty()){
-             user.setPassword(userdto.getPassword());
+             user.setPassword(new BCryptPasswordEncoder().encode(userdto.getPassword()));
          }
 
          userRepository.save(user);
@@ -85,8 +87,9 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userRequestDto.getEmail(),userRequestDto.getPassword()));
+        User user = userRepository.findByEmail(userRequestDto.getEmail());
         if(authentication.isAuthenticated()){
-            return jwtService.generateToken(userRequestDto.getEmail());
+            return jwtService.generateToken(user);
         }
         return null;
     }

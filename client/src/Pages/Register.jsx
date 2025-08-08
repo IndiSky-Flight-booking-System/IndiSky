@@ -2,12 +2,12 @@
 import React, { useContext, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify';
-import { RegisterBody } from '../Service/user';
 import '../css/Register.css';
+import { register } from 'react-scroll/modules/mixins/scroller';
+import { signUp } from './../Service/user';
 
 function Register() {
   const [info, setInfo] = useState({
-    role: 'USER',
     full_name: '',
     email: '',
     password: '',
@@ -46,6 +46,19 @@ function Register() {
       toast.error('Invalid Passport Number');
     } else {
       // Replace this with real API call
+      const { full_name, email, password, phone_no, dob, passport_no } = info;
+
+      const result = await signUp({
+        fullName: full_name,
+        email,
+        password,
+        phoneNo: phone_no,
+        birthDate: dob,
+        passportNo: passport_no
+      });
+
+      console.log(result);
+
       toast.success('Registered Successfully!');
       navigate('/log');
     }
@@ -57,36 +70,7 @@ function Register() {
         <h2 className="text-center mb-4">Create an Account</h2>
         <hr />
 
-        {/* Role Selection */}
-        <div className="form-group text-center mb-3">
-          <label>Select Role</label>
-          <div className="d-flex justify-content-center gap-4 mt-2">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                id="user"
-                name="role"
-                value="USER"
-                checked={info.role === 'USER'}
-                onChange={(e) => setInfo({ ...info, role: e.target.value })}
-              />
-              <label className="form-check-label" htmlFor="user">User</label>
-            </div>
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="radio"
-                id="admin"
-                name="role"
-                value="ADMIN"
-                checked={info.role === 'ADMIN'}
-                onChange={(e) => setInfo({ ...info, role: e.target.value })}
-              />
-              <label className="form-check-label" htmlFor="admin">Admin</label>
-            </div>
-          </div>
-        </div>
+    
 
         {/* Input Fields */}
         {[

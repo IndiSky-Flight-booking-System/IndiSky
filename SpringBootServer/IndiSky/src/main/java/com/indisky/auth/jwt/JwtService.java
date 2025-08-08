@@ -1,9 +1,12 @@
 package com.indisky.auth.jwt;
 
+import com.indisky.entities.User;
+import com.indisky.enums.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,26 +21,21 @@ import java.util.function.Function;
 
 @Service
 public class JwtService {
-    private String secretKey = "";
 
-    public JwtService(){
-        try {
-            KeyGenerator keyGen = KeyGenerator.getInstance("HmacSHA256");
-            SecretKey sk = keyGen.generateKey();
-            secretKey = Base64.getEncoder().encodeToString(sk.getEncoded());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Value("${jwt.secret}")
+    private String secretKey;
 
-    public String generateToken(String email) {
+
+    public String generateToken(User user) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("Id",user.getId());
+        claims.put("Role",user.getPersonRole()); // adding role to JWT token
         return Jwts.builder()
                 .claims()
                 .add(claims)
-                .subject(email)
+                .subject(user.getEmail())
                 .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + 60 * 60 * 30))
+                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10 hrs
                 .and()
                 .signWith(getKey())
                 .compact();
@@ -59,6 +57,10 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
+        if (token == null || !token.contains(".") || token.split("\\.").length != 3) {
+            throw new IllegalArgumentException("Invalid JWT token format: " + token);
+        }
+
         return Jwts.parser()
                 .verifyWith(getKey())
                 .build()
