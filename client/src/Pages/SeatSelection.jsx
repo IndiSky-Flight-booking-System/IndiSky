@@ -17,7 +17,7 @@ import { toast } from 'react-toastify';
 function SeatSelection() {
   const { selectedOneway, selectedRoundtrip } = useContext(flightDetailsContext);
   const { passengerList } = useContext(passengerListContext);
-  const { selectedSeats, setSelectedSeats ,selectedReturnSeats, setSelectedReturnSeats} = useContext(selectedSeatsContext);
+  const { selectedSeats, setSelectedSeats, selectedReturnSeats, setSelectedReturnSeats} = useContext(selectedSeatsContext);
   const [onewaySeats, setOnewaySeats] = useState([]);
   const [roundtripSeats, setRoundtripSeats] = useState([]);
   const { total } = useContext(totalPriceContext);
@@ -86,8 +86,8 @@ function SeatSelection() {
     }
 
     const isSelected = fromRoundtrip
-      ? selectedReturnSeats.some((s) => s.seatNumber === seatNumber)
-      : selectedSeats.some((s) => s.seatNumber === seatNumber);
+  ? selectedReturnSeats.some((s) => s.seatNumber === seatNumber)
+  : selectedSeats.some((s) => s.seatNumber === seatNumber);
 
     if (isSelected) {
       className += ' selected';
@@ -113,39 +113,54 @@ function SeatSelection() {
     return className;
   };
 
-  const renderSeatMap = (seats, fromRoundtrip = false) => {
-    const groupedSeats = seats.reduce((acc, seat) => {
-      const group = seat.seatClass || 'UNKNOWN';
-      if (!acc[group]) acc[group] = [];
-      acc[group].push(seat);
-      return acc;
-    }, {});
+const renderSeatMap = (seats, fromRoundtrip = false) => {
+  // Remove duplicate seats based on seatNumber + seatClass
+  const uniqueSeats = seats.filter(
+    (seat, index, self) =>
+      index === self.findIndex(
+        (s) => s.seatNumber === seat.seatNumber && s.seatClass === seat.seatClass
+      )
+  );
 
-    return (
-      <div className="plane-body">
-        {Object.entries(groupedSeats).map(([className, seats]) => (
-          <div key={className} className="seat-class-group">
-            <h4>{className}</h4>
-            <div className="seat-row">
-              {seats
-                .sort((a, b) => a.seatNumber.localeCompare(b.seatNumber))
-                .map((seat, i) => (
-                  <React.Fragment key={seat.seatNumber}>
-                    {i === 3 && <div className="aisle-gap" />}
-                    <div
-                      className={getSeatClass(seat.seatNumber, fromRoundtrip)}
-                      onClick={() => toggleSeat(seat.seatNumber, fromRoundtrip)}
-                    >
-                      {seat.seatNumber}
-                    </div>
-                  </React.Fragment>
-                ))}
-            </div>
+  // Group seats by class
+  const groupedSeats = uniqueSeats.reduce((acc, seat) => {
+    const group = seat.seatClass || 'UNKNOWN';
+    if (!acc[group]) acc[group] = [];
+    acc[group].push(seat);
+    return acc;
+  }, {});
+
+  return (
+    <div className="plane-body">
+      {Object.entries(groupedSeats).map(([className, groupSeats]) => (
+        <div
+          key={`${fromRoundtrip ? 'return' : 'oneway'}-${className}`}
+          className="seat-class-group"
+        >
+          <h4>{className}</h4>
+          <div className="seat-row">
+            {groupSeats
+              .sort((a, b) => a.seatNumber.localeCompare(b.seatNumber))
+              .map((seat, i) => (
+                <React.Fragment
+                  key={`${fromRoundtrip ? 'return' : 'oneway'}-${seat.seatClass}-${seat.seatNumber}`}
+                >
+                  {i === 3 && <div className="aisle-gap" />}
+                  <div
+                    className={getSeatClass(seat.seatNumber, fromRoundtrip)}
+                    onClick={() => toggleSeat(seat.seatNumber, fromRoundtrip)}
+                  >
+                    {seat.seatNumber}
+                  </div>
+                </React.Fragment>
+              ))}
           </div>
-        ))}
-      </div>
-    );
-  };
+        </div>
+      ))}
+    </div>
+  );
+};
+
 
   const handleProceed = async () => {
     const selectedSeatObjects = selectedSeats.map((s) => getSeatDetails(s.seatNumber));
@@ -153,9 +168,6 @@ function SeatSelection() {
 
     const returnSeatObjects = selectedReturnSeats.map((s) => getSeatDetails(s.seatNumber, true));
     const returnSeatIds = returnSeatObjects.map((seat) => seat?.seatId).filter(Boolean);
-
-    console.log("selected seat object =>" +selectedSeatObjects);
-
 
     const basePayload = {
       userId: 2,
@@ -172,12 +184,14 @@ function SeatSelection() {
       basePayload.returnFlightId = selectedRoundtrip.id;
       basePayload.returnSeatIds = returnSeatIds;
     }
-    console.log(basePayload)
+
+    console.log(basePayload);
     try {
       const result = await createBooking(basePayload);
+      console.log('result' + result);
       if (result) {
         setMainBooking(result);
-        navigate('/review-payment', { state : basePayload});
+        navigate('/review-payment',{state: basePayload});
       }
     } catch (err) {
       toast.error('Booking failed. Please try again.');

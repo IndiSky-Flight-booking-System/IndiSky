@@ -20,15 +20,15 @@ function ReviewPayment() {
   const [paymentMethod, setPaymentMethod] = useState('');
   const [confirmed, setConfirmed] = useState(false);
 
-  const location= useLocation();
-  const bookingBasePayload= location.state;
+  const location = useLocation();
+  const bookingBasePayload = location.state;
 
   console.log("basepayload " + bookingBasePayload.ticketClass);
-  
+
 
   const { selectedOneway, selectedRoundtrip } = useContext(flightDetailsContext);
   const { passengerRespList } = useContext(passengerListResponseContext);
-  const { selectedSeats,selectedReturnSeats  } = useContext(selectedSeatsContext);
+  const { selectedSeats, selectedReturnSeats } = useContext(selectedSeatsContext);
   const { total } = useContext(totalPriceContext);
   const { mainBooking } = useContext(bookingContext);
 
@@ -40,7 +40,7 @@ function ReviewPayment() {
     if (!paymentMethod) return toast.error('Please select a payment method');
 
     // Validate return trip seat selection
-   if (selectedRoundtrip && selectedReturnSeats?.length !== passengerRespList.length) {
+    if (selectedRoundtrip && selectedReturnSeats?.length !== passengerRespList.length) {
       return toast.error('Please select return seats for all passengers');
     }
 
@@ -63,7 +63,7 @@ function ReviewPayment() {
       returnPassengerIds: passengerRespList.map(p => p.passengerId || p.id).filter(Boolean),
 
       returnSeatIds: selectedReturnSeats.map(seat => seat.seatId).filter(Boolean),
-        
+
 
       ticketClass: bookingBasePayload.ticketClass || 'ECONOMY',
       ticketType: selectedRoundtrip ? 'ROUND_TRIP' : 'ONE_WAY'
@@ -72,7 +72,7 @@ function ReviewPayment() {
     console.log("Payment Request Data:", requestData);
 
     const result = await makePayment(requestData);
-    console.log("Payment data " +result);
+    console.log("Payment data " + result);
     if (result) {
       setTimeout(() => {
         navigate('/booking-confirmation');
@@ -140,13 +140,23 @@ function ReviewPayment() {
             {passengerRespList.map((passenger, index) => (
               <div className="row mb-2" key={index}>
                 <div className="col-md-4"><strong>Name:</strong> {passenger.fullName}</div>
-                <div className="col"><strong>Nationality:</strong> {
-                  countries.find(c => c.code === passenger.nationality)?.name || passenger.nationality
-                }</div>
-                <div className="col-md-3"><strong>Seat:</strong> {selectedSeats[index]?.seatNumber || 'Not Selected'}</div>
+                <div className="col">
+                  <strong>Nationality:</strong> {
+                    countries.find(c => c.code === passenger.nationality)?.name || passenger.nationality
+                  }
+                </div>
+                <div className="col-md-2">
+                  <strong>Oneway Seat:</strong> {selectedSeats[index]?.seatNumber || 'Not Selected'}
+                </div>
+                {selectedRoundtrip && (
+                  <div className="col-md-2">
+                    <strong>Return Seat:</strong> {selectedReturnSeats[index]?.seatNumber || 'Not Selected'}
+                  </div>
+                )}
               </div>
             ))}
           </section>
+
 
           <hr />
 

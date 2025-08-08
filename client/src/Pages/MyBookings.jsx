@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
-import Sidebar from '../Component/Sidebar';
+//import Sidebar from '../Component/Sidebar';
 import TicketModal from '../Component/TicketModal';
 import { getUserBookings, cancelBooking } from '../Service/booking';
 import '../css/MyBookings.css';
@@ -14,7 +14,7 @@ function MyBookings() {
   const [showModal, setShowModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
 
-  const userId = localStorage.getItem('userId') || 1;
+  const userId = localStorage.getItem('userId') || 2;
 
   useEffect(() => {
     getUserBookings(userId)
@@ -50,7 +50,7 @@ function MyBookings() {
   return (
     <div>
       <SlideBar />
-      <Sidebar />
+      {/* <Sidebar /> */}
       <div className="my-bookings-container">
         <h2 className="heading">My Bookings</h2>
 

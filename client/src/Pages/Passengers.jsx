@@ -1,7 +1,7 @@
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import React, { useContext, useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { infoContext, passengerListContext, passengerListResponseContext } from '../App';
 import { countries } from '../Component/country';
@@ -13,6 +13,7 @@ function Passengers() {
   const { info } = useContext(infoContext);
   const {passengerList, setPassengerList}= useContext(passengerListContext);
   const { setPassengerRespList} = useContext(passengerListResponseContext);
+  const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     let count = parseInt(info.passenger);
@@ -85,7 +86,7 @@ console.log(passengerList);
                   <div className="form-group mb-3">
                     <label>Date of Birth</label>
                     <input
-                      type="date"
+                      type="date" max={today}
                       className="form-control"
                       onChange={(e) => onPassengerChange(index, 'dob', e.target.value)}
                     />

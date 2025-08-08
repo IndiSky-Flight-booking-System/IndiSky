@@ -1,4 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState,useRef  } from 'react';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import '../css/StaticPage.css';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
 import Sidebar from '../Component/SideBar';
@@ -18,7 +21,7 @@ function BookingConfirmation() {
 
   const [onewayBookingData, setOnewayBookingData] = useState(null);
   const [returnBookingData, setReturnBookingData] = useState(null);
-
+const pdfRef = useRef();
   const navigate = useNavigate();
 
   useEffect(() => {

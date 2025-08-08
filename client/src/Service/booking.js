@@ -1,4 +1,6 @@
 // src/service/booking.js
+import { toast } from "react-toastify";
+import { config } from "./config";
 import axios from 'axios';
 
 const BASE_URL = 'http://localhost:8080/api/bookings';
@@ -12,9 +14,7 @@ export const cancelBooking = async (bookingId) => {
   const response = await axios.put(`${BASE_URL}/${bookingId}/cancel`);
   return response.data;
 };
-import { toast } from "react-toastify";
-import { config } from "./config";
-import axios from 'axios';
+
 
 export async function createBooking(bookingPayload) {
   try {

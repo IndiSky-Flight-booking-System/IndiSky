@@ -12,8 +12,6 @@ export async function getSeatsByFlightId(flightId) {
     return [];
   }
 }
-import axios from "axios";
-import { config } from "./config";
 
 const BASE_URL = `${config.serverUrl}/admin/seats`;
 

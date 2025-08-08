@@ -17,8 +17,6 @@ export async function makePayment(paymentData) {
     return null;
   }
 }
-import axios from 'axios';
-import { config } from './config';
 
 const BASE_URL = `${config.serverUrl}/api/payments`;
 
