@@ -40,19 +40,24 @@ public class FlightStatusServiceImpl implements FlightStatusService {
 
     @Override
     public FlightStatusDto addLog(FlightStatusDto dto) {
-        Flight flight = flightRepository.findById(dto.getFlightId())
-                .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
+        // Fetch flight by flight number instead of ID
+        Flight flight = flightRepository.findByFlightNumber(dto.getFlightNumber())
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with number: " + dto.getFlightNumber()));
 
+        // Create a new log entry
         FlightStatusLog log = new FlightStatusLog();
         log.setFlight(flight);
         log.setStatus(dto.getStatus());
         log.setUpdatedAt(LocalDateTime.now());
 
+        // Update flight's current status
         flight.setStatus(dto.getStatus());
         flightRepository.save(flight);
 
+        // Save the log
         FlightStatusLog saved = logRepository.save(log);
 
+        // Prepare response DTO
         FlightStatusDto responseDto = mapper.map(saved, FlightStatusDto.class);
         responseDto.setFlightId(flight.getFlightId());
         responseDto.setFlightNumber(flight.getFlightNumber());
@@ -60,4 +65,5 @@ public class FlightStatusServiceImpl implements FlightStatusService {
 
         return responseDto;
     }
+
 }

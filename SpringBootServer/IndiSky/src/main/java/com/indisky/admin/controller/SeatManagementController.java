@@ -20,9 +20,9 @@ public class SeatManagementController {
         this.seatService = seatService;
     }
 
-    @GetMapping("/flights/{flightId}/seats")
-    public ResponseEntity<List<FlightSeatDto>> getSeatsByFlight(@PathVariable Long flightId) {
-        return ResponseEntity.ok(seatService.getSeatsByFlightId(flightId));
+    @GetMapping("/seats")
+    public ResponseEntity<List<FlightSeatDto>> getAllSeats() {
+        return ResponseEntity.ok(seatService.getAllSeats());
     }
 
     @PostMapping("/seats")

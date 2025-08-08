@@ -15,8 +15,9 @@ public class FlightSeatDto {
     @NotNull(message = "Seat class is required")
     private TicketClass seatClass;
 
-    @NotNull(message = "Flight ID is required")
+
     private Long flightId;
 
     private boolean booked;
+    private String flightNumber;
 }

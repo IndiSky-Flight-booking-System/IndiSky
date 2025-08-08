@@ -38,7 +38,16 @@ function BookingConfirmation() {
   }, [mainBooking]);
 
   const handleDownload = () => {
-    alert('E-Ticket Downloaded (dummy)');
+    const input = pdfRef.current;
+    html2canvas(input).then((canvas) => {
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const imgProps = pdf.getImageProperties(imgData);
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+      pdf.save('E-Ticket.pdf');
+    });
   };
 
   const handleGoToBookings = () => {
@@ -49,7 +58,7 @@ function BookingConfirmation() {
     <div>
       <SlideBar />
       <Sidebar />
-      <div className="container mt-5 mb-5 static-page">
+      <div className="container mt-5 mb-5 static-page" ref={pdfRef}>
         <div className="text-center mb-4">
           <h2 className="text-success fw-bold">Booking Confirmed!</h2>
           <p className="text-muted">Your tickets have been booked successfully.</p>

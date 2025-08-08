@@ -1,3 +1,4 @@
+
 package com.indisky.Utils;
 
 import org.springframework.context.annotation.Configuration;

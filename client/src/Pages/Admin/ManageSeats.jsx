@@ -1,107 +1,284 @@
-// /src/Pages/Admin/ManageSeats.jsx
-import React, { useState } from 'react';
-import AdminSidebar from '../../Component/Admin/AdminSidebar';
-import '../../css/ManageSeats.css'; // Optional CSS if you created one
+import React, { useEffect, useState } from "react";
+import AdminSidebar from "../../Component/Admin/AdminSidebar";
+import {
+  getAllSeats,
+  addSeat,
+  updateSeat,
+  deleteSeat,
+} from "../../Service/flightSeat";
+import "../../css/ManageSeats.css";
 import "../../css/AdminHeader.css";
-
-const dummySeats = [
-  { seat_id: 1, seat_number: '1A', seat_class: 'ECONOMY', is_booked: false, flight_id: 101 },
-  { seat_id: 2, seat_number: '1B', seat_class: 'ECONOMY', is_booked: true, flight_id: 101 },
-  { seat_id: 3, seat_number: '1C', seat_class: 'BUSINESS', is_booked: false, flight_id: 102 },
-];
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function ManageSeats() {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false); // ✅ Added this
-  const [seats, setSeats] = useState(dummySeats);
-  const [form, setForm] = useState({ seat_id: '', seat_number: '', seat_class: 'ECONOMY', is_booked: false, flight_id: '' });
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [seats, setSeats] = useState([]);
+  const [form, setForm] = useState({
+    seatId: "",
+    seatNumber: "",
+    seatClass: "ECONOMY",
+    flightNumber: "",
+    flightId: "",
+    booked: false,
+  });
   const [editing, setEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState("");
 
-  const handleChange = e => {
-    const { name, value, type, checked } = e.target;
-    setForm(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-  };
+  const [currentPage, setCurrentPage] = useState(1);
+  const seatsPerPage = 10;
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    if (editing) {
-      setSeats(prev => prev.map(s => s.seat_id === form.seat_id ? form : s));
-    } else {
-      setSeats(prev => [...prev, { ...form, seat_id: Date.now() }]);
+  useEffect(() => {
+    fetchSeats();
+  }, []);
+
+  const fetchSeats = async () => {
+    setLoading(true);
+    try {
+      const response = await getAllSeats();
+      setSeats(response.data);
+    } catch (error) {
+      console.error("Error fetching seats:", error);
+      toast.error("Failed to fetch seats.");
+    } finally {
+      setLoading(false);
     }
-    setForm({ seat_id: '', seat_number: '', seat_class: 'ECONOMY', is_booked: false, flight_id: '' });
-    setEditing(false);
   };
 
-  const handleEdit = seat => {
-    setForm(seat);
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editing) {
+        await updateSeat(form.seatId, {
+          seatNumber: form.seatNumber,
+          seatClass: form.seatClass,
+          flightId: form.flightId,
+          booked: form.booked,
+        });
+        toast.success("Seat updated successfully!");
+      } else {
+        await addSeat({
+          seatNumber: form.seatNumber,
+          seatClass: form.seatClass,
+          flightNumber: form.flightNumber,
+          booked: form.booked,
+        });
+        toast.success("Seat added successfully!");
+      }
+      fetchSeats();
+      resetForm();
+    } catch (error) {
+      console.error("Error saving seat:", error);
+      toast.error("Failed to save seat. Please try again.");
+    }
+  };
+
+  const resetForm = () => {
+    setForm({
+      seatId: "",
+      seatNumber: "",
+      seatClass: "ECONOMY",
+      flightNumber: "",
+      flightId: "",
+      booked: false,
+    });
+    setEditing(false);
+    // toast.info("Form reset.");
+  };
+
+  const handleEdit = (seat) => {
+    setForm({
+      seatId: seat.seatId,
+      seatNumber: seat.seatNumber,
+      seatClass: seat.seatClass,
+      flightNumber: seat.flightNumber || "",
+      flightId: seat.flightId || "",
+      booked: seat.booked,
+    });
     setEditing(true);
   };
 
-  const handleDelete = id => {
-    setSeats(prev => prev.filter(s => s.seat_id !== id));
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete this seat?")) {
+      try {
+        await deleteSeat(id);
+        toast.success("Seat deleted successfully!");
+        fetchSeats();
+      } catch (error) {
+        console.error("Error deleting seat:", error);
+        toast.error("Failed to delete seat.");
+      }
+    }
   };
 
+  const filteredSeats = seats.filter((seat) =>
+    seat.flightNumber.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const indexOfLastSeat = currentPage * seatsPerPage;
+  const indexOfFirstSeat = indexOfLastSeat - seatsPerPage;
+  const currentSeats = filteredSeats.slice(indexOfFirstSeat, indexOfLastSeat);
+  const totalPages = Math.ceil(filteredSeats.length / seatsPerPage);
+
   return (
-    <div className={`admin-layout ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+    <div className={`admin-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
       <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
 
       <div className="admin-main p-4">
-       <h1 className="indisky-admin-heading">IndiSky Admin</h1>
-
+        <h1 className="indisky-admin-heading">IndiSky Admin</h1>
         <h2>Manage Flight Seats</h2>
+
+        <div className="mb-3">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Search by Flight Number"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </div>
 
         <form onSubmit={handleSubmit} className="row g-3 mb-4">
           <div className="col-md-3">
-            <input className="form-control" name="seat_number" placeholder="Seat Number" value={form.seat_number} onChange={handleChange} required />
+            <input
+              className="form-control"
+              name="seatNumber"
+              placeholder="Seat Number"
+              value={form.seatNumber}
+              onChange={handleChange}
+              required
+            />
           </div>
           <div className="col-md-3">
-            <select className="form-select" name="seat_class" value={form.seat_class} onChange={handleChange} required>
+            <select
+              className="form-select"
+              name="seatClass"
+              value={form.seatClass}
+              onChange={handleChange}
+              required
+            >
               <option value="ECONOMY">Economy</option>
               <option value="BUSINESS">Business</option>
               <option value="FIRST">First</option>
             </select>
           </div>
-          <div className="col-md-2">
-            <input className="form-control" name="flight_id" placeholder="Flight ID" value={form.flight_id} onChange={handleChange} required />
-          </div>
+          {!editing && (
+            <div className="col-md-2">
+              <input
+                className="form-control"
+                name="flightNumber"
+                placeholder="Flight Number"
+                value={form.flightNumber}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          )}
           <div className="col-md-2 d-flex align-items-center">
             <div className="form-check">
-              <input className="form-check-input" type="checkbox" name="is_booked" checked={form.is_booked} onChange={handleChange} />
+              <input
+                className="form-check-input"
+                type="checkbox"
+                name="booked"
+                checked={form.booked}
+                onChange={handleChange}
+              />
               <label className="form-check-label">Booked</label>
             </div>
           </div>
           <div className="col-md-2">
-            <button type="submit" className="btn btn-primary w-100">{editing ? 'Update' : 'Add'}</button>
+            <button type="submit" className="btn btn-primary w-100">
+              {editing ? "Update" : "Add"}
+            </button>
           </div>
+          {editing && (
+            <div className="col-md-2">
+              <button type="button" className="btn btn-secondary w-100" onClick={resetForm}>
+                Cancel
+              </button>
+            </div>
+          )}
         </form>
 
-        <table className="table table-bordered table-hover">
-          <thead className="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Seat Number</th>
-              <th>Class</th>
-              <th>Booked</th>
-              <th>Flight ID</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {seats.map(seat => (
-              <tr key={seat.seat_id}>
-                <td>{seat.seat_id}</td>
-                <td>{seat.seat_number}</td>
-                <td>{seat.seat_class}</td>
-                <td>{seat.is_booked ? 'Yes' : 'No'}</td>
-                <td>{seat.flight_id}</td>
-                <td>
-                  <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(seat)}>Edit</button>
-                  <button className="btn btn-sm btn-danger" onClick={() => handleDelete(seat.seat_id)}>Delete</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {loading ? (
+          <p>Loading seats...</p>
+        ) : (
+          <>
+            <table className="table table-bordered table-hover">
+              <thead className="table-light">
+                <tr>
+                  <th>Sr. No.</th>
+                  <th>Seat Number</th>
+                  <th>Class</th>
+                  <th>Booked</th>
+                  <th>Flight Number</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentSeats.length > 0 ? (
+                  currentSeats.map((seat, index) => (
+                    <tr key={seat.seatId}>
+                      <td>{indexOfFirstSeat + index + 1}</td>
+                      <td>{seat.seatNumber}</td>
+                      <td>{seat.seatClass}</td>
+                      <td>{seat.booked ? "Yes" : "No"}</td>
+                      <td>{seat.flightNumber}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-warning me-2"
+                          onClick={() => handleEdit(seat)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => handleDelete(seat.seatId)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="6" className="text-center">
+                      No seats found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+
+            <div className="d-flex justify-content-between align-items-center mt-3">
+              <span>
+                Page {currentPage} of {totalPages}
+              </span>
+              <div>
+                <button
+                  className="btn btn-secondary btn-sm me-2"
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((prev) => prev - 1)}
+                >
+                  Previous
+                </button>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((prev) => prev + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

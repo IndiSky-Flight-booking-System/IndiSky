@@ -25,15 +25,21 @@ public class FlightSeatServiceImpl implements FlightSeatService {
     private final ModelMapper mapper;
 
     @Override
-    public List<FlightSeatDto> getSeatsByFlightId(Long flightId) {
-        List<FlightSeat> seats = seatRepo.findByFlight_FlightId(flightId);
+    public List<FlightSeatDto> getAllSeats() {
+        List<FlightSeat> seats = seatRepo.findAll();
         return seats.stream().map(this::mapToDto).collect(Collectors.toList());
     }
 
     @Override
     public FlightSeatDto addSeat(FlightSeatDto dto) {
-        Flight flight = flightRepo.findById(dto.getFlightId())
-                .orElseThrow(() -> new ResourceNotFoundException("Flight not found"));
+        Flight flight;
+
+        if (dto.getFlightNumber() != null && !dto.getFlightNumber().isEmpty()) {
+            flight = flightRepo.findByFlightNumber(dto.getFlightNumber())
+                    .orElseThrow(() -> new ResourceNotFoundException("Flight not found with number: " + dto.getFlightNumber()));
+        } else {
+            throw new IllegalArgumentException("Flight number is required to add seat");
+        }
 
         FlightSeat seat = new FlightSeat();
         seat.setSeatNumber(dto.getSeatNumber());
@@ -76,7 +82,10 @@ public class FlightSeatServiceImpl implements FlightSeatService {
         dto.setSeatNumber(seat.getSeatNumber());
         dto.setSeatClass(seat.getSeatClass());
         dto.setBooked(seat.isBooked());
-        dto.setFlightId(seat.getFlight() != null ? seat.getFlight().getFlightId() : null);
+        dto.setFlightId(seat.getFlight().getFlightId());
+        dto.setFlightNumber(seat.getFlight().getFlightNumber());
         return dto;
     }
+
+
 }
