@@ -22,7 +22,9 @@ public class UserProfileController {
 
     @PostMapping("/login")
     public ResponseEntity<String> loginUser(@RequestBody UserRequestDto userRequestDto){
-//        System.out.println("Inside Login user");
+
+
+        System.out.println("Inside Login user:" + userRequestDto );
         String token = service.verify(userRequestDto);
 
         if (token != null) {

@@ -105,7 +105,7 @@ public class FlightServiceImpl implements FlightService {
 
             LocalDateTime ArrStartDate = arrival.atStartOfDay();
             LocalDateTime ArrEndDate = arrival.atTime(LocalTime.MAX);
-            System.out.println(source + " " + destination + " " + departure + " " + arrival + " -> " + ArrStartDate + " " + ArrEndDate);
+            System.out.println( "Return flights =" +source + " " + destination + " " + departure + " " + arrival + " -> " + ArrStartDate + " " + ArrEndDate);
             List<Flight> roundTripFlightsE = flightRepo.findByDepartureDate(destination, source, ArrStartDate, ArrEndDate);
             for (Flight flight : roundTripFlightsE) {
                 FlightResponseDto dto = modelMapper.map(flight, FlightResponseDto.class);

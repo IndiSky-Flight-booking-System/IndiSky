@@ -3,7 +3,7 @@ import SlideBar from '../Component/SlideBar';
 import { useNavigate } from 'react-router-dom';
 import { flightDetailsContext, infoContext, totalPriceContext } from '../App';
 import '../css/FlightDetails.css';
-import Sidebar from '../Component/Sidebar';
+import Sidebar from '../Component/SideBar';
 
 function FlightDetails() {
   const { info } = useContext(infoContext);
@@ -18,25 +18,25 @@ function FlightDetails() {
   const FlightCard = ({ flight, isRoundTrip }) => (
     <div className="flight-card shadow-lg rounded mb-4">
       <div className="flight-header">
-        <h4>{flight.from} <i className="fa-solid fa-arrow-right"></i> {flight.to}</h4>
+        <h4>{flight.sourceName} <i className="fa-solid fa-arrow-right"></i> {flight.destName}</h4>
         <span className="flight-sub">
-          {isRoundTrip ? info.return : info.departure} | {flight.duration}
+          {isRoundTrip ? flight.depDate : flight.depDate } | {flight.duration}
         </span>
       </div>
       <div className="flight-body">
         <div className="time-box">
-          <span className="date">{isRoundTrip ? info.return : info.departure}</span>
+          <span className="date">{isRoundTrip ? flight.arrDate : flight.arrDate }</span>
           <h5 className="time">{flight.dep}</h5>
           <span className="location">{flight.from}</span>
         </div>
 
         <div className="divider">
           <span>{flight.duration}</span>
-          <hr />
+          <b><hr /></b> 
         </div>
 
         <div className="time-box">
-          <span className="date">{isRoundTrip ? info.return : "Arrival"}</span>
+          <span className="date">{isRoundTrip ? flight.arrDate : flight.arrDate}</span>
           <h5 className="time">{flight.arr}</h5>
           <span className="location">{flight.to}</span>
         </div>

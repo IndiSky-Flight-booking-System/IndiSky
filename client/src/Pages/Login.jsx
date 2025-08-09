@@ -20,11 +20,13 @@ function Login() {
                 // console.log("Login result:", result);
                 if (result.success) {
                     sessionStorage.setItem("token", result.data);
+                    // sessionStorage.setItem("role", "USER");
 
-                    const token = sessionStorage.getItem("token"); 
-                    const payloadBase64 = token.split('.')[1];
-                    const payload = JSON.parse(atob(payloadBase64));
-                    console.log(payload);
+                    // const token = sessionStorage.getItem("token");
+                    // const payloadBase64 = token.split('.')[1];
+                    // const payload = JSON.parse(atob(payloadBase64));
+                    // console.log("payload : ",payload);
+                    
                     toast.success('Welcome to IndiSky!');
                     navigate('/');
                 } else {

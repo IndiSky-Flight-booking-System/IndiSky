@@ -1,72 +1,91 @@
-import React, { useState } from 'react';
+// src/pages/MyBookings.jsx
+import React, { useState, useEffect } from 'react';
 import SlideBar from '../Component/SlideBar';
 import Footer from '../Component/Footer';
-import '../css/MyBookings.css'; // Don't forget to create or replace this CSS file
-import Sidebar from '../Component/Sidebar';
+//import Sidebar from '../Component/Sidebar';
+import TicketModal from '../Component/TicketModal';
+import { getUserBookings, cancelBooking } from '../Service/booking';
+import '../css/MyBookings.css';
 
 function MyBookings() {
-  const [bookings, setBookings] = useState([
-    {
-      id: 'BK001',
-      date: '2025-08-05',
-      flight: 'Pune → Delhi',
-      status: 'CONFIRMED',
-      totalPrice: 4599,
-      ticketIds: ['TKT001', 'TKT002']
-    },
-    {
-      id: 'BK002',
-      date: '2025-08-12',
-      flight: 'Mumbai → Chennai',
-      status: 'CONFIRMED',
-      totalPrice: 3899,
-      ticketIds: ['TKT003']
-    }
-  ]);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState(null);
 
-  const handleCancel = (id) => {
-    const updated = bookings.map(b =>
-      b.id === id ? { ...b, status: 'CANCELLED' } : b
-    );
-    setBookings(updated);
+  const userId = localStorage.getItem('userId') || 2;
+
+  useEffect(() => {
+    getUserBookings(userId)
+      .then((data) => {
+        setBookings(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error('Axios error:', err);
+        setError('Failed to load bookings. Please try again.');
+        setLoading(false);
+      });
+  }, []);
+
+  const handleCancel = async (bookingId) => {
+    try {
+      await cancelBooking(bookingId);
+      const updated = bookings.map((b) =>
+        b.bookingId === bookingId ? { ...b, status: 'CANCELLED' } : b
+      );
+      setBookings(updated);
+    } catch (err) {
+      console.error('Error cancelling booking:', err);
+      alert('Failed to cancel booking. Try again.');
+    }
   };
 
-  const handleViewTickets = (tickets) => {
-    alert(`Viewing tickets: ${tickets.join(', ')}`);
+  const handleViewTickets = (bookingId) => {
+    setSelectedBookingId(bookingId);
+    setShowModal(true);
   };
 
   return (
     <div>
       <SlideBar />
-      <Sidebar />
+      {/* <Sidebar /> */}
       <div className="my-bookings-container">
         <h2 className="heading">My Bookings</h2>
+
+        {loading && <p>Loading bookings...</p>}
+        {error && <p className="text-danger">{error}</p>}
 
         {bookings.map((b, index) => (
           <div key={index} className="booking-card">
             <div className="booking-header">
-              <h5><i className="bi bi-airplane-engines-fill icon" /> {b.flight}</h5>
+              <h5>
+                <i className="bi bi-airplane-engines-fill icon" /> {b.sourceAirport} → {b.destinationAirport}
+              </h5>
               <span className={`status-badge ${b.status === 'CANCELLED' ? 'cancelled' : 'confirmed'}`}>
                 {b.status}
               </span>
             </div>
             <hr />
             <div className="booking-info">
-              <p><strong>Booking ID:</strong> {b.id}</p>
-              <p><strong>Date:</strong> {b.date}</p>
+              <p><strong>Date:</strong> {new Date(b.bookingDate).toLocaleDateString()}</p>
               <p><strong>Total Price:</strong> ₹{b.totalPrice}</p>
-              <p><strong>Ticket ID(s):</strong> {b.ticketIds.join(', ')}</p>
             </div>
             <div className="booking-actions">
-              <button className="view-btn" onClick={() => handleViewTickets(b.ticketIds)}>View Ticket(s)</button>
+              <button className="view-btn" onClick={() => handleViewTickets(b.bookingId)}>View Ticket(s)</button>
               {b.status !== 'CANCELLED' && (
-                <button className="cancel-btn" onClick={() => handleCancel(b.id)}>Cancel Booking</button>
+                <button className="cancel-btn" onClick={() => handleCancel(b.bookingId)}>Cancel Booking</button>
               )}
             </div>
           </div>
         ))}
       </div>
       <Footer />
+
+      {showModal && (
+        <TicketModal bookingId={selectedBookingId} onClose={() => setShowModal(false)} />
+      )}
     </div>
   );
 }

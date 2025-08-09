@@ -1,4 +1,6 @@
+import { toast } from "react-toastify";
 import { myAxios } from "./config";
+import { Toast } from "react-bootstrap";
 
 
 export const signUp = async (userData) => {
@@ -14,11 +16,12 @@ export const signUp = async (userData) => {
 
 export const login = async (userData) => {
     try{
-        const response = await myAxios.post("/user/login", userData);
-        return { success: true, data: response.data };
+      const response = await myAxios.post("/user/login", userData);
+      return { success: true, data: response.data };
     }catch (error){
-        const message = 
-            error.response?.data || "Something went wrong in login !!"
+      const message = 
+      error.response?.data || "Something went wrong in login !!"
+      console.log(userData)
         return { success: false, error: message };
     }
 };
