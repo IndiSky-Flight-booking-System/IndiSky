@@ -18,7 +18,6 @@ export async function GetFlightSearch(trip, from, to, dep, arr, passenger) {
     }
 }
 
-
 export const getFlights = async () => {
     try {
         const response = await axios.get(`${config.serverUrl}/admin/flights`);
@@ -40,7 +39,6 @@ export const addFlight = async (flightData) => {
         throw error;
     }
 };
-
 
 export const editFlight = async (flightId, flightData) => {
     try {

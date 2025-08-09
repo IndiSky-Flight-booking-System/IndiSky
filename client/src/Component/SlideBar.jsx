@@ -9,7 +9,8 @@ function SlideBar() {
 
   function onLogout() {
     toast.success('Logout Successful');
-    navigate('/log');
+    sessionStorage.removeItem("token");
+    navigate('/user/log');
   }
 
   return (

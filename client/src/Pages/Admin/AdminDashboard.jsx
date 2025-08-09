@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../Component/Admin/AdminSidebar";
 import "../../css/AdminHeader.css";
+import { toast } from "react-toastify";
 
 const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -15,9 +16,10 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = () => {
-    // Clear any session-related storage if needed (e.g., localStorage/sessionStorage)
-    // localStorage.removeItem("adminLoggedIn");
-    navigate("/admin/login");
+    toast.success('Logout Successful');
+    sessionStorage.removeItem("token");
+    navigate('/admin/login');
+
   };
 
   return (

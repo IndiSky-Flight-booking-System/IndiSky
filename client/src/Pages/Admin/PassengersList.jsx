@@ -1,82 +1,58 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { myAxios } from '../../Service/config';
 import '../../css/PassengersList.css';
 import AdminSidebar from '../../Component/Admin/AdminSidebar';
 import "../../css/AdminHeader.css";
 
-const dummyPassengers = [
-  {
-    id: 1,
-    name: 'Amit Kumar',
-    age: 32,
-    gender: 'Male',
-    bookingId: 'BK101',
-    ticketId: 'TCK1001',
-  },
-  {
-    id: 2,
-    name: 'Rina Shah',
-    age: 28,
-    gender: 'Female',
-    bookingId: 'BK102',
-    ticketId: 'TCK1002',
-  },
-  {
-    id: 3,
-    name: 'Soham Mehta',
-    age: 45,
-    gender: 'Male',
-    bookingId: 'BK103',
-    ticketId: 'TCK1003',
-  },
-  {
-    id: 4,
-    name: 'Nikita Patil',
-    age: 19,
-    gender: 'Female',
-    bookingId: 'BK104',
-    ticketId: 'TCK1004',
-  },
-];
-
 function PassengersList() {
   const [collapsed, setCollapsed] = useState(false);
-  const [passengers] = useState(dummyPassengers);
+  const [passengers, setPassengers] = useState([]);
+
+  useEffect(() => {
+    const fetchPassengers = async () => {
+      try {
+        const response = await myAxios.get('/admin/passenger/getAll');
+        setPassengers(response.data);
+      } catch (error) {
+        console.error("Error fetching passengers:", error);
+      }
+    };
+
+    fetchPassengers();
+  }, []);
 
   return (
     <div className={`admin-layout d-flex ${collapsed ? 'sidebar-collapsed' : ''}`}>
       <AdminSidebar collapsed={collapsed} setCollapsed={setCollapsed} />
-
       <div className="admin-main flex-grow-1">
-       <h1 className="indisky-admin-heading">IndiSky Admin</h1>
-
+        <h1 className="indisky-admin-heading">IndiSky Admin</h1>
         <div className="main-content container-fluid mt-5 pt-3 px-4">
           <h2 className="fw-bold mb-4">Passengers List</h2>
-
           <div className="table-responsive shadow-sm rounded">
             <table className="table table-hover align-middle">
               <thead className="table-dark">
                 <tr>
-                  <th>Passenger Name</th>
-                  <th>Age</th>
-                  <th>Gender</th>
-                  <th>Booking ID</th>
-                  <th>Ticket ID</th>
+                  <th>Passenger No.</th>
+                  <th>Full Name</th>
+                  <th>Date of Birth</th>
+                  <th>Passport No</th>
+                  <th>Nationality</th>
                 </tr>
               </thead>
               <tbody>
                 {passengers.length > 0 ? (
-                  passengers.map((p) => (
-                    <tr key={p.id}>
-                      <td>{p.name}</td>
-                      <td>{p.age}</td>
-                      <td>{p.gender}</td>
-                      <td><span className="badge bg-primary">{p.bookingId}</span></td>
-                      <td><span className="badge bg-secondary">{p.ticketId}</span></td>
+                  passengers.map((p, index) => (
+                    <tr key={index}>
+                      <td>{[index+1]}</td>
+                      <td>{p.fullName}</td>
+                      <td>{p.dob}</td>
+                      <td>{p.passportNo}</td>
+                      <td>{p.nationality}</td>
                     </tr>
                   ))
                 ) : (
                   <tr>
-                    <td colSpan="5" className="text-center py-4">No passengers found.</td>
+                    <td colSpan="4" className="text-center py-4">No passengers found.</td>
                   </tr>
                 )}
               </tbody>

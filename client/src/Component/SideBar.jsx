@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../css/SideBar.css';
 import { Menu, X } from 'lucide-react';
+import { toast } from 'react-toastify';
 
 function SlideBar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,8 +11,9 @@ function SlideBar() {
   const toggleSidebar = () => setIsOpen(!isOpen);
 
   const handleLogout = () => {
-    localStorage.clear();
-    navigate('/');
+    toast.success('Logout Successful');
+    sessionStorage.removeItem("token");
+    navigate('/user/log');
   };
 
   // Auto-close sidebar on navigation
