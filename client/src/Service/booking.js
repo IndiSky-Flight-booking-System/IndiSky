@@ -20,11 +20,11 @@ export async function createBooking(bookingPayload) {
   try {
     const url = `${config.serverUrl}/api/bookings`;
     const response = await axios.post(url, bookingPayload);
-    toast.success("Booking created successfully!");
+    toast.success("Booking Registered, make a payment!");
     return response.data;
   } catch (error) {
-    toast.error("Booking creation failed!");
-    console.error("Error during booking:", error);
+    toast.error("Booking registration failed!");
+    //console.error("Error during booking:", error);
     return null;
   }
 }
@@ -36,6 +36,6 @@ export async function getBooking(id) {
     const response = await axios.get(url);
     return response.data;
   } catch (error) {
-    console.error("Error during booking:", error);
+    //console.error("Error during booking:", error);
   }
 }

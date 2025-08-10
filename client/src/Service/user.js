@@ -1,6 +1,7 @@
-import { toast } from "react-toastify";
+
 import { myAxios } from "./config";
-import { Toast } from "react-bootstrap";
+import axios from "axios";
+import { config } from "./config";
 
 
 export const signUp = async (userData) => {
@@ -21,7 +22,34 @@ export const login = async (userData) => {
     }catch (error){
       const message = 
       error.response?.data || "Something went wrong in login !!"
-      console.log(userData)
+      //console.log(userData)
         return { success: false, error: message };
     }
 };
+
+
+export const getUserDetails = async (userId) => {
+  try {
+    const response = await axios.get(`${config.serverUrl}/user/${userId}`);
+    //console.log("User details fetched successfully:", response.data);
+    return { success: true, data: response.data };
+  } catch (error) {
+    //console.error("Error fetching user details:", error);
+    const message = error.response?.data || "Failed to fetch user details!";
+    return { success: false, error: message };
+  }
+};
+
+// Update user details by ID
+export const updateUserDetails = async (userId, userData) => {
+  try {
+    const response = await axios.put(`${config.serverUrl}/user/${userId}`, userData);
+    //console.log("User details updated successfully:", response.data);
+    return { success: true, data: response.data };
+  } catch (error) {
+    //console.error("Error updating user details:", error);
+    const message = error.response?.data || "Failed to update user details!";
+    return { success: false, error: message };
+  }
+};
+

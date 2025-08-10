@@ -1,8 +1,8 @@
 import React from 'react';
 import SlideBar from '../Component/SlideBar';
+import Sidebar from '../Component/Sidebar';
 import Footer from '../Component/Footer';
-import '../css/StaticPage.css'; // ✅ Ensure this file exists
-import Sidebar from '../Component/SideBar';
+import '../css/StaticPage.css'; 
 
 function TermsPrivacy() {
   return (

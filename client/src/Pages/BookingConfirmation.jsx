@@ -3,8 +3,8 @@ import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import '../css/StaticPage.css';
 import SlideBar from '../Component/SlideBar';
+import Sidebar from '../Component/Sidebar';
 import Footer from '../Component/Footer';
-import Sidebar from '../Component/SideBar';
 import { useNavigate } from 'react-router-dom';
 import '../css/StaticPage.css';
 

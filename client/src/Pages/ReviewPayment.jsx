@@ -23,7 +23,7 @@ function ReviewPayment() {
   const location = useLocation();
   const bookingBasePayload = location.state;
 
-  console.log("basepayload " + bookingBasePayload.ticketClass);
+  //console.log("basepayload " + bookingBasePayload.ticketClass);
 
 
   const { selectedOneway, selectedRoundtrip } = useContext(flightDetailsContext);
@@ -69,10 +69,10 @@ function ReviewPayment() {
       ticketType: selectedRoundtrip ? 'ROUND_TRIP' : 'ONE_WAY'
     };
 
-    console.log("Payment Request Data:", requestData);
+    //console.log("Payment Request Data:", requestData);
 
     const result = await makePayment(requestData);
-    console.log("Payment data " + result);
+    //console.log("Payment data " + result);
     if (result) {
       setTimeout(() => {
         navigate('/booking-confirmation');

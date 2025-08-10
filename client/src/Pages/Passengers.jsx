@@ -31,7 +31,7 @@ function Passengers() {
     updatedList[index][field] = value;
     setPassengerList(updatedList);
   };
-console.log(passengerList);
+//console.log(passengerList);
   const navigate = useNavigate();
 
   const onSave = async () => {
@@ -50,7 +50,7 @@ console.log(passengerList);
     }
  
     const result = await addPassenger(passengerList);
-    console.log(result);
+    //console.log(result);
     if (result.status === 201) {
       setPassengerRespList(result.data);
       toast.success(result.data);

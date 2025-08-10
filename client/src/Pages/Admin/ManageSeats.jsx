@@ -1,5 +1,7 @@
+
 import React, { useEffect, useState } from "react";
 import AdminSidebar from "../../Component/Admin/AdminSidebar";
+import AdminHeader from "../../Component/Admin/AdminHeader";
 import {
   getAllSeats,
   addSeat,
@@ -89,7 +91,6 @@ export default function ManageSeats() {
       booked: false,
     });
     setEditing(false);
-    // toast.info("Form reset.");
   };
 
   const handleEdit = (seat) => {
@@ -127,158 +128,164 @@ export default function ManageSeats() {
   const totalPages = Math.ceil(filteredSeats.length / seatsPerPage);
 
   return (
-    <div className={`admin-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
-      <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+    <div className={`admin-page-container ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+      {/* Fixed header */}
+      <AdminHeader />
 
-      <div className="admin-main p-4">
-        <h1 className="indisky-admin-heading">IndiSky Admin</h1>
-        <h2>Manage Flight Seats</h2>
+      <div className="admin-body d-flex">
+        {/* Sidebar */}
+        <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
 
-        <div className="mb-3">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search by Flight Number"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+        {/* Main content */}
+        <main className="admin-main flex-grow-1 px-4 pt-4">
+          <h1>Manage Flight Seats</h1>
 
-        <form onSubmit={handleSubmit} className="row g-3 mb-4">
-          <div className="col-md-3">
+          <div className="mb-3">
             <input
+              type="text"
               className="form-control"
-              name="seatNumber"
-              placeholder="Seat Number"
-              value={form.seatNumber}
-              onChange={handleChange}
-              required
+              placeholder="Search by Flight Number"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
             />
           </div>
-          <div className="col-md-3">
-            <select
-              className="form-select"
-              name="seatClass"
-              value={form.seatClass}
-              onChange={handleChange}
-              required
-            >
-              <option value="ECONOMY">Economy</option>
-              <option value="BUSINESS">Business</option>
-              <option value="FIRST">First</option>
-            </select>
-          </div>
-          {!editing && (
-            <div className="col-md-2">
+
+          <form onSubmit={handleSubmit} className="row g-3 mb-4">
+            <div className="col-md-3">
               <input
                 className="form-control"
-                name="flightNumber"
-                placeholder="Flight Number"
-                value={form.flightNumber}
+                name="seatNumber"
+                placeholder="Seat Number"
+                value={form.seatNumber}
                 onChange={handleChange}
                 required
               />
             </div>
-          )}
-          <div className="col-md-2 d-flex align-items-center">
-            <div className="form-check">
-              <input
-                className="form-check-input"
-                type="checkbox"
-                name="booked"
-                checked={form.booked}
+            <div className="col-md-3">
+              <select
+                className="form-select"
+                name="seatClass"
+                value={form.seatClass}
                 onChange={handleChange}
-              />
-              <label className="form-check-label">Booked</label>
+                required
+              >
+                <option value="ECONOMY">Economy</option>
+                <option value="BUSINESS">Business</option>
+                <option value="FIRST">First</option>
+              </select>
             </div>
-          </div>
-          <div className="col-md-2">
-            <button type="submit" className="btn btn-primary w-100">
-              {editing ? "Update" : "Add"}
-            </button>
-          </div>
-          {editing && (
-            <div className="col-md-2">
-              <button type="button" className="btn btn-secondary w-100" onClick={resetForm}>
-                Cancel
-              </button>
-            </div>
-          )}
-        </form>
-
-        {loading ? (
-          <p>Loading seats...</p>
-        ) : (
-          <>
-            <table className="table table-bordered table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th>Sr. No.</th>
-                  <th>Seat Number</th>
-                  <th>Class</th>
-                  <th>Booked</th>
-                  <th>Flight Number</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {currentSeats.length > 0 ? (
-                  currentSeats.map((seat, index) => (
-                    <tr key={seat.seatId}>
-                      <td>{indexOfFirstSeat + index + 1}</td>
-                      <td>{seat.seatNumber}</td>
-                      <td>{seat.seatClass}</td>
-                      <td>{seat.booked ? "Yes" : "No"}</td>
-                      <td>{seat.flightNumber}</td>
-                      <td>
-                        <button
-                          className="btn btn-sm btn-warning me-2"
-                          onClick={() => handleEdit(seat)}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          className="btn btn-sm btn-danger"
-                          onClick={() => handleDelete(seat.seatId)}
-                        >
-                          Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="text-center">
-                      No seats found
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-
-            <div className="d-flex justify-content-between align-items-center mt-3">
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-              <div>
-                <button
-                  className="btn btn-secondary btn-sm me-2"
-                  disabled={currentPage === 1}
-                  onClick={() => setCurrentPage((prev) => prev - 1)}
-                >
-                  Previous
-                </button>
-                <button
-                  className="btn btn-secondary btn-sm"
-                  disabled={currentPage === totalPages}
-                  onClick={() => setCurrentPage((prev) => prev + 1)}
-                >
-                  Next
-                </button>
+            {!editing && (
+              <div className="col-md-2">
+                <input
+                  className="form-control"
+                  name="flightNumber"
+                  placeholder="Flight Number"
+                  value={form.flightNumber}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            )}
+            <div className="col-md-2 d-flex align-items-center">
+              <div className="form-check">
+                <input
+                  className="form-check-input"
+                  type="checkbox"
+                  name="booked"
+                  checked={form.booked}
+                  onChange={handleChange}
+                />
+                <label className="form-check-label">Booked</label>
               </div>
             </div>
-          </>
-        )}
+            <div className="col-md-2">
+              <button type="submit" className="btn btn-primary w-100">
+                {editing ? "Update" : "Add"}
+              </button>
+            </div>
+            {editing && (
+              <div className="col-md-2">
+                <button type="button" className="btn btn-secondary w-100" onClick={resetForm}>
+                  Cancel
+                </button>
+              </div>
+            )}
+          </form>
+
+          {loading ? (
+            <p>Loading seats...</p>
+          ) : (
+            <>
+              <table className="table table-bordered table-hover">
+                <thead className="table-light">
+                  <tr>
+                    <th>Sr. No.</th>
+                    <th>Seat Number</th>
+                    <th>Class</th>
+                    <th>Booked</th>
+                    <th>Flight Number</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentSeats.length > 0 ? (
+                    currentSeats.map((seat, index) => (
+                      <tr key={seat.seatId}>
+                        <td>{indexOfFirstSeat + index + 1}</td>
+                        <td>{seat.seatNumber}</td>
+                        <td>{seat.seatClass}</td>
+                        <td>{seat.booked ? "Yes" : "No"}</td>
+                        <td>{seat.flightNumber}</td>
+                        <td>
+                          <button
+                            className="btn btn-sm btn-warning me-2"
+                            onClick={() => handleEdit(seat)}
+                          >
+                            Edit
+                          </button>
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() => handleDelete(seat.seatId)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="text-center">
+                        No seats found
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              <div className="d-flex justify-content-between align-items-center mt-3">
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <div>
+                  <button
+                    className="btn btn-secondary btn-sm me-2"
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                  >
+                    Previous
+                  </button>
+                  <button
+                    className="btn btn-secondary btn-sm"
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </main>
       </div>
     </div>
   );

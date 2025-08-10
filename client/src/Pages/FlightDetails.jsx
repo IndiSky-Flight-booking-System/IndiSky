@@ -1,9 +1,10 @@
+
 import React, { useContext } from 'react';
 import SlideBar from '../Component/SlideBar';
+import Sidebar from '../Component/Sidebar';
 import { useNavigate } from 'react-router-dom';
 import { flightDetailsContext, infoContext, totalPriceContext } from '../App';
 import '../css/FlightDetails.css';
-import Sidebar from '../Component/SideBar';
 
 function FlightDetails() {
   const { info } = useContext(infoContext);
@@ -55,12 +56,12 @@ function FlightDetails() {
       <SlideBar />
       <Sidebar />
 
-      <div className="container flight-details-container">
+      <div className="container flight-details-container" style={{ marginTop: '80px' }}>
         {selectedOneway && <FlightCard flight={selectedOneway} isRoundTrip={false} />}
         {selectedRoundtrip && <FlightCard flight={selectedRoundtrip} isRoundTrip={true} />}
       </div>
 
-      <div className="footer-box shadow-lg">
+      <div className="footer-box shadow-lg" style={{ marginTop: '30px' }}>
         <div className="price-box">
           <h4>Total Price:</h4>
           <h3>₹ {total}</h3>

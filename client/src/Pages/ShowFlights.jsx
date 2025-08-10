@@ -75,7 +75,7 @@ function ShowFlights() {
   async function onGetFlightSearch() {
     const { trip, from, to, departure, arrival, passenger } = info;
     const result = await GetFlightSearch(trip, from, to, departure, arrival,  passenger);
-    console.log(result);
+    //console.log(result);
 
     if (result) {
       const onewayformat = (result.onewayFlights || []).map(f => ({
@@ -136,6 +136,8 @@ function ShowFlights() {
       <Search />
 
       <div className="container my-3" style={{ paddingBottom: "120px" }}>
+
+        
         {/* Trip Summary */}
 
         {info.from && info.to && info.passenger && info.Tclass && (

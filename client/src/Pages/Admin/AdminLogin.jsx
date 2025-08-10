@@ -24,11 +24,12 @@ function AdminLogin() {
       if (result.success && result.data) {
         const token = result.data;
         sessionStorage.setItem('token', token);
+        
         navigate("/admin/dashboard");
 
-        // const payloadBase64 = token.split('.')[1];
-        // const payload = JSON.parse(atob(payloadBase64));
-        // console.log("payload.role", payload.Role);
+        const payloadBase64 = token.split('.')[1];
+        const payload = JSON.parse(atob(payloadBase64));
+        //console.log("payload.role", payload);
       } else {
         toast.error(result.error || 'Invalid credentials');
       }
@@ -68,17 +69,6 @@ function AdminLogin() {
         <button className="btn btn-primary w-100 mb-3" onClick={onLogin}>
           Login
         </button>
-
-        <div className="text-center mt-3">
-          <p className="text-muted">
-            New user?{' '}
-            <Link
-              to="/reg"
-              className="register-link text-decoration-none fw-semibold">
-              Register here
-            </Link>
-          </p>
-        </div>
       </div>
     </div>
   );

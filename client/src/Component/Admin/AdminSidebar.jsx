@@ -15,15 +15,15 @@ export default function AdminSidebar({ collapsed, setCollapsed }) {
   { to: '/admin/seats', label: 'Manage Flight Seats', icon: 'fa-solid fa-chair' },
   { to: '/admin/users', label: 'Manage Users', icon: 'fa-solid fa-users' },
   { to: '/admin/flight-status', label: 'Flight Status', icon: 'fa-solid fa-clock-rotate-left' },
-  { to: '/admin/view-bookings', label: 'View Bookings', icon: 'fa-solid fa-receipt' }, // updated icon
-  { to: '/admin/payments', label: 'Payments', icon: 'fa-solid fa-credit-card' },        // distinct icon
-  { to: '/admin/passengers', label: 'Passengers', icon: 'fa-solid fa-user-tag' }        // distinct icon
+  { to: '/admin/view-bookings', label: 'View Bookings', icon: 'fa-solid fa-receipt' }, 
+  { to: '/admin/payments', label: 'Payments', icon: 'fa-solid fa-credit-card' },        
+  { to: '/admin/passengers', label: 'Passengers', icon: 'fa-solid fa-user-tag' }       
 ];
 
 
   return (
     <div className={`admin-sidebar bg-dark text-white ${collapsed ? 'collapsed' : ''}`}>
-      {/* Toggle Button */}
+    
       <div className="sidebar-toggle text-end p-2">
         <button
           className="btn btn-sm btn-light"
@@ -34,14 +34,14 @@ export default function AdminSidebar({ collapsed, setCollapsed }) {
         </button>
       </div>
 
-      {/* Title */}
+      
       {!collapsed && (
         <div className="text-center mb-4">
           <h5 className="fw-bold text-white">✈️ Admin Panel</h5>
         </div>
       )}
 
-      {/* Menu Items */}
+      
       <ul className="nav flex-column">
         {menuItems.map(({ to, label, icon }) => (
           <li className="nav-item mb-2" key={to}>

@@ -1,11 +1,18 @@
-// src/pages/MyBookings.jsx
 import React, { useState, useEffect } from 'react';
 import SlideBar from '../Component/SlideBar';
+import Sidebar from '../Component/Sidebar';
 import Footer from '../Component/Footer';
-//import Sidebar from '../Component/Sidebar';
 import TicketModal from '../Component/TicketModal';
 import { getUserBookings, cancelBooking } from '../Service/booking';
 import '../css/MyBookings.css';
+
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch {
+    return null;
+  }
+}
 
 function MyBookings() {
   const [bookings, setBookings] = useState([]);
@@ -14,12 +21,21 @@ function MyBookings() {
   const [showModal, setShowModal] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState(null);
 
-  const userId = localStorage.getItem('userId') || 2;
+  const token = sessionStorage.getItem('token');
+  const decoded = token ? parseJwt(token) : null;
+  const userId = decoded?.Id ?? null;
 
   useEffect(() => {
+    if (!userId) {
+      setError('User not logged in.');
+      setLoading(false);
+      return;
+    }
+
     getUserBookings(userId)
       .then((data) => {
-        setBookings(data);
+        const sortedBookings = data.sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate));
+        setBookings(sortedBookings);
         setLoading(false);
       })
       .catch((err) => {
@@ -27,7 +43,7 @@ function MyBookings() {
         setError('Failed to load bookings. Please try again.');
         setLoading(false);
       });
-  }, []);
+  }, [userId]);
 
   const handleCancel = async (bookingId) => {
     try {
@@ -50,12 +66,17 @@ function MyBookings() {
   return (
     <div>
       <SlideBar />
-      {/* <Sidebar /> */}
-      <div className="my-bookings-container">
+      <Sidebar />
+
+      <div className="my-bookings-container" style={{ marginLeft: '250px', padding: '1rem' }}>
         <h2 className="heading">My Bookings</h2>
 
         {loading && <p>Loading bookings...</p>}
         {error && <p className="text-danger">{error}</p>}
+
+        {bookings.length === 0 && !loading && !error && (
+          <p>No bookings found.</p>
+        )}
 
         {bookings.map((b, index) => (
           <div key={index} className="booking-card">
@@ -81,6 +102,7 @@ function MyBookings() {
           </div>
         ))}
       </div>
+
       <Footer />
 
       {showModal && (

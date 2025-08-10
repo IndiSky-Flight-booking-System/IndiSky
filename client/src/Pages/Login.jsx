@@ -16,8 +16,7 @@ function Login() {
         } else {
             try {
                 const result = await login({ ...info, email: info.email.trim() });
-                // console.log(result.data);
-                // console.log("Login result:", result);
+                
                 if (result.success) {
                     sessionStorage.setItem("token", result.data);
                     // sessionStorage.setItem("role", "USER");
@@ -74,7 +73,7 @@ function Login() {
                     <p className="text-muted">
                         New user?{' '}
                         <Link
-                            to="/reg"
+                            to="/register"
                             className="register-link text-decoration-none fw-semibold">
                             Register here
                         </Link>

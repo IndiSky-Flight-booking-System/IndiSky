@@ -28,7 +28,6 @@ import ManageSeats from './Pages/Admin/ManageSeats';
 import AdminViewBookings from './Pages/Admin/AdminViewBookings';
 import PaymentsManagement from './Pages/Admin/PaymentsManagement';
 import PassengersList from './Pages/Admin/PassengersList';
-import UserManagement from './Pages/Admin/UserManagement';
 import AdminLogin from './Pages/Admin/AdminLogin';
 
 
@@ -88,9 +87,9 @@ function App() {
                   <selectedSeatsContext.Provider value={{ selectedSeats, setSelectedSeats, selectedReturnSeats, setSelectedReturnSeats }} >
                     <bookingContext.Provider value={{ mainBooking, setMainBooking }} >
                       <Routes>
-                        <Route path='/user/log' element={<Login />} />
+                        <Route path='/user/login' element={<Login />} />
                         <Route path='/admin/login' element={<AdminLogin />} />
-                        <Route path='/reg' element={<Register />} />
+                        <Route path='/register' element={<Register />} />
                         <Route path='/' element={<Home />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/terms" element={<TermsPrivacy />} />
@@ -130,10 +129,6 @@ function App() {
 
                         
                         <Route path="/admin/flight-status" element={<ProtectedRoute requiredRole="ADMIN"><FlightStatusManagement /></ProtectedRoute>} />
-
-                        
-                        <Route path="/admin/users-management" element={<ProtectedRoute requiredRole="ADMIN"><UserManagement /></ProtectedRoute>} />
-                        {/* //<Route path="/admin/bookings/:bookingId" element={<AdminBookingDetails />} /> */}
 
 
 

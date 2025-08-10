@@ -1,157 +1,211 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+
+import React, { useEffect, useState } from "react";
 import AdminSidebar from "../../Component/Admin/AdminSidebar";
-import "../../css/AdminHeader.css";
+import AdminHeader from "../../Component/Admin/AdminHeader";
+import { getDashboardData } from "../../Service/dashboard";
 import { toast } from "react-toastify";
+import "../../css/AdminHeader.css";
 
 const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const navigate = useNavigate();
+  const [dashboardData, setDashboardData] = useState(null);
 
-  const summary = {
-    flights: 28,
-    bookings: 143,
-    users: 84,
-    revenue: 258450,
+  useEffect(() => {
+    fetchDashboard();
+  }, []);
+
+  const fetchDashboard = async () => {
+    try {
+      const res = await getDashboardData();
+      setDashboardData(res.data);
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to fetch dashboard data");
+    }
   };
 
-  const handleLogout = () => {
-    toast.success('Logout Successful');
-    sessionStorage.removeItem("token");
-    navigate('/admin/login');
+  if (!dashboardData) {
+    return <div className="text-center mt-5">Loading...</div>;
+  }
 
-  };
+  const {
+    totalFlights,
+    totalBookings,
+    totalUsers,
+    totalRevenue,
+    recentBookings,
+    recentPayments,
+  } = dashboardData;
 
   return (
-    <div className={`admin-layout d-flex ${sidebarCollapsed ? 'collapsed' : ''}`}>
-      <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+    <>
+      <div className={`admin-page-container ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+        {/* Header fixed on top */}
+        <AdminHeader />
 
-      <div className="admin-main flex-grow-1">
-        <div className="d-flex justify-content-between align-items-center px-4 pt-3">
-          <h1 className="indisky-admin-heading">IndiSky Admin</h1>
-          <button className="btn btn-outline-danger" onClick={handleLogout}>
-            Logout
-          </button>
-        </div>
+        <div className="admin-body d-flex">
+          {/* Sidebar on left */}
+          <AdminSidebar
+            collapsed={sidebarCollapsed}
+            setCollapsed={setSidebarCollapsed}
+          />
 
-        <div className="main-content container-fluid mt-3 pt-2 px-4">
-          <h2 className="mb-4 fw-bold">Admin Dashboard</h2>
+          {/* Main content area */}
+          <main className="admin-main flex-grow-1 px-4 pt-4">
+            <h1 className="indisky-admin-heading mb-4">IndiSky Admin Dashboard</h1>
 
-          {/* Summary Cards */}
-          <div className="row">
-            <div className="col-md-3 mb-3">
-              <div className="card text-bg-primary shadow">
-                <div className="card-body">
-                  <h5 className="card-title">Flights</h5>
-                  <p className="card-text fs-3">{summary.flights}</p>
-                </div>
+            {/* Summary Cards */}
+            <div className="row">
+              <SummaryCard title="Flights" value={totalFlights} />
+              <SummaryCard title="Bookings" value={totalBookings} />
+              <SummaryCard title="Users" value={totalUsers} />
+              <SummaryCard
+                title="Revenue"
+                value={`₹${totalRevenue.toLocaleString()}`}
+              />
+            </div>
+
+            {/* Recent Bookings */}
+            <section className="mt-5">
+              <h4 className="fw-bold">Recent Bookings</h4>
+              <div className="table-responsive">
+                <table className="table table-hover table-striped">
+                  <thead className="table-dark">
+                    <tr>
+                      <th>Sr. No.</th>
+                      <th>User</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentBookings.map((booking, index) => (
+                      <tr key={booking.bookingId}>
+                        <td>{index + 1}</td>
+                        <td>{booking.user}</td>
+                        <td>{new Date(booking.date).toLocaleDateString()}</td>
+                        <td>
+                          <span className="badge text-bg-success">
+                            {booking.status}
+                          </span>
+                        </td>
+                        <td>₹{booking.total.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
-            </div>
-            <div className="col-md-3 mb-3">
-              <div className="card text-bg-success shadow">
-                <div className="card-body">
-                  <h5 className="card-title">Bookings</h5>
-                  <p className="card-text fs-3">{summary.bookings}</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3 mb-3">
-              <div className="card text-bg-warning shadow">
-                <div className="card-body">
-                  <h5 className="card-title">Users</h5>
-                  <p className="card-text fs-3">{summary.users}</p>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-3 mb-3">
-              <div className="card text-bg-danger shadow">
-                <div className="card-body">
-                  <h5 className="card-title">Revenue</h5>
-                  <p className="card-text fs-3">₹{summary.revenue.toLocaleString()}</p>
-                </div>
-              </div>
-            </div>
-          </div>
+            </section>
 
-          {/* Recent Bookings */}
-          <div className="mt-5">
-            <h4 className="fw-bold">Recent Bookings</h4>
-            <div className="table-responsive">
-              <table className="table table-hover table-striped">
-                <thead className="table-dark">
-                  <tr>
-                    <th>Booking ID</th>
-                    <th>User</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>#BKG1234</td>
-                    <td>Akash Bhadange</td>
-                    <td>2024-07-24</td>
-                    <td><span className="badge text-bg-success">CONFIRMED</span></td>
-                    <td>₹8,500</td>
-                  </tr>
-                  <tr>
-                    <td>#BKG1235</td>
-                    <td>Kalpesh Margaj</td>
-                    <td>2024-07-22</td>
-                    <td><span className="badge text-bg-warning">PENDING</span></td>
-                    <td>₹12,000</td>
-                  </tr>
-                  <tr>
-                    <td>#BKG1236</td>
-                    <td>Gaurav Shimpi</td>
-                    <td>2024-07-23</td>
-                    <td><span className="badge text-bg-danger">CANCELLED</span></td>
-                    <td>₹5,700</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Recent Payments */}
-          <div className="mt-5">
-            <h4 className="fw-bold">Recent Payments</h4>
-            <div className="table-responsive">
-              <table className="table table-hover table-bordered">
-                <thead className="table-dark">
-                  <tr>
-                    <th>Payment ID</th>
-                    <th>User</th>
-                    <th>Method</th>
-                    <th>Status</th>
-                    <th>Amount</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>#PAY9981</td>
-                    <td>Akash Bhadange</td>
-                    <td>UPI</td>
-                    <td><span className="badge text-bg-success">SUCCESS</span></td>
-                    <td>₹8,500</td>
-                  </tr>
-                  <tr>
-                    <td>#PAY9982</td>
-                    <td>Kalpesh Margaj</td>
-                    <td>Credit Card</td>
-                    <td><span className="badge text-bg-warning">PENDING</span></td>
-                    <td>₹12,000</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-
+            {/* Recent Payments */}
+            <section className="mt-5">
+              <h4 className="fw-bold">Recent Payments</h4>
+              <div className="table-responsive">
+                <table className="table table-hover table-bordered">
+                  <thead className="table-dark">
+                    <tr>
+                      <th>Sr. No.</th>
+                      <th>User</th>
+                      <th>Method</th>
+                      <th>Status</th>
+                      <th>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recentPayments.map((payment, index) => (
+                      <tr key={payment.paymentId}>
+                        <td>{index + 1}</td>
+                        <td>{payment.user}</td>
+                        <td>{payment.method.replace("_", " ")}</td>
+                        <td>
+                          <span className="badge text-bg-success">
+                            {payment.status}
+                          </span>
+                        </td>
+                        <td>₹{payment.amount.toLocaleString()}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </main>
         </div>
       </div>
-    </div>
+
+      <style jsx>{`
+        /* Container for whole admin page */
+        .admin-page-container {
+          height: 100vh;
+          display: flex;
+          flex-direction: column;
+        }
+
+        /* Header fixed height */
+        nav.navbar {
+          flex-shrink: 0;
+          height: 56px;
+        }
+
+        /* Flex body with sidebar and main */
+        .admin-body {
+          flex-grow: 1;
+          display: flex;
+          overflow: hidden;
+        }
+
+        /* Main content area */
+        .admin-main {
+          overflow-y: auto;
+          padding-top: 1rem;
+          margin-left: 250px;
+          transition: margin-left 0.3s ease;
+        }
+
+        /* Main margin when sidebar collapsed */
+        .sidebar-collapsed .admin-main {
+          margin-left: 80px;
+        }
+
+        /* Heading style */
+        .indisky-admin-heading {
+          font-size: 2.2rem;
+          font-weight: 700;
+          background: linear-gradient(90deg, #17283a, #1f4044);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin-bottom: 1.5rem;
+          text-align: center;
+          letter-spacing: 1px;
+          text-transform: uppercase;
+          animation: fadeInDown 0.6s ease-out;
+        }
+
+        @keyframes fadeInDown {
+          from {
+            opacity: 0;
+            transform: translateY(-20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
+    </>
   );
 };
+
+const SummaryCard = ({ title, value }) => (
+  <div className="col-md-3 mb-3">
+    <div className="card text-bg-warning shadow">
+      <div className="card-body">
+        <h5 className="card-title">{title}</h5>
+        <p className="card-text fs-3">{value}</p>
+      </div>
+    </div>
+  </div>
+);
 
 export default AdminDashboard;

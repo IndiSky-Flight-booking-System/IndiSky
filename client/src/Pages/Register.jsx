@@ -57,10 +57,10 @@ function Register() {
         passportNo: passport_no
       });
 
-      console.log(result);
+      //console.log(result);
 
       toast.success('Registered Successfully!');
-      navigate('/log');
+      navigate('/user/login');
     }
   }
 
@@ -101,7 +101,7 @@ function Register() {
           </button>
           <p className="mt-4 text-muted">
             Already have an account?{' '}
-            <Link to="/log" className="fw-bold text-decoration-none text-primary">
+            <Link to="/user/login" className="fw-bold text-decoration-none text-primary">
               Login here
             </Link>
           </p>

@@ -1,9 +1,9 @@
 import React from 'react'
 import SlideBar from '../Component/SlideBar';
+import Sidebar from '../Component/Sidebar';
 import Footer from '../Component/Footer';
 import '../css/HomeCustom.css';
 import '../css/Popup.css';
-import Sidebar from '../Component/SideBar';
 import AdvertisementSlider from '../Component/AdvertisementSlider';
 
 

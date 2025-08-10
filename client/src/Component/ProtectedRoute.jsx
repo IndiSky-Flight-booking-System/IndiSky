@@ -9,9 +9,9 @@ export default function ProtectedRoute({ children, requiredRole }) {
 
   const normalizeRole = (role) => role?.replace('ROLE_', '').toUpperCase();
 
-  // If token not found, redirect immediately
+  
   if (!token) {
-    return <Navigate to={requiredRole === 'ADMIN' ? '/admin/login' : '/user/log'} replace />;
+    return <Navigate to={requiredRole === 'ADMIN' ? '/admin/login' : '/user/login'} replace />;
   }else{
     useEffect(() => {
       try {
@@ -19,14 +19,14 @@ export default function ProtectedRoute({ children, requiredRole }) {
         const payload = JSON.parse(atob(payloadBase64));
         const actualRole = normalizeRole(payload.Role || storedRole);
   
-        // If role doesn't match requiredRole, redirect accordingly
+        
         if (actualRole !== requiredRole) {
           sessionStorage.removeItem('token');
-          navigate(actualRole === 'ADMIN' ? '/admin/login' : '/user/log', { replace: true });
+          navigate(actualRole === 'ADMIN' ? '/admin/login' : '/user/login', { replace: true });
         }
       } catch (e) {
         sessionStorage.removeItem('token');
-        navigate(requiredRole === 'ADMIN' ? '/admin/login' : '/user/log', { replace: true });
+        navigate(requiredRole === 'ADMIN' ? '/admin/login' : '/user/login', { replace: true });
       }
     }, [token, storedRole, requiredRole, navigate]);
 

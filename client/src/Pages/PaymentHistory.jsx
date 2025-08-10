@@ -1,17 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import SlideBar from '../Component/SlideBar';
+import Sidebar from '../Component/Sidebar';
 import Footer from '../Component/Footer';
 import '../css/PaymentHistory.css';
-//import Sidebar from '../Component/Sidebar';
 import { getPaymentsByUser } from '../Service/payment';
+
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch {
+    return null;
+  }
+}
 
 function PaymentHistory() {
   const [payments, setPayments] = useState([]);
   const [error, setError] = useState(null);
 
-  const userId = 2; // ✅ Replace with dynamic value if needed
+  const token = sessionStorage.getItem('token');
+  const decoded = token ? parseJwt(token) : null;
+  const userId = decoded?.Id ?? null;
 
   useEffect(() => {
+    if (!userId) {
+      setError('User not logged in.');
+      return;
+    }
+
     const fetchPayments = async () => {
       try {
         const data = await getPaymentsByUser(userId);
@@ -23,7 +38,7 @@ function PaymentHistory() {
     };
 
     fetchPayments();
-  }, []);
+  }, [userId]);
 
   const statusClass = (status) => {
     switch (status) {
@@ -38,8 +53,9 @@ function PaymentHistory() {
   return (
     <div>
       <SlideBar />
-      {/* <Sidebar /> */}
-      <div className="container mt-5 mb-5">
+      <Sidebar />
+
+      <div className="container mt-5 mb-5" style={{ marginLeft: '250px', padding: '1rem' }}>
         <h2 className="text-center mb-4" style={{ color: '#512888' }}>Payment History</h2>
 
         {error ? (
@@ -81,6 +97,7 @@ function PaymentHistory() {
           </div>
         )}
       </div>
+
       <Footer />
     </div>
   );

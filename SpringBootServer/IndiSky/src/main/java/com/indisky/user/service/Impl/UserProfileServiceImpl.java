@@ -2,9 +2,11 @@ package com.indisky.user.service.Impl;
 
 import com.indisky.auth.jwt.JwtService;
 import com.indisky.enums.Role;
+import com.indisky.exception.ResourceNotFoundException;
 import com.indisky.repository.UserRepository;
 import com.indisky.entities.User;
 import com.indisky.user.dto.UserRequestDto;
+import com.indisky.user.dto.UserDto;
 import com.indisky.user.service.UserProfileService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -47,39 +49,24 @@ public class UserProfileServiceImpl implements UserProfileService {
 
 
     @Override
-    public String updateUser(UserRequestDto userdto, String email) {
-        // String email = from security  and remove email from parameter
-        User user = userRepository.findByEmail(email);
-        System.out.println(user.toString());
+    public UserDto updateUserDetails(Long userId, UserDto userDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-         if(userdto.getFullName()!=null){
-             user.setFullName(userdto.getFullName());
-         }
+        if (userDto.getFullName() != null && !userDto.getFullName().trim().isEmpty())
+            user.setFullName(userDto.getFullName().trim());
 
-//Allowing users to update their email can break JWT-based login and is a security risk
-//         if(userdto.getEmail()!=null){
-//             user.setEmail(userdto.getEmail());
-//         }
+        if (userDto.getBirthDate() != null)
+            user.setBirthDate(userDto.getBirthDate());
 
-         if(userdto.getBirthDate()!=null){
-             user.setBirthDate(userdto.getBirthDate());
-         }
+        if (userDto.getPhoneNo() != null && !userDto.getPhoneNo().trim().isEmpty())
+            user.setPhoneNo(userDto.getPhoneNo().trim());
 
-         if(userdto.getPassportNo()!=null){
-             user.setPassportNo(userdto.getPassportNo());
-         }
+        if (userDto.getPassportNo() != null && !userDto.getPassportNo().trim().isEmpty())
+            user.setPassportNo(userDto.getPassportNo().trim());
 
-         if(userdto.getPhoneNo()!=null){
-             user.setPhoneNo(userdto.getPhoneNo());
-         }
-
-         if(userdto.getPassword()!=null && !userdto.getPassword().isEmpty()){
-             user.setPassword(new BCryptPasswordEncoder().encode(userdto.getPassword()));
-         }
-
-         userRepository.save(user);
-
-        return "User Updated Successfully";
+        User updatedUser = userRepository.save(user);
+        return modelMapper.map(updatedUser, UserDto.class);
     }
 
     @Override
@@ -93,5 +80,13 @@ public class UserProfileServiceImpl implements UserProfileService {
         }
         return null;
     }
+
+    @Override
+    public UserDto getUserDetails(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        return modelMapper.map(user, UserDto.class);
+    }
+
 
 }

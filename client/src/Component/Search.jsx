@@ -16,7 +16,7 @@ function Search() {
   
 
   const navigate = useNavigate();
-  console.log(info);
+  //console.log(info);
 
   const today = new Date().toISOString().split('T')[0];
   const next = new Date();
@@ -35,9 +35,6 @@ function Search() {
     }
   }, []);
 
-  //It was just giving default value when changed to roundtrip and summation of total
-  //It was not Synchronizing properly  therefore used useEffect to update it simultaneously 
-  //did for both in single useEffect  
   useEffect(() => {
     setInfo((e) => ({
       ...e,
