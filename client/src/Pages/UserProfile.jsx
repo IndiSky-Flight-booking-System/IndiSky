@@ -1,83 +1,97 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SlideBar from '../Component/SlideBar';
+import Sidebar from '../Component/Sidebar';
 import Footer from '../Component/Footer';
 import { useNavigate } from 'react-router-dom';
 import '../css/UserProfile.css';
-import Sidebar from '../Component/Sidebar';
+import { getUserDetails, updateUserDetails } from '../Service/user'; // your API helpers
+
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
 
 function UserProfile() {
   const navigate = useNavigate();
 
   const [profile, setProfile] = useState({
-    first_name: 'Gaurav',
-    last_name: 'Shimpi',
-    dob: '2000-05-15',
-    email: 'gaurav@example.com',
-    phone: '9876543210',
-    passport_no: 'X1234567'
+    fullName: '',
+    birthDate: '',
+    email: '',
+    phoneNo: '',
+    passportNo: ''
   });
 
-  const [passwords, setPasswords] = useState({
-    oldPassword: '',
-    newPassword: ''
-  });
+  const token = sessionStorage.getItem("token");
+  let userId = null;
+  if (token) {
+    const decoded = parseJwt(token);
+    userId = decoded?.Id || null;
+  }
+
+  useEffect(() => {
+    if (userId) {
+      getUserDetails(userId).then(res => {
+        if (res.success) {
+          const formattedDate = res.data.birthDate ? res.data.birthDate.split('T')[0] : '';
+          setProfile({
+            fullName: res.data.fullName || '',
+            birthDate: formattedDate,
+            email: res.data.email || '',
+            phoneNo: res.data.phoneNo || '',
+            passportNo: res.data.passportNo || ''
+          });
+        } else {
+          alert("Failed to load profile: " + res.error);
+        }
+      });
+    }
+  }, [userId]);
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePasswordChange = (e) => {
-    const { name, value } = e.target;
-    setPasswords(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleProfileSave = (e) => {
+  const handleProfileSave = async (e) => {
     e.preventDefault();
-    alert('Profile updated successfully (dummy)!');
-  };
-
-  const handlePasswordUpdate = (e) => {
-    e.preventDefault();
-    if (!passwords.oldPassword || !passwords.newPassword) {
-      alert('Please enter both passwords');
+    if (!userId) {
+      alert("User not identified.");
       return;
     }
-    alert('Password updated successfully (dummy)!');
-    setPasswords({ oldPassword: '', newPassword: '' });
+
+    const res = await updateUserDetails(userId, profile);
+    if (res.success) {
+      alert("Profile updated successfully!");
+    } else {
+      alert("Failed to update profile: " + res.error);
+    }
   };
 
   return (
     <div>
       <SlideBar />
       <Sidebar />
-      <div className="container mt-5 mb-5">
+      <div className="container profile-container mb-5">
         <h2 className="text-center mb-4 profile-title">User Profile</h2>
         <div className="row g-4">
 
-          {/* Personal Info */}
-          <div className="col-md-6">
+          <div className="col-md-8 offset-md-2">
             <div className="card profile-card shadow-sm p-4">
               <h5 className="mb-4 text-primary">Edit Personal Information</h5>
               <form onSubmit={handleProfileSave}>
                 <div className="mb-3">
-                  <label>First Name</label>
+                  <label>Full Name</label>
                   <input
                     className="form-control"
                     type="text"
-                    name="first_name"
-                    value={profile.first_name}
+                    name="fullName"
+                    value={profile.fullName}
                     onChange={handleProfileChange}
-                  />
-                </div>
-                <div className="mb-3">
-                  <label>Last Name</label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    name="last_name"
-                    value={profile.last_name}
-                    onChange={handleProfileChange}
+                    required
                   />
                 </div>
                 <div className="mb-3">
@@ -85,28 +99,28 @@ function UserProfile() {
                   <input
                     className="form-control"
                     type="date"
-                    name="dob"
-                    value={profile.dob}
+                    name="birthDate"
+                    value={profile.birthDate}
                     onChange={handleProfileChange}
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Email</label>
+                  <label>Email (read-only)</label>
                   <input
                     className="form-control"
                     type="email"
                     name="email"
                     value={profile.email}
-                    onChange={handleProfileChange}
+                    readOnly
                   />
                 </div>
                 <div className="mb-3">
-                  <label>Phone</label>
+                  <label>Phone Number</label>
                   <input
                     className="form-control"
                     type="tel"
-                    name="phone"
-                    value={profile.phone}
+                    name="phoneNo"
+                    value={profile.phoneNo}
                     onChange={handleProfileChange}
                   />
                 </div>
@@ -115,8 +129,8 @@ function UserProfile() {
                   <input
                     className="form-control"
                     type="text"
-                    name="passport_no"
-                    value={profile.passport_no}
+                    name="passportNo"
+                    value={profile.passportNo}
                     onChange={handleProfileChange}
                   />
                 </div>
@@ -130,38 +144,6 @@ function UserProfile() {
                     My Bookings
                   </button>
                 </div>
-              </form>
-            </div>
-          </div>
-
-          {/* Password Section */}
-          <div className="col-md-6">
-            <div className="card profile-card shadow-sm p-4">
-              <h5 className="mb-4 text-success">Update Password</h5>
-              <form onSubmit={handlePasswordUpdate}>
-                <div className="mb-3">
-                  <label>Old Password</label>
-                  <input
-                    className="form-control"
-                    type="password"
-                    name="oldPassword"
-                    value={passwords.oldPassword}
-                    onChange={handlePasswordChange}
-                    required
-                  />
-                </div>
-                <div className="mb-3">
-                  <label>New Password</label>
-                  <input
-                    className="form-control"
-                    type="password"
-                    name="newPassword"
-                    value={passwords.newPassword}
-                    onChange={handlePasswordChange}
-                    required
-                  />
-                </div>
-                <button type="submit" className="btn btn-success w-100">Update Password</button>
               </form>
             </div>
           </div>

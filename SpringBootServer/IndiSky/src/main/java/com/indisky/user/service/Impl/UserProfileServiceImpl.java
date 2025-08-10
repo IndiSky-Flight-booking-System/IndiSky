@@ -2,9 +2,11 @@ package com.indisky.user.service.Impl;
 
 import com.indisky.auth.jwt.JwtService;
 import com.indisky.enums.Role;
+import com.indisky.exception.ResourceNotFoundException;
 import com.indisky.repository.UserRepository;
 import com.indisky.entities.User;
 import com.indisky.user.dto.UserRequestDto;
+import com.indisky.user.dto.UserDto;
 import com.indisky.user.service.UserProfileService;
 import lombok.AllArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -38,46 +40,33 @@ public class UserProfileServiceImpl implements UserProfileService {
         if(user!=null){
             user.setPersonRole(Role.USER);
             user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-            userRepository.save(user);
-            return user.getFullName() + " Registered Successfully!";
+            User  savedUser = userRepository.save(user);
+            String token = jwtService.generateToken(savedUser);
+            return "Registered successfully. Token: " + token;
         }
         return "Failed to Registered!";
     }
 
 
     @Override
-    public String updateUser(UserRequestDto userdto, String email) {
-        //        String email = from security  and remove email from parameter
-                User user = userRepository.findByEmail(email);
-        System.out.println(user.toString());
+    public UserDto updateUserDetails(Long userId, UserDto userDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-         if(userdto.getFullName()!=null){
-             user.setFullName(userdto.getFullName());
-         }
+        if (userDto.getFullName() != null && !userDto.getFullName().trim().isEmpty())
+            user.setFullName(userDto.getFullName().trim());
 
-         if(userdto.getEmail()!=null){
-             user.setEmail(userdto.getEmail());
-         }
+        if (userDto.getBirthDate() != null)
+            user.setBirthDate(userDto.getBirthDate());
 
-         if(userdto.getBirthDate()!=null){
-             user.setBirthDate(userdto.getBirthDate());
-         }
+        if (userDto.getPhoneNo() != null && !userDto.getPhoneNo().trim().isEmpty())
+            user.setPhoneNo(userDto.getPhoneNo().trim());
 
-         if(userdto.getPassportNo()!=null){
-             user.setPassportNo(userdto.getPassportNo());
-         }
+        if (userDto.getPassportNo() != null && !userDto.getPassportNo().trim().isEmpty())
+            user.setPassportNo(userDto.getPassportNo().trim());
 
-         if(userdto.getPhoneNo()!=null){
-             user.setPhoneNo(userdto.getPhoneNo());
-         }
-
-         if(userdto.getPassword()!=null && !userdto.getPassword().isEmpty()){
-             user.setPassword(userdto.getPassword());
-         }
-
-         userRepository.save(user);
-
-        return "User Updated Successfully";
+        User updatedUser = userRepository.save(user);
+        return modelMapper.map(updatedUser, UserDto.class);
     }
 
     @Override
@@ -85,10 +74,19 @@ public class UserProfileServiceImpl implements UserProfileService {
 
         Authentication authentication = authManager.authenticate(new UsernamePasswordAuthenticationToken(
                 userRequestDto.getEmail(),userRequestDto.getPassword()));
+        User user = userRepository.findByEmail(userRequestDto.getEmail());
         if(authentication.isAuthenticated()){
-            return jwtService.generateToken(userRequestDto.getEmail());
+            return jwtService.generateToken(user);
         }
         return null;
     }
+
+    @Override
+    public UserDto getUserDetails(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+        return modelMapper.map(user, UserDto.class);
+    }
+
 
 }

@@ -1,103 +1,115 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AdminSidebar from '../../Component/Admin/AdminSidebar';
+import AdminHeader from '../../Component/Admin/AdminHeader';
 import "../../css/AdminHeader.css";
-
-const initialUsers = [
-  {
-    user_id: 1,
-    first_name: 'Akash',
-    last_name: 'Bhadange',
-    email: 'akash@example.com',
-    phone: '1234567890',
-    role: 'ROLE_USER',
-    blocked: false,
-  },
-  {
-    user_id: 2,
-    first_name: 'Admin',
-    last_name: 'User',
-    email: 'admin@example.com',
-    phone: '0987654321',
-    role: 'ROLE_ADMIN',
-    blocked: false,
-  },
-];
+import { myAxios } from '../../Service/config';
 
 export default function ManageUsers() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [users, setUsers] = useState(initialUsers);
+  const [users, setUsers] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
-  const handleBlockToggle = (id) => {
-    setUsers(users.map(user =>
-      user.user_id === id ? { ...user, blocked: !user.blocked } : user
-    ));
+  const fetchUsers = async () => {
+    try {
+      const res = await myAxios.get('/admin/user/users');
+      setUsers(res.data);
+    } catch (err) {
+      console.error("Error fetching users:", err);
+    }
   };
 
-  const handleResetPassword = (id) => {
-    alert(`Reset password requested for user ID: ${id}`);
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const handleRoleChange = async (userId, newRole) => {
+    try {
+      await myAxios.put(`/admin/user/role/${userId}?role=${newRole}`);
+      setUsers(users.map(user => user.id === userId ? { ...user, personRole: newRole } : user));
+    } catch (err) {
+      console.error("Failed to update role", err);
+    }
   };
+
+  // Filter users by fullName or email based on search input (case-insensitive)
+  const filteredUsers = users.filter(user =>
+    user.fullName.toLowerCase().includes(searchText.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
-    <div className={`admin-layout d-flex ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+    <div className={`admin-page-container ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+      {/* Fixed header */}
+      <AdminHeader />
 
-      <div className="admin-main flex-grow-1 p-4">
-       <h1 className="indisky-admin-heading">IndiSky Admin</h1>
+      <div className="admin-body d-flex">
+        {/* Sidebar */}
+        <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
 
-        <h2 className="fw-bold mb-4">User Management</h2>
+        {/* Main content */}
+        <main className="admin-main flex-grow-1 px-4 pt-4">
+          <h1 className="fw-bold mb-4">User Management</h1>
 
-        <div className="table-responsive shadow-sm rounded">
-          <table className="table table-hover align-middle">
-            <thead className="table-dark">
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Role</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((u) => (
-                <tr key={u.user_id} style={{ opacity: u.blocked ? 0.6 : 1 }}>
-                  <td>{u.first_name} {u.last_name}</td>
-                  <td>{u.email}</td>
-                  <td>{u.phone}</td>
-                  <td>
-                    <span className="badge bg-info text-dark">
-                      {u.role.replace('ROLE_', '')}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={`badge ${u.blocked ? 'bg-danger' : 'bg-success'}`}>
-                      {u.blocked ? 'Blocked' : 'Active'}
-                    </span>
-                  </td>
-                  <td>
-                    <button
-                      className={`btn btn-sm ${u.blocked ? 'btn-success' : 'btn-danger'} me-2`}
-                      onClick={() => handleBlockToggle(u.user_id)}
-                    >
-                      {u.blocked ? 'Unblock' : 'Block'}
-                    </button>
-                    <button
-                      className="btn btn-sm btn-warning"
-                      onClick={() => handleResetPassword(u.user_id)}
-                    >
-                      Reset Password
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {users.length === 0 && (
+          {/* Search Input */}
+          <div className="mb-3">
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Search by name or email..."
+              value={searchText}
+              onChange={e => setSearchText(e.target.value)}
+            />
+          </div>
+
+          {/* Users Table */}
+          <div className="table-responsive shadow-sm rounded">
+            <table className="table table-hover align-middle">
+              <thead className="table-dark">
                 <tr>
-                  <td colSpan="6" className="text-center py-4">No users available.</td>
+                  <th>Sr. No.</th>
+                  <th>Full Name</th>
+                  <th>Email</th>
+                  <th>Phone No</th>
+                  <th>Passport No</th>
+                  <th>Birth Date</th>
+                  <th>Role</th>
+                  <th>Change Role</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {filteredUsers.length > 0 ? (
+                  filteredUsers.map((u, index) => (
+                    <tr key={u.id}>
+                      <td>{index + 1}</td>
+                      <td>{u.fullName}</td>
+                      <td>{u.email}</td>
+                      <td>{u.phoneNo}</td>
+                      <td>{u.passportNo}</td>
+                      <td>{u.birthDate}</td>
+                      <td>
+                        <span className="badge bg-info text-dark">{u.personRole}</span>
+                      </td>
+                      <td>
+                        <select
+                          value={u.personRole}
+                          className="form-select form-select-sm"
+                          onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                        >
+                          <option value="USER">USER</option>
+                          <option value="ADMIN">ADMIN</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="8" className="text-center py-4">No users found.</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </main>
       </div>
     </div>
   );

@@ -2,10 +2,11 @@ import { toast } from "react-toastify";
 import { config } from "./config";
 import axios from 'axios';
 
-// ✅ Existing function (kept as it is)
-export async function GetFlightSearch(trip, from, to, dep, arr, Tclass, passenger) {
+
+export async function GetFlightSearch(trip, from, to, dep, arr, passenger) {
+
     try {
-        let url = `${config.serverUrl}/search?source=${from}&destination=${to}&departure=${dep}&passengers=${passenger}&travelclass=${Tclass}&tripType=${trip}`;
+        let url = `${config.serverUrl}/api/flights/search?source=${from}&destination=${to}&departure=${dep}&passengers=${passenger}&travelclass=ECONOMY&tripType=${trip}`;
 
         if (arr) {
             url += `&arrival=${arr}`;
@@ -17,50 +18,47 @@ export async function GetFlightSearch(trip, from, to, dep, arr, Tclass, passenge
     }
 }
 
-// ✅ Get all flights
 export const getFlights = async () => {
     try {
         const response = await axios.get(`${config.serverUrl}/admin/flights`);
-        console.log("Flights fetched successfully:", response.data);
+        //console.log("Flights fetched successfully:", response.data);
         return response.data;
     } catch (error) {
-        console.error("Error fetching flights:", error);
+        //console.error("Error fetching flights:", error);
         throw error;
     }
 };
 
-// ✅ Add new flight
 export const addFlight = async (flightData) => {
     try {
         const response = await axios.post(`${config.serverUrl}/admin/flights`, flightData);
-        console.log("Flight added successfully:", response.data);
+        //console.log("Flight added successfully:", response.data);
         return response.data;
     } catch (error) {
-        console.error("Error adding flight:", error);
+        //console.error("Error adding flight:", error);
         throw error;
     }
 };
 
-// ✅ Edit flight
 export const editFlight = async (flightId, flightData) => {
     try {
         const response = await axios.put(`${config.serverUrl}/admin/flights/${flightId}`, flightData);
-        console.log("Flight updated successfully:", response.data);
+        //console.log("Flight updated successfully:", response.data);
         return response.data;
     } catch (error) {
-        console.error("Error updating flight:", error);
+        ////console.error("Error updating flight:", error);
         throw error;
     }
 };
 
-// ✅ Delete flight
+
 export const deleteFlight = async (flightId) => {
     try {
         const response = await axios.delete(`${config.serverUrl}/admin/flights/${flightId}`);
-        console.log("Flight deleted successfully:", response.data);
+        //console.log("Flight deleted successfully:", response.data);
         return response.data;
     } catch (error) {
-        console.error("Error deleting flight:", error);
+        //console.error("Error deleting flight:", error);
         throw error;
     }
 };

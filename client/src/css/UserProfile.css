@@ -1,3 +1,9 @@
+
+
+.profile-container {
+  margin-top: 100px; /* adjust this value to move further down or up */
+}
+
 .profile-title {
   color: #512888;
   font-weight: 700;

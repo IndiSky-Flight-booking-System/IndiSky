@@ -1,6 +1,6 @@
-
 import React, { useEffect, useState } from "react";
 import AdminSidebar from "../../Component/Admin/AdminSidebar";
+import AdminHeader from "../../Component/Admin/AdminHeader";
 import { getAllFlightStatusLogs, addFlightStatusLog } from "../../Service/flightStatusLog";
 import { toast } from "react-toastify";
 import "../../css/FlightStatusManagement.css";
@@ -72,109 +72,115 @@ function FlightStatusManagement() {
   };
 
   return (
-    <div className={`admin-layout ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
-      <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
+    <div className={`admin-page-container ${sidebarCollapsed ? "sidebar-collapsed" : ""}`}>
+      {/* Fixed header */}
+      <AdminHeader />
 
-      <div className="admin-main p-4">
-        <h1 className="indisky-admin-heading">IndiSky Admin</h1>
-        <h2>Flight Status Management</h2>
+      <div className="admin-body d-flex">
+        {/* Sidebar */}
+        <AdminSidebar collapsed={sidebarCollapsed} setCollapsed={setSidebarCollapsed} />
 
-        <form onSubmit={handleAddStatus} className="row g-3 align-items-end mb-4">
-          <div className="col-md-4">
-            <label className="form-label">Flight Number</label>
+        {/* Main content */}
+        <main className="admin-main flex-grow-1 px-4 pt-4">
+          <h1>Flight Status Management</h1>
+
+          <form onSubmit={handleAddStatus} className="row g-3 align-items-end mb-4">
+            <div className="col-md-4">
+              <label className="form-label">Flight Number</label>
+              <input
+                type="text"
+                className="form-control"
+                value={newFlightNumber}
+                onChange={(e) => setNewFlightNumber(e.target.value)}
+                placeholder="e.g., IN101"
+                required
+              />
+            </div>
+            <div className="col-md-4">
+              <label className="form-label">Status</label>
+              <select
+                className="form-select"
+                value={newStatus}
+                onChange={(e) => setNewStatus(e.target.value)}
+              >
+                <option value="SCHEDULED">Scheduled</option>
+                <option value="DELAYED">Delayed</option>
+                <option value="CANCELLED">Cancelled</option>
+              </select>
+            </div>
+            <div className="col-md-4">
+              <button type="submit" className="btn btn-primary w-100">
+                Add / Update Status
+              </button>
+            </div>
+          </form>
+
+          <div className="mb-3">
             <input
               type="text"
               className="form-control"
-              value={newFlightNumber}
-              onChange={(e) => setNewFlightNumber(e.target.value)}
-              placeholder="e.g., IN101"
-              required
+              placeholder="Search by Flight Number"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setCurrentPage(1);
+              }}
             />
           </div>
-          <div className="col-md-4">
-            <label className="form-label">Status</label>
-            <select
-              className="form-select"
-              value={newStatus}
-              onChange={(e) => setNewStatus(e.target.value)}
-            >
-              <option value="SCHEDULED">Scheduled</option>
-              <option value="DELAYED">Delayed</option>
-              <option value="CANCELLED">Cancelled</option>
-            </select>
-          </div>
-          <div className="col-md-4">
-            <button type="submit" className="btn btn-primary w-100">
-              Add / Update Status
-            </button>
-          </div>
-        </form>
 
-        <div className="mb-3">
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Search by Flight Number"
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setCurrentPage(1); 
-            }}
-          />
-        </div>
-
-        <div className="table-responsive shadow-sm rounded">
-          <table className="table table-bordered table-hover align-middle">
-            <thead className="table-light">
-              <tr>
-                <th>Flight Number</th>
-                <th>Status</th>
-                <th>Updated At</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentLogs.length > 0 ? (
-                currentLogs.map((log) => (
-                  <tr key={log.logId}>
-                    <td>{log.flightNumber}</td>
-                    <td>
-                      <span className={`badge ${getStatusBadge(log.status)} py-2 px-3`}>
-                        {log.status}
-                      </span>
-                    </td>
-                    <td>{new Date(log.updatedAt).toLocaleString()}</td>
-                  </tr>
-                ))
-              ) : (
+          <div className="table-responsive shadow-sm rounded">
+            <table className="table table-bordered table-hover align-middle">
+              <thead className="table-light">
                 <tr>
-                  <td colSpan="3" className="text-center py-3">
-                    No flight logs found.
-                  </td>
+                  <th>Flight Number</th>
+                  <th>Status</th>
+                  <th>Updated At</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-
-        {totalPages > 1 && (
-          <div className="d-flex justify-content-between align-items-center mt-3">
-            <button
-              className="btn btn-outline-secondary"
-              onClick={handlePrev}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            <span>Page {currentPage} of {totalPages}</span>
-            <button
-              className="btn btn-outline-secondary"
-              onClick={handleNext}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
+              </thead>
+              <tbody>
+                {currentLogs.length > 0 ? (
+                  currentLogs.map((log) => (
+                    <tr key={log.logId}>
+                      <td>{log.flightNumber}</td>
+                      <td>
+                        <span className={`badge ${getStatusBadge(log.status)} py-2 px-3`}>
+                          {log.status}
+                        </span>
+                      </td>
+                      <td>{new Date(log.updatedAt).toLocaleString()}</td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="text-center py-3">
+                      No flight logs found.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        )}
+
+          {totalPages > 1 && (
+            <div className="d-flex justify-content-between align-items-center mt-3">
+              <button
+                className="btn btn-outline-secondary"
+                onClick={handlePrev}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </button>
+              <span>Page {currentPage} of {totalPages}</span>
+              <button
+                className="btn btn-outline-secondary"
+                onClick={handleNext}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </button>
+            </div>
+          )}
+        </main>
       </div>
     </div>
   );

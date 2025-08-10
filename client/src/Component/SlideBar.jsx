@@ -1,15 +1,34 @@
+
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import '../css/Popup.css';
-import '../css/SlideBar.css'; // ✅ NEW CSS file
+import '../css/SlideBar.css'; 
+
+function parseJwt(token) {
+  try {
+    return JSON.parse(atob(token.split('.')[1]));
+  } catch (e) {
+    return null;
+  }
+}
 
 function SlideBar() {
   const navigate = useNavigate();
 
+  const token = sessionStorage.getItem("token");
+  let userName = "";
+  if (token) {
+    const decoded = parseJwt(token);
+    if (decoded?.Name) {
+      userName = decoded.Name;
+    }
+  }
+
   function onLogout() {
     toast.success('Logout Successful');
-    navigate('/log');
+    sessionStorage.removeItem("token");
+    navigate('/user/login');
   }
 
   return (
@@ -36,17 +55,11 @@ function SlideBar() {
           <ul className="navbar-nav mx-auto">
             {[
               { name: 'Home', path: '/' },
-              //{ name: 'Bookings', path: '/bookings' },
-              //{ name: 'About Us', path: '/home#about' },
-              //{ name: 'Contact Us', path: '/home#contact' },
               { name: 'Flight Status', path: '/flight-status' },
-              { name: 'Payment History', path: '/payment-history' },
+              //{ name: 'Payment History', path: '/payment-history' },
               { name: 'Profile', path: '/profile' },
               { name: 'My Bookings', path: '/my-bookings' },
-              { name: 'Show Flights', path: '/show-flights' },
-
-              {/* { name: 'Review Payment', path: '/review-payment' },
-              { name: 'Booking Confirmation', path: '/booking-confirmation' }, */}
+              { name: 'Search Flights', path: '/show-flights' },
             ].map((link, idx) => (
               <li className="nav-item" key={idx}>
                 <Link className="nav-link nav-hover" to={link.path}>
@@ -57,10 +70,21 @@ function SlideBar() {
           </ul>
 
           <div className="d-flex align-items-center gap-2">
-            <span className="welcome-text">Hello, {/* fullname */}</span>
-            <button type="button" className="btn btn-outline-light logout-btn" onClick={onLogout}>
-              Logout
-            </button>
+            {userName ? (
+              <>
+                <span className="welcome-text">Hello, {userName}</span>
+                <button type="button" className="btn btn-outline-light logout-btn" onClick={onLogout}>
+                  Logout
+                </button>
+              </>
+            ) : (
+              <>
+                {/* No greeting shown */}
+                <Link to="/user/login" className="btn btn-outline-light">
+                  Login
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>

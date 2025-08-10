@@ -1,0 +1,22 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+input:focus {
+  border-color: #512888;
+  box-shadow: 0 0 0 0.2rem rgba(81, 40, 136, 0.25);
+}
+
+.btn-primary {
+  background-color: #512888;
+  border-color: #512888;
+}
+
+.btn-primary:hover {
+  background-color: #3f1f6d;
+  border-color: #3f1f6d;
+}

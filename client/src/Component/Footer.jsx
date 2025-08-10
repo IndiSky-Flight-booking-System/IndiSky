@@ -1,5 +1,5 @@
 import React from 'react';
-import '../css/Footer.css'; // ✅ New CSS file
+import '../css/Footer.css'; 
 
 function Footer() {
   return (
@@ -16,8 +16,6 @@ function Footer() {
           <a href="#about" className="footer-link">About Us</a>
           <a href="#contact" className="footer-link">Contact</a>
           <a href="/terms" className="footer-link">Terms & Privacy</a>
-          {/* <a href="/review-payment" className="footer-link">Review Payment</a>
-          <a href="/booking-confirmation" className="footer-link">Booking Confirmation</a> */}
         </div>
 
         <p className="footer-copy">

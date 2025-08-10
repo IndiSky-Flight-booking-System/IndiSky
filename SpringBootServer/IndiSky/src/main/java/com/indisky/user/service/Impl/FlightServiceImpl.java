@@ -105,7 +105,7 @@ public class FlightServiceImpl implements FlightService {
 
             LocalDateTime ArrStartDate = arrival.atStartOfDay();
             LocalDateTime ArrEndDate = arrival.atTime(LocalTime.MAX);
-            System.out.println(source + " " + destination + " " + departure + " " + arrival + " -> " + ArrStartDate + " " + ArrEndDate);
+            System.out.println( "Return flights =" +source + " " + destination + " " + departure + " " + arrival + " -> " + ArrStartDate + " " + ArrEndDate);
             List<Flight> roundTripFlightsE = flightRepo.findByDepartureDate(destination, source, ArrStartDate, ArrEndDate);
             for (Flight flight : roundTripFlightsE) {
                 FlightResponseDto dto = modelMapper.map(flight, FlightResponseDto.class);
@@ -124,26 +124,29 @@ public class FlightServiceImpl implements FlightService {
                 .orElseThrow(() -> new ResourceNotFoundException("Flight not found with number: " + flightNumber));
 
         List<FlightStatusLog> logs = flight.getStatusLogs();
-        if (logs == null || logs.isEmpty()) {
-            throw new ResourceNotFoundException("No status logs found for flight number: " + flightNumber);
-        }
 
-        // Find latest log without using streams
-        FlightStatusLog latestLog = logs.get(0);
-        for (int i = 1; i < logs.size(); i++) {
-            if (logs.get(i).getUpdatedAt().isAfter(latestLog.getUpdatedAt())) {
-                latestLog = logs.get(i);
-            }
-        }
-
-        // Map to DTO
-        FlightStatusDto dto = modelMapper.map(latestLog, FlightStatusDto.class);
-
-        // Set flightId explicitly if not part of log
+        FlightStatusDto dto = new FlightStatusDto();
         dto.setFlightId(flight.getFlightId());
+
+        if (logs != null && !logs.isEmpty()) {
+            // Find latest log without using streams
+            FlightStatusLog latestLog = logs.get(0);
+            for (int i = 1; i < logs.size(); i++) {
+                if (logs.get(i).getUpdatedAt().isAfter(latestLog.getUpdatedAt())) {
+                    latestLog = logs.get(i);
+                }
+            }
+            dto.setStatus(latestLog.getStatus());
+            dto.setUpdatedAt(latestLog.getUpdatedAt());
+        } else {
+            // No logs found, fallback to flight status
+            dto.setStatus(flight.getStatus());
+            dto.setUpdatedAt(null); // or flight.getDepartureTime() or LocalDateTime.now(), as appropriate
+        }
 
         return dto;
     }
+
 
 
 

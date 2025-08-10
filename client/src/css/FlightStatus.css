@@ -3,6 +3,7 @@
   color: #512888;
   font-weight: 700;
   font-size: 1.6rem;
+  margin-top: 40px;
 }
 
 /* Status Card Containers */
@@ -99,13 +100,17 @@
 @media (max-width: 768px) {
   .admin-main {
     margin-left: 70px !important;
+
   }
 
   .main-content {
     padding: 20px;
   }
 
+  
+
   .title-purple {
     font-size: 1.3rem;
+    margin-top: 25px; 
   }
 }

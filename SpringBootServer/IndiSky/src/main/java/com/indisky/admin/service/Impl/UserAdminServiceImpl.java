@@ -32,6 +32,7 @@ public class UserAdminServiceImpl implements AdminUserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new ResourceNotFoundException("User With given Id does not exit.."));
         user.setPersonRole(role);
+        userRepository.save(user);
         AdminUserDto userDto = modelMapper.map(user,AdminUserDto.class);
 
         return userDto;

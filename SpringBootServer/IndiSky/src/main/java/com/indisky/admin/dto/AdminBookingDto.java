@@ -14,6 +14,8 @@ import java.util.List;
 
 @Data
 public class AdminBookingDto {
+    private Long bookingId;
+
     private AdminUserDto user;
 
     private FlightAdminDto flight;

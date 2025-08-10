@@ -104,32 +104,6 @@
   box-shadow: 0 -5px 25px rgba(33, 147, 176, 0.15);
 }
 
-.booking-flight-details {
-  flex-grow: 1;
-}
-
-.booking-flight-card {
-  background: #e3f2fd;
-  border-radius: 10px;
-  padding: 10px 15px;
-  margin-right: 10px;
-  min-width: 180px;
-  box-shadow: 0 2px 8px rgba(33, 147, 176, 0.15);
-  color: #1976d2;
-}
-
-.booking-flight-card p {
-  font-weight: 700;
-  font-size: 1.1rem;
-  margin-bottom: 6px;
-}
-
-.booking-flight-card span {
-  font-weight: 600;
-  margin: 0 8px;
-  font-size: 1rem;
-}
-
 /* Booking total */
 .booking-total h3 {
   margin: 0;
@@ -161,68 +135,31 @@
   }
 }
 
-.trip-summary {
-  background: linear-gradient(90deg, #2193b0 0%, #6dd5ed 100%);
-  box-shadow: 0 4px 12px rgba(33, 147, 176, 0.3);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+/* --- Layout fix for sidebar and navbar --- */
+
+:root {
+  --navbar-height: 58px; /* adjust to your navbar height */
+  --sidebar-width: 240px;
 }
 
-.trip-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 1.2rem;
-  user-select: none;
-  min-width: 100px;
-  justify-content: center;
+/* Wrapper to push content below navbar */
+.page-content-wrapper {
+  padding-top: var(--navbar-height);
+  transition: margin-left 0.3s ease;
 }
 
-.trip-icon {
-  font-size: 1.5rem;
+/* Push content right when sidebar is open */
+body.sidebar-open .page-content-wrapper {
+  margin-left: var(--sidebar-width);
 }
 
-@media (max-width: 576px) {
-  .trip-summary {
-    flex-wrap: wrap;
-    gap: 12px;
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  :root {
+    --navbar-height: 56px;
   }
-  .trip-item {
-    min-width: 45%;
-    justify-content: flex-start;
+  
+  body.sidebar-open .page-content-wrapper {
+    margin-left: 0; /* usually sidebar overlays on mobile */
   }
 }
-
-.trip-tabs {
-  cursor: default;
-  user-select: none;
-  font-weight: 600;
-  font-size: 1.2rem;
-}
-
-.tab {
-  padding: 12px 0;
-  color: #1976d2;
-  background-color: #e3f2fd;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
-}
-
-.tab:hover {
-  background-color: #bbdefb;
-  color: #0d47a1;
-}
-
-.tab-active {
-  background-color: #1976d2;
-  color: white !important;
-  border-color: #115293;
-  box-shadow: 0 4px 10px rgba(25, 118, 210, 0.5);
-  cursor: default;
-}
-
-.tab:focus-visible {
-  outline: 3px solid #64b5f6;
-  outline-offset: 2px;
-}
-

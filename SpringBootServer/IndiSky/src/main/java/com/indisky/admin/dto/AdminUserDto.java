@@ -9,6 +9,7 @@ import java.util.List;
 
 @Data
 public class AdminUserDto {
+    private Long id;
 
     private String fullName;
 
